@@ -1,6 +1,4 @@
-# Barcelona GSE Data Science 2016/17
-# Computing Project
-# Group 7
+# Barcelona GSE Data Science 2016/17 - Computing Project - Group 7
 
 Details to follow.
 
