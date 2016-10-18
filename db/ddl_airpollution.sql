@@ -17,6 +17,7 @@ use airpollution;
 create table country (
   countryID    varchar(2),                   -- ISO 3166-1 alpha-2 code 
   countryName  varchar(40),                  -- English country name 
+  pctTraffic   decimal(3,2),                -- fraction of population living close to traffic sources   
   
   primary key (countryID)
 );
@@ -31,12 +32,10 @@ create table city (
 );
 
 create table station (
-  stationID     varchar(7),                  -- European station code 
-  cityID        varchar(7),                  -- reference to city table 
-  stationType   varchar(11),                 -- Dominant pollution source ("traffic" or "background") 
-  areaType      varchar(2),                  -- constructions around station ("urban" or "suburban") 
-  popluation    int (11),                    -- population represented by station 
-  pctTraffic    decimal(3,2),                -- fraction of population  living close to traffic sources 
+  stationID       varchar(7),                -- European station code 
+  cityID          varchar(7),                -- reference to city table 
+  stationType     varchar(11),               -- Dominant pollution source ("traffic" or "background") 
+  areaType        varchar(8),                -- constructions around station ("urban" or "suburban") 
   
   primary key (stationID)
 );
@@ -44,9 +43,9 @@ create table station (
 create table pollutant (
   pollutantID     varchar(5),                -- acronym of the pollutant 
   description     varchar(50),               -- pollutant name 
-  measurementCode varchar(3),                -- Type of technique used for measurement 
+  statistic       varchar(5),                -- statistic (annual mean, percentile)
   unitConc        varchar(6),                -- measurement unit of concentration 
-  unitEmission    varchar(6),                -- measurement unit of emission 
+  unitEmission    varchar(20),               -- measurement unit of emission 
   limitDesc       varchar(100),              -- description of Europaean concentration limit 
   limitConc       decimal(5,2),              -- concentration limit 
   
@@ -60,6 +59,8 @@ create table concentration (
   year            int(4),                          -- statistics year 
   concentration   decimal(5,2),                    -- statistics value 
   pctValid        decimal(3,2),                    -- fraction of valid data in the year 
+  measurementCode varchar(3),                      -- Type of technique used for measurement   
+  popluation      int (11),                        -- population represented by station in that year   
   
   primary key (concID)
 );
