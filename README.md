@@ -1,6 +1,6 @@
 # BGSE Data Science 2016/17 - Computing Project - Group 7
 
-Details to follow.
+Details to follow
 
 ### Structure
 
