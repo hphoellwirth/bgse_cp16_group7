@@ -15,8 +15,8 @@ use airpollution;
 /* Create tables */
 /*****************/
 create table country (
-  countryID    varchar(2),                   -- ISO 3166-1 alpha-2 code 
-  countryName  varchar(40),                  -- English country name 
+  countryID    varchar(2),                  -- ISO 3166-1 alpha-2 code 
+  countryName  varchar(40),                 -- English country name 
   pctTraffic   decimal(3,2),                -- fraction of population living close to traffic sources   
   
   primary key (countryID)
@@ -60,7 +60,7 @@ create table concentration (
   concentration   decimal(5,2),                    -- statistics value 
   pctValid        decimal(3,2),                    -- fraction of valid data in the year 
   measurementCode varchar(3),                      -- Type of technique used for measurement   
-  popluation      int (11),                        -- population represented by station in that year   
+  population      int (11),                        -- population represented by station in that year   
   
   primary key (concID)
 );
@@ -88,4 +88,13 @@ create table emission (
 /***********************/
 /* Create foreign keys */
 /***********************/ 
--- TBD 
+alter table city 
+  add foreign key (countryID) references country (countryID);
+
+alter table station 
+  add foreign key (cityID) references city (cityID);
+  
+alter table concentration 
+  add foreign key (pollutantID) references pollutant (pollutantID);
+alter table concentration 
+  add foreign key (stationID) references station (stationID); 

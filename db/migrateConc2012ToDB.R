@@ -49,43 +49,129 @@ dbConn = dbConnect(MySQL(),
                    user='gseuser', password='gsepass', 
                    dbname='airpollution')
 
-# ----------------------------------------------------------------------
-# Insert data
-# ----------------------------------------------------------------------
-
 # support UTF-8 characters
-dbGetQuery(dbConn, "set names utf8")
+invisible(dbGetQuery(dbConn, "set names utf8"))
 
-# countries
-countries <- uniquecombs(data.frame(code = paste0("\"",dat_NO2$country_iso_code,"\""), 
-                                    name = paste0("\"",dat_NO2$country_name,"\""),
-                                    pctTraffic = dat_NO2$percentage_traffic_population))
+# ----------------------------------------------------------------------
+# Assign dummy cityIDs to TR cities
+# ----------------------------------------------------------------------
+dat_NO2[dat_NO2$city_code == "NULL",]$city_code <- 
+    paste0(dat_NO2[dat_NO2$city_code == "NULL",]$country_iso_code,
+           substr(dat_NO2[dat_NO2$city_code == "NULL",]$city_name,1,5))
+
+dat_O3[dat_O3$city_code == "NULL",]$city_code <- 
+    paste0(dat_O3[dat_O3$city_code == "NULL",]$country_iso_code,
+           substr(dat_O3[dat_O3$city_code == "NULL",]$city_name,1,5))
+
+dat_PM10[dat_PM10$city_code == "NULL",]$city_code <- 
+    paste0(dat_PM10[dat_PM10$city_code == "NULL",]$country_iso_code,
+           substr(dat_PM10[dat_PM10$city_code == "NULL",]$city_name,1,5))
+
+# ----------------------------------------------------------------------
+# Insert countries
+# ----------------------------------------------------------------------
+countries <- uniquecombs(rbind(data.frame(code = paste0("\"",dat_NO2$country_iso_code,"\""), 
+                                          name = paste0("\"",dat_NO2$country_name,"\""),
+                                          pctTraffic = dat_NO2$percentage_traffic_population),
+                               data.frame(code = paste0("\"",dat_O3$country_iso_code,"\""), 
+                                          name = paste0("\"",dat_O3$country_name,"\""),
+                                          pctTraffic = dat_O3$percentage_traffic_population),
+                               data.frame(code = paste0("\"",dat_PM10$country_iso_code,"\""), 
+                                          name = paste0("\"",dat_PM10$country_name,"\""),
+                                          pctTraffic = dat_PM10$percentage_traffic_population)))
+inserts <- apply(countries, 1, paste, collapse = ", ")
 query <- paste("INSERT INTO country",
                "(countryID, countryName, pctTraffic)",
-               "VALUES (", apply(countries, 1, paste, collapse = ", "), ");")
+               "VALUES (", paste(inserts, collapse = "), ("), ");")
 invisible(lapply(query, function(q) dbGetQuery(dbConn, q)))
 
-# cities
-cities <- uniquecombs(data.frame(code = paste0("\"",dat_NO2$city_code,"\""),
-                                 name = paste0("\"",dat_NO2$city_name,"\""),
-                                 country = paste0("\"",dat_NO2$country_iso_code,"\""),
-                                 population = dat_NO2$UA_city_pop))
+# ----------------------------------------------------------------------
+# Insert cities
+# ----------------------------------------------------------------------
+
+# TBD: filter TR cities are assign them artificial ID
+
+cities <- uniquecombs(rbind(data.frame(code = paste0("\"",dat_NO2$city_code,"\""),
+                                       name = paste0("\"",dat_NO2$city_name,"\""),
+                                       country = paste0("\"",dat_NO2$country_iso_code,"\""),
+                                       population = dat_NO2$UA_city_pop),
+                            data.frame(code = paste0("\"",dat_O3$city_code,"\""),
+                                       name = paste0("\"",dat_O3$city_name,"\""),
+                                       country = paste0("\"",dat_O3$country_iso_code,"\""),
+                                       population = dat_O3$UA_city_pop),
+                            data.frame(code = paste0("\"",dat_PM10$city_code,"\""),
+                                       name = paste0("\"",dat_PM10$city_name,"\""),
+                                       country = paste0("\"",dat_PM10$country_iso_code,"\""),
+                                       population = dat_PM10$UA_city_pop)))
+inserts <- apply(cities, 1, paste, collapse = ", ")
 query <- paste("INSERT INTO city",
                "(cityID, cityName, countryID, popluation)", 
-               "VALUES(", apply(cities, 1, paste, collapse = ", "), ");")
+               "VALUES (", paste(inserts, collapse = "), ("), ");")
 invisible(lapply(query, function(q) dbGetQuery(dbConn, q)))
 
-# stations
-stations <- uniquecombs(data.frame(code = paste0("\"",dat_NO2$station_european_code,"\""),
-                                   city = paste0("\"",dat_NO2$city_code,"\""),
-                                   type = paste0("\"",dat_NO2$type_of_station,"\""),
-                                   area = paste0("\"",dat_NO2$station_type_of_area,"\"")))
+# ----------------------------------------------------------------------
+# Insert stations
+# ----------------------------------------------------------------------
+stations <- uniquecombs(rbind(data.frame(code = paste0("\"",dat_NO2$station_european_code,"\""),
+                                         city = paste0("\"",dat_NO2$city_code,"\""),
+                                         type = paste0("\"",dat_NO2$type_of_station,"\""),
+                                         area = paste0("\"",dat_NO2$station_type_of_area,"\"")),
+                              data.frame(code = paste0("\"",dat_O3$station_european_code,"\""),
+                                         city = paste0("\"",dat_O3$city_code,"\""),
+                                         type = paste0("\"",dat_O3$type_of_station,"\""),
+                                         area = paste0("\"",dat_O3$station_type_of_area,"\"")),
+                              data.frame(code = paste0("\"",dat_PM10$station_european_code,"\""),
+                                         city = paste0("\"",dat_PM10$city_code,"\""),
+                                         type = paste0("\"",dat_PM10$type_of_station,"\""),
+                                         area = paste0("\"",dat_PM10$station_type_of_area,"\""))))
+inserts <- apply(stations, 1, paste, collapse = ", ")
 query <- paste("INSERT INTO station",
                "(stationID, cityID, stationType, areaType)",
-               "VALUES (", apply(stations, 1, paste, collapse = ", "), ");")
+               "VALUES (", paste(inserts, collapse = "), ("), ");")
 invisible(lapply(query, function(q) dbGetQuery(dbConn, q)))
 
-# concentration
+# ----------------------------------------------------------------------
+# Insert concentrations
+# ----------------------------------------------------------------------
+
+# NO2 concentrations
+conc <- uniquecombs(data.frame(station = paste0("\"",dat_NO2$station_european_code,"\""),
+                               year = dat_NO2$statistics_year,
+                               value = dat_NO2$statistic_value,
+                               valid = dat_NO2$statistics_percentage_valid,
+                               mcode = paste0("\"",dat_NO2$measurement_european_group_code,"\""),
+                               population = dat_NO2$assigned_population))
+inserts <- paste("(\"NO2\", ", apply(conc, 1, paste, collapse = ", "), ")")
+query <- paste("INSERT INTO concentration",
+               "(pollutantID, stationID, year, concentration, pctValid, measurementCode, population)",
+               "VALUES", paste(inserts,collapse = ", "))
+invisible(lapply(query, function(q) dbGetQuery(dbConn, q)))
+
+# O3 concentrations
+conc <- uniquecombs(data.frame(station = paste0("\"",dat_O3$station_european_code,"\""),
+                               year = dat_O3$statistics_year,
+                               value = dat_O3$statistic_value,
+                               valid = dat_O3$statistics_percentage_valid,
+                               mcode = paste0("\"",dat_O3$measurement_european_group_code,"\""),
+                               population = dat_O3$assigned_population))
+inserts <- paste("(\"O3\", ", apply(conc, 1, paste, collapse = ", "), ")")
+query <- paste("INSERT INTO concentration",
+               "(pollutantID, stationID, year, concentration, pctValid, measurementCode, population)",
+               "VALUES", paste(inserts,collapse = ", "))
+invisible(lapply(query, function(q) dbGetQuery(dbConn, q)))
+
+# PM10 concentrations
+conc <- uniquecombs(data.frame(station = paste0("\"",dat_PM10$station_european_code,"\""),
+                               year = dat_PM10$statistics_year,
+                               value = dat_PM10$statistic_value,
+                               valid = dat_PM10$statistics_percentage_valid,
+                               mcode = paste0("\"",dat_PM10$measurement_european_group_code,"\""),
+                               population = dat_PM10$assigned_population))
+inserts <- paste("(\"PM10\", ", apply(conc, 1, paste, collapse = ", "), ")")
+query <- paste("INSERT INTO concentration",
+               "(pollutantID, stationID, year, concentration, pctValid, measurementCode, population)",
+               "VALUES", paste(inserts,collapse = ", "))
+invisible(lapply(query, function(q) dbGetQuery(dbConn, q)))
 
 
 
