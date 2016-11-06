@@ -26,7 +26,7 @@ create table city (
   cityID     varchar(7),                     -- city code 
   cityName   varchar(40),                    -- English city name 
   countryID  varchar(2),                     -- reference to table country 
-  popluation int (11),                       -- population in the Urban Audit core city 
+  population int (11),                       -- population in the Urban Audit core city 
   longitude  decimal(13,10),                 -- geo longitude
   latitude   decimal(13,10),                 -- geo latitude
   
@@ -86,6 +86,24 @@ create table emission (
   
   primary key (emissionID)
 );
+
+create table countryPopulation (
+  popID      int(11) not null auto_increment,   -- system ID 
+  countryID  varchar(2),                        -- country code 
+  year       int(4),                            -- statistics year
+  population int (11),                          -- national population 
+  
+  primary key (popID)
+);
+
+create table cityPopulation (
+  popID      int(11) not null auto_increment,   -- system ID 
+  cityID     varchar(7),                        -- city code 
+  year       int(4),                            -- statistics year
+  population int (11),                          -- city population 
+  
+  primary key (popID)
+);
   
 /***********************/
 /* Create foreign keys */
@@ -100,3 +118,9 @@ alter table concentration
   add foreign key (pollutantID) references pollutant (pollutantID);
 alter table concentration 
   add foreign key (stationID) references station (stationID); 
+  
+alter table countryPopulation 
+  add foreign key (countryID) references country (countryID);  
+  
+alter table cityPopulation 
+  add foreign key (cityID) references city (cityID);   

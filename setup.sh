@@ -29,6 +29,7 @@ install)
     #Rscript db/migrateConc2013ToDB.R
     #Rscript db/migrateEmissionsToDB.R 
     Rscript db/migrateGeoDataToDB.R $user $pswd
+    Rscript db/migratePopulationsToDB.R $user $pswd
     #rm data/CLRTAP_NFR14_V16_GF.csv   
 
     # 4. Create web dashboard

@@ -133,7 +133,7 @@ cities <- uniquecombs(rbind(data.frame(code = paste0("\"",dat_NO2$city_code,"\""
                                        population = dat_BaP$UA_city_pop)))
 inserts <- apply(cities, 1, paste, collapse = ", ")
 query <- paste("INSERT INTO city",
-               "(cityID, cityName, countryID, popluation)", 
+               "(cityID, cityName, countryID, population)", 
                "VALUES (", paste(inserts, collapse = "), ("), ");")
 invisible(dbGetQuery(dbConn, query))
 
