@@ -39,9 +39,16 @@ dat  <- read.xlsx(loadFileName, sheet = 1, startRow = 1, colNames = TRUE)
 # ----------------------------------------------------------------------
 # Connect to mySQL database
 # ----------------------------------------------------------------------
+
+# load arguments: db user and password
+args <- commandArgs(trailingOnly = TRUE)
+if (!is.na(args[1])) dbUser <- args[1]
+if (!is.na(args[2])) dbPswd <- args[2]
+
+# connect to database
 dbConn = dbConnect(MySQL(), 
                    host='0.0.0.0', port=3306,
-                   user='gseuser', password='gsepass', 
+                   user=dbUser, password=dbPswd, 
                    dbname='airpollution')
 
 # support UTF-8 characters

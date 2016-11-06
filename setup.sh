@@ -25,10 +25,10 @@ install)
     
     # 3. Migrate data to mySQL database
     echo "... migrating data"
-    Rscript db/migrateConc2012ToDB.R
+    Rscript db/migrateConc2012ToDB.R $user $pswd
     #Rscript db/migrateConc2013ToDB.R
     #Rscript db/migrateEmissionsToDB.R 
-    Rscript db/migrateGeoDataToDB.R
+    Rscript db/migrateGeoDataToDB.R $user $pswd
     #rm data/CLRTAP_NFR14_V16_GF.csv   
 
     # 4. Create web dashboard
