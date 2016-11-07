@@ -124,3 +124,28 @@ alter table countryPopulation
   
 alter table cityPopulation 
   add foreign key (cityID) references city (cityID);   
+
+/*******************/
+/* Create triggers */
+/*******************/ 
+DELIMITER $$
+
+-- set first character upper case and rest lower case
+create function styleName (name varchar(100))
+  returns varchar(100)
+begin
+  if (not name regexp '[a-z]-| [a-z]') then
+    return concat(upper(substr(name,1,1)), lower(substr(name,2)));
+  end if;
+  return name;
+end$$
+
+-- style on city name
+create trigger tri_city_beforeInsert 
+  before insert on city
+  for each row 
+begin
+  set new.cityName = styleName(new.cityName);
+end$$
+DELIMITER ;
+
