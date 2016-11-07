@@ -48,20 +48,21 @@ create view countryConcentration as
          n.countryName        as countryName,
          e.pollutantID        as pollutantID, 
          e.year               as year, 
-         count(s.stationID)   as noStations,
-         sum(e.exceededLimit) as noExceededLimit,
-         sum(e.population)    as stationPopulation,
-         p.population         as population
-    from country n,
+         (select p.population
+            from countryPopulation p
+		   where p.countryID = n.countryID
+             and p.year      = e.year) as population,
+	     count(s.stationID)   as totStations,
+         sum(e.exceededLimit) as excStations,
+         sum(e.population)    as totStationsPop,
+         sum(if(e.exceededLimit,e.population,0)) as excStationsPop
+    from country n, 
          city c, 
          station s, 
-         concEvaluation e,
-         countryPopulation p
+         concEvaluation e
    where n.countryID = c.CountryID
      and c.cityID    = s.cityID
      and s.stationID = e.stationID
-     and n.countryID = p.countryID
-     and e.year      = p.year
    group by c.countryID, e.pollutantID, e.year;
 
 -- cityConcentration
@@ -72,7 +73,11 @@ create view cityConcentration as
          e.year               as year, 
          count(s.stationID)   as stations, 
          sum(e.exceededLimit) as noExceededLimit,
-         sum(e.population)    as population
+         sum(e.population)    as stationPopulation,
+         (select p.population
+            from cityPopulation p
+		   where p.cityID = c.cityID
+             and p.year   = e.year) as population         
     from city c,
          station s, 
          concEvaluation e
