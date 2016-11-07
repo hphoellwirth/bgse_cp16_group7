@@ -31,8 +31,12 @@ install)
     Rscript db/migrateGeoDataToDB.R $user $pswd
     Rscript db/migratePopulationsToDB.R $user $pswd
     #rm data/CLRTAP_NFR14_V16_GF.csv   
+    
+    # 4. Optimize database performance
+    echo "... optimizing database performance"
+	mysql -u $user -p$pswd < db/ddl_indexes.sql   
 
-    # 4. Create web dashboard
+    # 5. Create web dashboard
     echo "... setting up dashboard"
 	mkdir -p "$target_dir/airpollution"
 	cp -rf web/* "$target_dir/airpollution"
