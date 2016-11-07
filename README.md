@@ -14,9 +14,9 @@ The project sources are organized in the following folder structure:
 TBD
 
 ### TODO list
-- [ ] Migrate city geo data to DB
-- [ ] Find city population growth data and migrate to DB
-- [ ] Use database user/pwd from service.conf file
+- [ ] Assign Turkish cities cityID as observed in population data
+- [ ] Interpolate missing years in population data (new script)
+- [ ] Add missing geo data (roughly 300 cities) with DML script
 
 ### Required packages
 
