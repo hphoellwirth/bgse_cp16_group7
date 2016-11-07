@@ -33,8 +33,8 @@ install)
     #rm data/CLRTAP_NFR14_V16_GF.csv   
     
     # 4. Optimize database performance
-    echo "... optimizing database performance"
-	mysql -u $user -p$pswd < db/ddl_indexes.sql   
+    echo "... optimizing performance"
+	mysql -u $user -p$pswd < db/ddl_performance.sql   
 
     # 5. Create web dashboard
     echo "... setting up dashboard"
