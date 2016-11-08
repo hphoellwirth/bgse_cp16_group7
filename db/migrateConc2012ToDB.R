@@ -229,7 +229,7 @@ conc <- uniquecombs(data.frame(station = paste0("\"",dat_BaP$station_european_co
                                valid = dat_BaP$statistics_percentage_valid,
                                mcode = paste0("\"",dat_BaP$measurement_european_group_code,"\""),
                                population = dat_BaP$assigned_population))
-inserts <- paste("(\"PM10\", ", apply(conc, 1, paste, collapse = ", "), ")")
+inserts <- paste("(\"BaP\", ", apply(conc, 1, paste, collapse = ", "), ")")
 query <- paste("INSERT INTO concentration",
                "(pollutantID, stationID, year, concentration, pctValid, measurementCode, population)",
                "VALUES", paste(inserts,collapse = ", "))
