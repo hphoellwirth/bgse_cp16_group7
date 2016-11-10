@@ -14,7 +14,6 @@ The project sources are organized in the following folder structure:
 TBD
 
 ### TODO list
-- [ ] Assign Turkish cities cityID as observed in population data
 - [ ] Interpolate missing years in population data (new script)
 - [ ] Add missing geo data (roughly 300 cities) with DML script
 
