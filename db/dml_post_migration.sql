@@ -4,6 +4,8 @@
 # Group 7
 # -------------------------------------------
 
+use airpollution;
+
 /*******************************/
 /* Add sector parent structure */
 /*******************************/
@@ -14,7 +16,7 @@ update sector set parentID = '1A3' where sectorID = '1A3aii(ii)';
 update sector set parentID = '1A3' where sectorID = '1A3bi';
 update sector set parentID = '1A3' where sectorID = '1A3bii';
 update sector set parentID = '1A3' where sectorID = '1A3biii';
-update sector set parentID = '1A3' where sectorID = '1A3biv';
+update sector set parentID = '1A3' where sectorID = '1A3bvi';
 update sector set parentID = '1A3' where sectorID = '1A3bv';
 update sector set parentID = '1A3' where sectorID = '1A3bvii';
 update sector set parentID = '1A3' where sectorID = '1A3c';
@@ -31,8 +33,6 @@ update sector set parentID = '2B1' where sectorID = '2B10b';
 /*********************/
 /* Update city codes */
 /*********************/
-use airpollution;
-
 DELIMITER $$
 
 -- set Turkish city codes according to cityIDs from population file

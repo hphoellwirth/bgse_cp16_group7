@@ -82,7 +82,7 @@ create table emission (
   countryID     varchar(2),                        -- reference to country table 
   sectorID      varchar(12),                       -- reference to sector table 
   year          int(4),                            -- statistics year 
-  emission      decimal(12,2),                     -- statistics value in   
+  emission      decimal(16,8),                     -- statistics value in   
   
   primary key (emissionID)
 );
@@ -109,7 +109,8 @@ create table cityPopulation (
 /* Create foreign keys */
 /***********************/ 
 alter table city 
-  add foreign key (countryID) references country (countryID);
+  add foreign key (countryID) references country (countryID)
+  on update cascade;
 
 alter table station 
   add foreign key (cityID) references city (cityID)
@@ -119,6 +120,16 @@ alter table concentration
   add foreign key (pollutantID) references pollutant (pollutantID);
 alter table concentration 
   add foreign key (stationID) references station (stationID); 
+  
+alter table sector 
+  add foreign key (parentID) references sector (sectorID);     
+  
+alter table emission 
+  add foreign key (pollutantID) references pollutant (pollutantID);  
+alter table emission 
+  add foreign key (countryID) references country (countryID);  
+alter table emission 
+  add foreign key (sectorID) references sector (sectorID);      
   
 alter table countryPopulation 
   add foreign key (countryID) references country (countryID);  

@@ -33,9 +33,6 @@ loadFileName <- "data/CLRTAP_NFR14_V16_GF.csv"
 
 # load data
 dat <- read.csv2(loadFileName,header = TRUE, sep = "\t",stringsAsFactors = FALSE)
-dat$Emissions[dat$Emissions==''] <-NA 
-dat$Emissions <- as.numeric(dat$Emissions)
-
 
 # ----------------------------------------------------------------------
 # Connect to mySQL database
@@ -57,41 +54,48 @@ invisible(dbGetQuery(dbConn, "set names utf8"))
 
 
 # ----------------------------------------------------------------------
-# Insert emissions
+# Prepare/pre-filter data
 # ----------------------------------------------------------------------
+dat$Emissions[dat$Emissions == ''] <- 0 
+dat$Emissions <- as.numeric(dat$Emissions)
+dat$Pollutant_name[dat$Pollutant_name == "NOx"] <- "NO2" 
 
-# step 1: only filter relevant pollutants
-#pollutants <- uniquecombs(data.frame(code = dat$Pollutant_name))
-
-#dat_P10 <- dat[dat$Pollutant_name == 'PM10',]
-
-
-# step 2: load sectors
-# sectors <- uniquecombs(data.frame(code = dat$Sector_code,
-#                                   name = dat$Sector_name,
-#                                   parent = dat$Parent_sector_code))
-
-# sectors <- uniquecombs(data.frame(code = paste0("\"",dat$Sector_code,"\""),
-#                                   name = paste0("\"",dat$Sector_name,"\"")))
-# inserts <- apply(sectors, 1, paste, collapse = ", ")
-# query <- paste("INSERT INTO sector",
-#                "(sectorID, sectorName)",
-#                "VALUES (", paste(inserts, collapse = "), ("), ");")
-# invisible(dbGetQuery(dbConn, query))
+# filter only nonzero values
+dat <- dat[!(dat$Sector_code %in% c("ADJUSTMENTS (Net total)",
+                                    "NATIONAL TOTAL",
+                                    "NATIONAL TOTAL FOR COMPLIANCE")),]
+dat <- dat[!(dat$Country_code %in% c("AL", "BA", "LI", "MK", "ME", "RS", "")),]
+dat <- dat[dat$Emissions > 0,]
 
 
+# ----------------------------------------------------------------------
+# Insert sectors
+# ----------------------------------------------------------------------
+sectors <- uniquecombs(data.frame(code = paste0("\"",dat$Sector_code,"\""),
+                                  name = paste0("\"",dat$Sector_name,"\"")))
+inserts <- apply(sectors, 1, paste, collapse = ", ")
+query <- paste("INSERT INTO sector",
+               "(sectorID, sectorName)",
+               "VALUES (", paste(inserts, collapse = "), ("), ");")
+invisible(dbGetQuery(dbConn, query))
 
-# step 3: load emission
 
 
-# emission <- uniquecombs(data.frame(code = paste0("\"",dat$Pollutant_name,"\""),
-#                                    country = paste0("\"",dat$Country_code,"\""),
-#                                    sector = paste0("\"",dat$Sector_code,"\""),
-#                                    year = paste0("\"",dat$Year,"\""),
-#                                    emission = paste0("\"",dat$Emissions,"\"")))
-# query <- paste("INSERT INTO emission",
-#                "(emissionID, pollutantID, countryID, sectorID, year, emission)",
-#                "VALUES (", apply(emission, 1, paste, collapse = ", "), ");")
-# invisible(lapply(query, function(q) dbGetQuery(dbConn, q)))
-
-# step 4: create manual inserts for parentID in dml_post_migration
+# ----------------------------------------------------------------------
+# Insert emissions (of selected pollutant types)
+# ----------------------------------------------------------------------
+pollutants <- c("PM10","PM2.5","NO2")
+for (i in 1:length(pollutants)) {
+    dat_pol <- dat[dat$Pollutant_name == pollutants[i],] 
+    
+    emission <- data.frame(code = paste0("\"",dat_pol$Pollutant_name,"\""),
+                           country = paste0("\"",dat_pol$Country_code,"\""),
+                           sector = paste0("\"",dat_pol$Sector_code,"\""),
+                           year = dat_pol$Year,
+                           emission = paste0("\"",dat_pol$Emissions,"\""))
+    inserts <- paste("(", apply(emission, 1, paste, collapse = ", "), ")")
+    query <- paste("INSERT INTO emission",
+                   "(pollutantID, countryID, sectorID, year, emission)",
+                   "VALUES ", paste(inserts,collapse = ", "))   
+    invisible(dbGetQuery(dbConn, query))
+}
