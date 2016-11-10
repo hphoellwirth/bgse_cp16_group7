@@ -17,10 +17,14 @@
 # # house cleaning
 rm(list = ls())
 # 
-# # load libraries
-library("mgcv")
-library("openxlsx")
-library("RMySQL")
+# install/load libraries
+suppressMessages(if(!require(openxlsx)){install.packages("openxlsx")})
+suppressMessages(if(!require(RMySQL)){install.packages("RMySQL")})
+suppressMessages(if(!require(mgcv)){install.packages("mgcv")})
+
+suppressMessages(library("openxlsx"))
+suppressMessages(library("RMySQL"))
+suppressMessages(library("mgcv"))
 # 
 # # if interactive, during the development, set to TRUE
 interactive <- FALSE
@@ -40,10 +44,15 @@ dat_BaP   <- read.xlsx(loadFileName, sheet = 5, startRow = 11, colNames = TRUE)
 # # ----------------------------------------------------------------------
 # # Connect to mySQL database
 # # ----------------------------------------------------------------------
-# #system('ssh -i "../14D003.pem" ubuntu@54.171.170.201 -N sleep 20'')
+# load arguments: db user and password
+args <- commandArgs(trailingOnly = TRUE)
+if (!is.na(args[1])) dbUser <- args[1]
+if (!is.na(args[2])) dbPswd <- args[2]
+
+# connect to database
 dbConn = dbConnect(MySQL(),
                    host='0.0.0.0', port=3306,
-                   user='gseuser', password='gsepass',
+                   user=dbUser, password=dbPswd, 
                    dbname='airpollution')
 
 # 
@@ -54,11 +63,11 @@ dbConn = dbConnect(MySQL(),
 # 
 # #create column for year=2013
 # 
-dat_PM10$statistics_year <- rep(2013, length(dat_PM10$city_name))
-dat_NO2$statistics_year <-rep(2013, length(dat_NO2$city_name))
-dat_O3$statistics_year <-rep(2013, length(dat_O3$city_name))
-dat_PM2.5$statustics_year <-rep(2013, length(dat_PM2.5$city_name))
-dat_BaP$statistics_year <-rep(2013, length(dat_BaP$city_name))
+#dat_PM10$statistics_year <- rep(2013, length(dat_PM10$city_name))
+#dat_NO2$statistics_year <-rep(2013, length(dat_NO2$city_name))
+#dat_O3$statistics_year <-rep(2013, length(dat_O3$city_name))
+#dat_PM2.5$statustics_year <-rep(2013, length(dat_PM2.5$city_name))
+#dat_BaP$statistics_year <-rep(2013, length(dat_BaP$city_name))
 
 # 
 # 
@@ -124,59 +133,60 @@ dat_BaP$statistics_year <-rep(2013, length(dat_BaP$city_name))
 stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
 
 for (i in 1:dim(stations)[1]) {
-  station<- as.charachter(stations[i,])
+  station<- as.character(stations[i,])
   value <-dat_PM10[dat_PM10$station_european_code == station, ]
   
   if (dim(value)[1] == 1){
     
     query<- paste0("INSERT INTO concentration", 
-                   "(concID, pollutionID, stationID, year)",
-                   "VALUES(\"", value$statistic_value ,"\",", value$component_caption, ",", value$station_european_code,",", "2013", ");")
-    invisible(dbGetQuery(dbConn, query))  
-  }
-}
-
-for (i in 1:dim(stations)[1]) {
-  station<- as.charachter(stations[i,])
-  value <-dat_NO2[dat_NO2$station_european_code == station, ]
-  
-  if (dim(value)[1] == 1){
-    
-    query<- paste0("INSERT INTO concentration", 
-                   "(concID, pollutionID, stationID, year)",
-                   "VALUES(\"", value$statistic_value ,"\",", value$component_caption, ",", value$station_european_code,",", "2013", ");")
+                   "(concentration, pollutionID, stationID, year)",
+                   "VALUES(", value$statistic_value ,",", value$component_caption, ",", value$station_european_code,",2013);")
     invisible(dbGetQuery(dbConn, query))  
   }
 }
 
 
-for (i in 1:dim(stations)[1]) {
-  station<- as.charachter(stations[i,])
-  value <-dat_O3[dat_O3$station_european_code == station, ]
-  
-  if (dim(value)[1] == 1){
-    
-    query<- paste0("INSERT INTO concentration", 
-                   "(concID, pollutionID, stationID, year)",
-                   "VALUES(\"", value$statistic_value ,"\",", value$component_caption, ",", value$station_european_code,",", "2013", ");")
-    invisible(dbGetQuery(dbConn, query))  
-  }
-}
-
-
-
-#
-#
-for (i in 1:dim(stations)[1]) {
-  station<- as.charachter(stations[i,])
-  value <-dat_PM2.5[dat_PM2.5$station_european_code == station, ]
-  
-  if (dim(value)[1] == 1){
-    
-    query<- paste0("INSERT INTO concentration", 
-                   "(concID, pollutionID, stationID, year)",
-                   "VALUES(\"", value$statistic_value ,"\",", value$component_caption, ",", value$station_european_code,",", "2013", ");")
-    invisible(dbGetQuery(dbConn, query))  
-  }
-}
-
+# for (i in 1:dim(stations)[1]) {
+#   station<- as.charachter(stations[i,])
+#   value <-dat_NO2[dat_NO2$station_european_code == station, ]
+# 
+#   if (dim(value)[1] == 1){
+# 
+#     query<- paste0("INSERT INTO concentration",
+#                    "(concID, pollutionID, stationID, year)",
+#                    "VALUES(\"", value$statistic_value ,"\",", value$component_caption, ",", value$station_european_code,",", "2013", ");")
+#     invisible(dbGetQuery(dbConn, query))
+#   }
+# }
+# 
+# 
+# for (i in 1:dim(stations)[1]) {
+#   station<- as.charachter(stations[i,])
+#   value <-dat_O3[dat_O3$station_european_code == station, ]
+# 
+#   if (dim(value)[1] == 1){
+# 
+#     query<- paste0("INSERT INTO concentration",
+#                    "(concID, pollutionID, stationID, year)",
+#                    "VALUES(\"", value$statistic_value ,"\",", value$component_caption, ",", value$station_european_code,",", "2013", ");")
+#     invisible(dbGetQuery(dbConn, query))
+#   }
+# }
+# 
+# 
+# 
+# #
+# #
+# for (i in 1:dim(stations)[1]) {
+#   station<- as.charachter(stations[i,])
+#   value <-dat_PM2.5[dat_PM2.5$station_european_code == station, ]
+# 
+#   if (dim(value)[1] == 1){
+# 
+#     query<- paste0("INSERT INTO concentration",
+#                    "(concID, pollutionID, stationID, year)",
+#                    "VALUES(\"", value$statistic_value ,"\",", value$component_caption, ",", value$station_european_code,",", "2013", ");")
+#     invisible(dbGetQuery(dbConn, query))
+#   }
+# }
+# 
