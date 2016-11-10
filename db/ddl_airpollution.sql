@@ -69,7 +69,7 @@ create table concentration (
   
 create table sector (
   sectorID      varchar(12),                       -- sector code   
-  sectorName    varchar(100),                      -- sector name 
+  sectorName    varchar(180),                      -- sector name 
   parentID      varchar(12),                       -- parent sector code 
   treeLeaf      boolean,                           -- actual reporting level (Y/N) 
   

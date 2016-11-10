@@ -16,7 +16,7 @@ install)
 	echo "Installing"
 	
     # 1. Decompress data files
-    #tar xf data/CLRTAP_NFR14_V16_GF.csv.zip -C data	
+    tar xf data/CLRTAP_NFR14_V16_GF.tar.gz -C data		
 
     # 2. Create mySQL database
     echo "... setting up database"
@@ -27,11 +27,11 @@ install)
     mysql -u $user -p$pswd -t < db/dml_pre_migration.sql    
     Rscript db/migrateConc2012ToDB.R $user $pswd
     #Rscript db/migrateConc2013ToDB.R $user $pswd
-    #Rscript db/migrateEmissionsToDB.R 
+    #Rscript db/migrateEmissionsToDB.R $user $pswd
     Rscript db/migrateGeoDataToDB.R $user $pswd
     Rscript db/migratePopulationsToDB.R $user $pswd
     mysql -u $user -p$pswd -t < db/dml_post_migration.sql
-    #rm data/CLRTAP_NFR14_V16_GF.csv   
+    rm data/CLRTAP_NFR14_V16_GF.csv   
     
     # 4. Optimize database performance
     echo "... optimizing performance"
