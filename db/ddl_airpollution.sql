@@ -125,9 +125,9 @@ alter table countryPopulation
 alter table cityPopulation 
   add foreign key (cityID) references city (cityID);   
 
-/*******************/
-/* Create triggers */
-/*******************/ 
+/*****************************/
+/* Create functions/triggers */
+/*****************************/ 
 DELIMITER $$
 
 -- set first character upper case and rest lower case
