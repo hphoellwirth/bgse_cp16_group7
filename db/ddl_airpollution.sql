@@ -112,7 +112,8 @@ alter table city
   add foreign key (countryID) references country (countryID);
 
 alter table station 
-  add foreign key (cityID) references city (cityID);
+  add foreign key (cityID) references city (cityID)
+  on update cascade;
   
 alter table concentration 
   add foreign key (pollutantID) references pollutant (pollutantID);
@@ -125,12 +126,13 @@ alter table countryPopulation
 alter table cityPopulation 
   add foreign key (cityID) references city (cityID);   
 
-/*****************************/
-/* Create functions/triggers */
-/*****************************/ 
+/********************/
+/* Create functions */
+/********************/ 
 DELIMITER $$
 
 -- set first character upper case and rest lower case
+-- provided that the name does not contain any dashes or spaces
 create function styleName (name varchar(100))
   returns varchar(100)
 begin
@@ -140,12 +142,37 @@ begin
   return name;
 end$$
 
--- style on city name
+DELIMITER ;
+
+/*******************/
+/* Create triggers */
+/*******************/ 
+DELIMITER $$
+
+-- city: before insert trigger
 create trigger tri_city_beforeInsert 
   before insert on city
   for each row 
 begin
   set new.cityName = styleName(new.cityName);
+  -- if (new.countryID = 'TR') then
+  --  set new.cityID = assignCityID(new.cityName);
+  -- end if;
 end$$
+
 DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

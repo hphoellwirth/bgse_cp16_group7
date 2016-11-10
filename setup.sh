@@ -21,15 +21,16 @@ install)
     # 2. Create mySQL database
     echo "... setting up database"
 	mysql -u $user -p$pswd < db/ddl_airpollution.sql
-    mysql -u $user -p$pswd -t < db/dml_pollutants.sql
     
     # 3. Migrate data to mySQL database
     echo "... migrating data"
+    mysql -u $user -p$pswd -t < db/dml_pre_migration.sql    
     Rscript db/migrateConc2012ToDB.R $user $pswd
-    #Rscript db/migrateConc2013ToDB.R
+    #Rscript db/migrateConc2013ToDB.R $user $pswd
     #Rscript db/migrateEmissionsToDB.R 
     Rscript db/migrateGeoDataToDB.R $user $pswd
     Rscript db/migratePopulationsToDB.R $user $pswd
+    mysql -u $user -p$pswd -t < db/dml_post_migration.sql
     #rm data/CLRTAP_NFR14_V16_GF.csv   
     
     # 4. Optimize database performance
