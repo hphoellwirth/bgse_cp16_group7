@@ -159,6 +159,7 @@ invisible(dbGetQuery(dbConn, "set names utf8"))
 
 line<-c(10,11,11,11,11)
 sheet<-seq(1,5,1)
+pollutant<-c("PM10","NO2","O3", "PM2.5", "BaP")
 stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
 
 for (j in 1:length(line)){
@@ -171,10 +172,10 @@ for (j in 1:length(line)){
       
       query<-  paste0("INSERT INTO concentration ",
                       "(pollutantID, stationID, year, concentration) ",
-                      "VALUES ( " ,"\"", value$component_caption,"\"",  ",", "\"", value$station_european_code,"\"" ,",", " 2013 ", ",", value$statistic_value, ");")
-      
+                      "VALUES ( " ,"\"", pollutant[j], "\"",  ",", "\"", value$station_european_code,"\"" ,",", " 2013 ", ",", value$statistic_value, ");")
       invisible(dbGetQuery(dbConn, query))
     }
   }
 }
+
 
