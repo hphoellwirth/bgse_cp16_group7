@@ -159,10 +159,10 @@ invisible(dbGetQuery(dbConn, "set names utf8"))
 
 line<-c(10,11,11,11,11)
 sheet<-seq(1,5,1)
+stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
 
 for (j in 1:length(line)){
   dat  <- read.xlsx(loadFileName, sheet = sheet[j], startRow = line[j], colNames = TRUE)
-  stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
   for (i in 1:dim(stations)[1])  {
     station<- as.character(stations[i,])
     value <-dat[dat$station_european_code == station, ]
