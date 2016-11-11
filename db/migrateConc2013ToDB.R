@@ -33,14 +33,6 @@ if (interactive) {
 }
 loadFileName <- "data/2013 data from air quality monitoring stations by city compared to EU values.xlsx"
 
-
-# # load data
-# dat_PM10  <- read.xlsx(loadFileName, sheet = 1, startRow = 10, colNames = TRUE)
-# dat_NO2   <- read.xlsx(loadFileName, sheet = 2, startRow = 11, colNames = TRUE)
-# dat_O3    <- read.xlsx(loadFileName, sheet = 3, startRow = 11, colNames = TRUE)
-# dat_PM2.5 <- read.xlsx(loadFileName, sheet = 4, startRow = 11, colNames = TRUE)
-# dat_BaP   <- read.xlsx(loadFileName, sheet = 5, startRow = 11, colNames = TRUE)
-
 # # ----------------------------------------------------------------------
 # # Connect to mySQL database
 # # ----------------------------------------------------------------------
@@ -58,110 +50,27 @@ dbConn = dbConnect(MySQL(),
 invisible(dbGetQuery(dbConn, "set names utf8"))
 # 
 # 
-# # ----------------------------------------------------------------------
-# # Insert concentrations
-# # ----------------------------------------------------------------------
-##------------------------------------------------------------------------------------------------------------ 
-##Insert concentration PM_10
-##-----------------------------------------------------
+##----------------------------------------------------------------------------------------------------------
+## Loading and inserting the concentration data simultaneously for the stations contained in the 2012 file
+##-----------------------------------------------------------------------------------------------------------
 
-# stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
-# for (i in 1:dim(stations)[1]) {
-#   station<- as.character(stations[i,])
-#   value <-dat_PM10[dat_PM10$station_european_code == station, ]
-#   
-#   if (dim(value)[1] == 1){
-#     
-#     query<-  paste0("INSERT INTO concentration ",
-#                     "(pollutantID, stationID, year, concentration) ",
-#                     "VALUES ( " ,"\"", value$component_caption,"\"",  ",", "\"", value$station_european_code,"\"" ,",", " 2013 ", ",", value$statistic_value, ");")
-#     
-#     invisible(dbGetQuery(dbConn, query))
-#   }
-# }
-# 
-# 
-# 
-# 
-# ##-----------------------------------------------------------------------------------------------------------
-# ##Insert concentration N02
-# ##----------------------------------------------------------------------------------------------------------
-# stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
-# for (i in 1:dim(stations)[1])  {
-#   station<- as.character(stations[i,])
-#   value <-dat_NO2[dat_NO2$station_european_code == station, ]
-#   
-#   if (dim(value)[1] == 1){
-#     
-#     query<-  paste0("INSERT INTO concentration ",
-#                     "(pollutantID, stationID, year, concentration) ",
-#                     "VALUES ( " ,"\"", value$component_caption,"\"",  ",", "\"", value$station_european_code,"\"" ,",", " 2013 ", ",", value$statistic_value, ");")
-#     
-#     invisible(dbGetQuery(dbConn, query))
-#   }
-# }
-# 
-# ##---------------------------------------------------------------------------------------------------------
-# ##Insert concentration O3
-# ##---------------------------------------------------------------------------------------------------------
-# 
-# 
-# stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
-# for (i in 1:dim(stations)[1]) {
-#   station<- as.character(stations[i,])
-#   value <-dat_O3[dat_O3$station_european_code == station, ]
-#   
-#   if (dim(value)[1] == 1){
-#     
-#     query<-  paste0("INSERT INTO concentration ",
-#                     "(pollutantID, stationID, year, concentration) ",
-#                     "VALUES ( " ,"\"", value$component_caption,"\"",  ",", "\"", value$station_european_code,"\"" ,",", " 2013 ", ",", value$statistic_value, ");")
-#     
-#     invisible(dbGetQuery(dbConn, query))
-#   } 
-# }
-# 
-# ##-------------------------------------------------------------------------------------------------------
-# ##Insert concentration PM2.5
-# ##-----------------------------------------------------------------------------------------------------
-# stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
-# for (i in 1:dim(stations)[1]) {
-#   station<- as.character(stations[i,])
-#   value <-dat_PM2.5[dat_PM2.5$station_european_code == station, ]
-#   
-#   if (dim(value)[1] == 1){
-#     
-#     query<-  paste0("INSERT INTO concentration ",
-#                     "(pollutantID, stationID, year, concentration) ",
-#                     "VALUES ( " ,"\"", value$component_caption,"\"",  ",", "\"", value$station_european_code,"\"" ,",", " 2013 ", ",", value$statistic_value, ");")
-#     
-#     invisible(dbGetQuery(dbConn, query))
-#   }
-# }
-# 
-# ##---------------------------------------------------------------------------------------------------
-# ##Insert concentration BaP
-# ##---------------------------------------------------------------------------------------------------
-# stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
-# for (i in 1:dim(stations)[1])  {
-#   station<- as.character(stations[i,])
-#   value <-dat_BaP[dat_BaP$station_european_code == station, ]
-#   
-#   if (dim(value)[1] == 1){
-#     
-#     query<-  paste0("INSERT INTO concentration ",
-#                     "(pollutantID, stationID, year, concentration) ",
-#                     "VALUES ( " ,"\"", value$component_caption,"\"",  ",", "\"", value$station_european_code,"\"" ,",", " 2013 ", ",", value$statistic_value, ");")
-#     
-#     invisible(dbGetQuery(dbConn, query))
-#   }
-# }
-
-line<-c(10,11,11,11,11)
+# Create a vector giving the sheet loaded from the Excel file
 sheet<-seq(1,5,1)
+
+#Create a vector giving the staring row in each sheet
+line<-c(10,11,11,11,11)
+
+#Create a vector giving the pllutant type in each sheet 
 pollutant<-c("PM10","NO2","O3", "PM2.5", "BaP")
+
+# Creating a data frame containing all stations present in the 2012 file
 stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
 
+# Creating a loop that first loads the data in each sheet and then checks if which station is contained
+# in the 2012 file through the second for loop. 
+# In case of having a match, we extract all the data that is present for the given station
+# The if statement checks if whether or not a match is present and if yes- inserts the data in the 
+# Concentration table in MySql
 for (j in 1:length(line)){
   dat  <- read.xlsx(loadFileName, sheet = sheet[j], startRow = line[j], colNames = TRUE)
   for (i in 1:dim(stations)[1])  {
