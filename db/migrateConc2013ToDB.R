@@ -60,17 +60,16 @@ sheet<-seq(1,5,1)
 #Create a vector giving the staring row in each sheet
 line<-c(10,11,11,11,11)
 
-#Create a vector giving the pllutant type in each sheet 
+#Create a vector giving the pollutant type in each sheet 
 pollutant<-c("PM10","NO2","O3", "PM2.5", "BaP")
 
 # Creating a data frame containing all stations present in the 2012 file
 stations <- dbGetQuery(dbConn, "SELECT stationID FROM station;")
 
-# Creating a loop that first loads the data in each sheet and then checks if which station is contained
+# Creating a loop that first loads the data in each sheet and then checks if each station is contained
 # in the 2012 file through the second for loop. 
-# In case of having a match, we extract all the data that is present for the given station
-# The if statement checks if whether or not a match is present and if yes- inserts the data in the 
-# Concentration table in MySql
+# In case of having a match, we extract all the data that is present for the given station and insert
+#  the data in the Concentration table in MySql
 for (j in 1:length(line)){
   dat  <- read.xlsx(loadFileName, sheet = sheet[j], startRow = line[j], colNames = TRUE)
   for (i in 1:dim(stations)[1])  {
