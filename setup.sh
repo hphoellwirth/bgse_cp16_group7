@@ -26,8 +26,8 @@ install)
     echo "... migrating data"
     mysql -u $user -p$pswd -t < db/dml_pre_migration.sql    
     Rscript db/migrateConc2012ToDB.R $user $pswd
-    #Rscript db/migrateConc2013ToDB.R $user $pswd
-    Rscript db/migrateEmissionsToDB.R $user $pswd
+    Rscript db/migrateConc2013ToDB.R $user $pswd
+    #Rscript db/migrateEmissionsToDB.R $user $pswd
     Rscript db/migrateGeoDataToDB.R $user $pswd
     Rscript db/migratePopulationsToDB.R $user $pswd
     mysql -u $user -p$pswd -t < db/dml_post_migration.sql
@@ -59,11 +59,14 @@ uninstall)
 
 run)
 	echo "Running"
+    echo "... interpolating population data"	
+	Rscript analysis/preInterpolatePopulation.R $user $pswd
 	#R CMD BATCH analysis/analysis.R 
 	#cat analysis.Rout
 	#rm analysis.Rout
 	#cp web/categories_network.png "$target_dir/airpollution"
 
+    echo "done!"
 	;;
 
 *)

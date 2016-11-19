@@ -88,19 +88,21 @@ create table emission (
 );
 
 create table countryPopulation (
-  popID      int(11) not null auto_increment,   -- system ID 
-  countryID  varchar(2),                        -- country code 
-  year       int(4),                            -- statistics year
-  population int (11),                          -- national population 
+  popID         int(11) not null auto_increment,   -- system ID 
+  countryID     varchar(2),                        -- country code 
+  year          int(4),                            -- statistics year
+  population    int (11),                          -- national population 
+  interpolation boolean default false,             -- interpolated data point?
   
   primary key (popID)
 );
 
 create table cityPopulation (
-  popID      int(11) not null auto_increment,   -- system ID 
-  cityID     varchar(7),                        -- city code 
-  year       int(4),                            -- statistics year
-  population int (11),                          -- city population 
+  popID         int(11) not null auto_increment,   -- system ID 
+  cityID        varchar(7),                        -- city code 
+  year          int(4),                            -- statistics year
+  population    int (11),                          -- city population 
+  interpolation boolean default false,             -- interpolated data point?
   
   primary key (popID)
 );
