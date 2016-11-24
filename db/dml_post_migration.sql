@@ -16,7 +16,7 @@ update sector set parentID = '1A3' where sectorID = '1A3aii(ii)';
 update sector set parentID = '1A3' where sectorID = '1A3bi';
 update sector set parentID = '1A3' where sectorID = '1A3bii';
 update sector set parentID = '1A3' where sectorID = '1A3biii';
-update sector set parentID = '1A3' where sectorID = '1A3bvi';
+update sector set parentID = '1A3' where sectorID = '1A3biv';
 update sector set parentID = '1A3' where sectorID = '1A3bv';
 update sector set parentID = '1A3' where sectorID = '1A3bvii';
 update sector set parentID = '1A3' where sectorID = '1A3c';
@@ -27,6 +27,15 @@ update sector set parentID = '1A3' where sectorID = '1A3ei';
 update sector set parentID = '1A3' where sectorID = '1A3eii';
 update sector set parentID = '2B1' where sectorID = '2B10a';
 update sector set parentID = '2B1' where sectorID = '2B10b';
+
+
+/**********************************/
+/* Remove aggregate emission data */
+/**********************************/
+delete 
+  from emission
+ where sectorID in (select parentID
+                      from sector);
 
 
 
