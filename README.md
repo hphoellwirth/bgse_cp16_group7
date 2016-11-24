@@ -8,7 +8,7 @@ The project sources are organized in the following folder structure:
 - data: Data sources
 - db: Database creation and migration scripts (DDL, DML, R)
 - doc: Documentation and reporting
-- web: Dashboard code (HTML)  
+- web: Dashboard code (HTML/PHP)  
 
 ### Implementation
 TBD
@@ -22,7 +22,7 @@ TBD
 The `R` processing relies on the following libraries which get automatically installed if missing:
 - openxlsx
 - RMySQL
-- mgcv
+- mgcv (version '1.8.15' or higher)
 
 ## Acknowledgments
 

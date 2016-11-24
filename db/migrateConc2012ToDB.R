@@ -20,7 +20,7 @@ rm(list = ls())
 # install/load libraries
 suppressMessages(if(!require(openxlsx)){install.packages("openxlsx")})
 suppressMessages(if(!require(RMySQL)){install.packages("RMySQL")})
-suppressMessages(if(!require(mgcv)){install.packages("mgcv")})
+suppressMessages(if(!require(mgcv) | packageVersion("mgcv") < '1.8.15'){install.packages("mgcv")})
 
 suppressMessages(library("openxlsx"))
 suppressMessages(library("RMySQL"))
