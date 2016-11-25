@@ -27,7 +27,7 @@ install)
     mysql -u $user -p$pswd -t < db/dml_pre_migration.sql    
     Rscript db/migrateConc2012ToDB.R $user $pswd
     Rscript db/migrateConc2013ToDB.R $user $pswd
-    #Rscript db/migrateEmissionsToDB.R $user $pswd
+    Rscript db/migrateEmissionsToDB.R $user $pswd
     Rscript db/migrateGeoDataToDB.R $user $pswd
     Rscript db/migratePopulationsToDB.R $user $pswd
     mysql -u $user -p$pswd -t < db/dml_post_migration.sql
