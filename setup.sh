@@ -20,7 +20,7 @@ install)
 
     # 2. Create mySQL database
     echo "... setting up database"
-	mysql -u $user -p$pswd < db/ddl_airpollution.sql
+    mysql -u $user -p$pswd < db/ddl_airpollution.sql
     
     # 3. Migrate data to mySQL database
     echo "... migrating data"
@@ -35,12 +35,12 @@ install)
     
     # 4. Optimize database performance
     echo "... optimizing performance"
-	mysql -u $user -p$pswd < db/ddl_performance.sql   
+    mysql -u $user -p$pswd < db/ddl_performance.sql   
 
     # 5. Create web dashboard
     echo "... setting up dashboard"
-	mkdir -p "$target_dir/airpollution"
-	cp -rf web/* "$target_dir/airpollution"
+    sudo mkdir -p "$target_dir/airpollution"
+    sudo cp -rf web/* "$target_dir/airpollution"
 
 	echo "done!"
 	;;
@@ -59,14 +59,16 @@ uninstall)
 
 run)
 	echo "Running"
-    echo "... interpolating population data"	
-	Rscript analysis/preInterpolatePopulation.R $user $pswd
+	echo "... interpolating population data"	
+	#Rscript analysis/preInterpolatePopulation.R $user $pswd
+	echo "... computing descriptive analysis"	
+	Rscript analysis/descPollutantCountry.R $user $pswd
 	#R CMD BATCH analysis/analysis.R 
 	#cat analysis.Rout
 	#rm analysis.Rout
 	#cp web/categories_network.png "$target_dir/airpollution"
 
-    echo "done!"
+  echo "done!"
 	;;
 
 *)

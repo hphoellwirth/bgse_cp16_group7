@@ -50,7 +50,7 @@
                        'height':400};
 
         // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
         chart.draw(data, options);
       }
   </script>
@@ -87,7 +87,7 @@
     }
 
     function show_content(optionsId) {
-	    var ids = new Array('home','data','analysis');
+	    var ids = new Array('home','data','desc_analysis','pres_analysis');
 	    show(optionsId);
 	    document.getElementById(optionsId + '_link').className = 'active';
 
@@ -107,13 +107,14 @@
     <div id="menu">
 		<a id="home_link" href="#" class="active" onclick="show_content('home'); return false;">Home</a> &middot;
 		<a id="data_link" href="#" onclick="show_content('data'); update_data_charts(); return false;">Data</a> &middot;
-		<a id="analysis_link" href="#" onclick="show_content('analysis'); return false;">Analysis</a> 
+		<a id="desc_analysis_link" href="#" onclick="show_content('desc_analysis'); return false;">Descriptive Analysis</a> &middot;
+		<a id="pres_analysis_link" href="#" onclick="show_content('pres_analysis'); return false;">Prescriptive Analysis</a> 
 	  </div>
     
     <div id="main">
 		  <div id="home">
 			  <h2>Home</h2>
-			  <h3>The goal</h3>
+			  <h3>The goal or so</h3>
 			  <p>The main goal of this project is to shed light on the possible measures that an emission (reduction) government policy could consider in order to reduce the air pollution most efficiently, and to predict city pollutant concentrations for future years, assuming no policy changes. For this purpose, we want to learn which emission sectors impact the measured air pollutants most in a country (and to what extend) and also try to relate the measured pollutions to the size of city populations.</p>						
 
 			  <h3>The dataset</h3>
@@ -134,9 +135,14 @@
 	      <h2>Data</h2>
 	    </div>	 
 	    
-	    <div id="analysis" style="display: none">
-	      <h2>Analysis</h2>
-	    </div>	   
+	    <div id="desc_analysis" style="display: none">
+	      <h2>Descriptive Analysis</h2>
+	      <p>The section analysis the main drivers of observed air pollution concentrations for different pollutants across observed countries in Europe.</p>
+	    </div>	
+	    
+	    <div id="pres_analysis" style="display: none">
+	      <h2>Prescriptive Analysis</h2>
+	    </div>	       
     </div>
         
     <div id="footer">Project team: Carlos Isaac Rodriguez Prado, Hans-Peter H&ouml;llwirth, Veronika Kyuchukova</div>
