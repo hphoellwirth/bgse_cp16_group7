@@ -62,7 +62,8 @@ run)
 	echo "... interpolating population data"	
 	#Rscript analysis/preInterpolatePopulation.R $user $pswd
 	echo "... computing descriptive analysis"	
-	Rscript analysis/descPollutantCountry.R $user $pswd
+	#Rscript analysis/descPollutantCountry.R $user $pswd
+	echo "... computing predictive analysis"
 	#R CMD BATCH analysis/analysis.R 
 	#cat analysis.Rout
 	#rm analysis.Rout
