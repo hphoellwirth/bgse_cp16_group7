@@ -39,8 +39,8 @@ install)
 
     # 5. Create web dashboard
     echo "... setting up dashboard"
-	mkdir -p "$target_dir/airpollution"
-	cp -rf web/* "$target_dir/airpollution"
+	sudo mkdir -p "$target_dir/airpollution"
+	sudo cp -rf web/* "$target_dir/airpollution"
 
 	echo "done!"
 	;;

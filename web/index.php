@@ -113,7 +113,7 @@
     <div id="main">
 		  <div id="home">
 			  <h2>Home</h2>
-			  <h3>The goal</h3>
+			  <h3>I have a goal </h3>
 			  <p>The main goal of this project is to shed light on the possible measures that an emission (reduction) government policy could consider in order to reduce the air pollution most efficiently, and to predict city pollutant concentrations for future years, assuming no policy changes. For this purpose, we want to learn which emission sectors impact the measured air pollutants most in a country (and to what extend) and also try to relate the measured pollutions to the size of city populations.</p>						
 
 			  <h3>The dataset</h3>
