@@ -25,8 +25,6 @@ update sector set parentID = '1A3' where sectorID = '1A3di(ii)';
 update sector set parentID = '1A3' where sectorID = '1A3dii';
 update sector set parentID = '1A3' where sectorID = '1A3ei';
 update sector set parentID = '1A3' where sectorID = '1A3eii';
-update sector set parentID = '2B1' where sectorID = '2B10a';
-update sector set parentID = '2B1' where sectorID = '2B10b';
 
 
 /**********************************/
