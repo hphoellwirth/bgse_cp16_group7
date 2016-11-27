@@ -1,5 +1,17 @@
 <?php
 
+// list of approved function calls
+$approved_functions = array('query_and_return_json');
+
+$func = (isset($_GET['function']) ? $_GET['function'] : null);
+
+// check the $_GET['function'] and see if it matches an approved function
+if(in_array($func, $approved_functions)) {
+    // call the approved function
+    $func();
+}
+
+// connect to database
 function connect_to_db() {    
     $host = "localhost";
     $dbuser = "gseuser";
@@ -207,6 +219,38 @@ MY_MARKER;
     echo $str;
 
 }
+
+function query_and_return_json() {
+
+    //open connection to database
+    connect_to_db(); 
+    
+    // perform Query
+    $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT' limit 7";
+    $result = mysql_query($query);
+
+    //create an array  
+    $table = array();
+    $table['cols'] = array(  
+      array('label' => 'year', 'type' => 'string'),
+      array('label' => 'emission', 'type' => 'number')
+    );
+
+    $rows = array();
+    while ($row = mysql_fetch_array($result)) {
+    
+      $temp = array();
+      $temp[] = array('v' => (string) $row['year']); 
+      $temp[] = array('v' => (double) $row['emission']); 
+      $rows[] = array('c' => $temp);    
+    }
+    
+    // encode in JSON
+    $table['rows'] = $rows;
+    $jsonTable = json_encode($table);    
+    echo $jsonTable;
+}
+
 
 
 ?>
