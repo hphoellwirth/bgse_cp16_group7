@@ -226,7 +226,7 @@ function query_and_return_json() {
     connect_to_db(); 
     
     // perform Query
-    $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT' limit 7";
+    $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT'";
     $result = mysql_query($query);
 
     //create an array  

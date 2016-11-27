@@ -32,7 +32,7 @@ interactive <- FALSE
 if (interactive) {
     setwd("/Users/Hans-Peter/Documents/Masters/14D003/project")
     loadFileName <- "analysis/data/countryPollutantFactor.csv"
-    dat <- read.csv2(loadFileName,header = TRUE, sep = ",", dec = ".",
+    data <- read.csv2(loadFileName,header = TRUE, sep = ",", dec = ".",
                      na.string="NULL", stringsAsFactors = FALSE)
 } 
 
@@ -59,10 +59,12 @@ invisible(dbGetQuery(dbConn, "set names utf8"))
 # Regression functions
 # ----------------------------------------------------------------------
 
+
 # ----------------------------------------------------------------------
 # Regression on city pollutant concentration
 # ----------------------------------------------------------------------
 #dat <- dbGetQuery(dbConn, "SELECT * FROM countryPollutantFactor WHERE pollutantID = 'PM10' AND countryID = 'AT';")
+dat <- data
 
 # filter country and pollutant
 dat <- dat[dat$pollutantID == 'PM10',]
@@ -97,7 +99,7 @@ cv.glmmod <- cv.glmnet(X,t,alpha=1,grouped=FALSE)
 plot(cv.glmmod)
 best_lambda <- cv.glmmod$lambda.min
 
-coef(glmmod)[,23]
+coef(glmmod)[,25]
 
 
 # ----------------------------------------------------------------------
@@ -105,8 +107,27 @@ coef(glmmod)[,23]
 # ----------------------------------------------------------------------
 reg <- dat[ , (names(dat) %in% c("concentration","e1B1a"))] # AT/PM10
 reg <- dat[ , (names(dat) %in% c("concentration","e1A1c","e1A3ai_i","e3B3","e5C1a"))] # BE/PM10
-reg <- dat[ , (names(dat) %in% c("concentration","e11A1a","e3Dc","e5C1bv"))] # DE/PM10
+reg <- dat[ , (names(dat) %in% c("concentration","e11B","e11A1a","e3Dc","e5C1bv"))] # DE/PM10
+
+reg <- dat[ , (names(dat) %in% c("concentration","e1A3bi","e1A3bii","e1A3biii","e1A3biv"))] # DE/PM10
 
 fit <- lm(concentration ~ ., data = reg)
+out <- summary(fit)
+print(out)
+
+
+# ----------------------------------------------------------------------
+# Test linear regression with aggregated emission
+# ----------------------------------------------------------------------
+dat <- data
+#dat[is.na(dat)] <- 0
+emissions <- rowSums(dat[,7:140], na.rm = TRUE)
+dat["totEmission"] <- emissions
+dat["totEmissionAdj"] <- emissions/dat$population *1000000000
+dat <- dat[dat$pollutantID == 'PM10',]
+#dat <- dat[dat$countryID == 'DE',]
+dat <- dat[ , (names(dat) %in% c("concentration","totEmissionAdj"))]
+
+fit <- lm(concentration ~ ., data = dat, na.action = na.exclude)
 out <- summary(fit)
 print(out)
