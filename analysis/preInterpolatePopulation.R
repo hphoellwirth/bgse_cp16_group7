@@ -50,11 +50,15 @@ invisible(dbGetQuery(dbConn, "set names utf8"))
 # ----------------------------------------------------------------------
 # Interpolating city population data
 # ----------------------------------------------------------------------
+dbGetQuery(dbConn, "DELETE FROM cityPopulation WHERE interpolation = TRUE;")
+dbGetQuery(dbConn, "DELETE FROM countryPopulation WHERE interpolation = TRUE;")
+
+
 cityIDs <- dbGetQuery(dbConn, "SELECT cityID FROM cityPopulation group by cityID;")
 
 end.year<- dbGetQuery(dbConn, "SELECT max(year) FROM cityPopulation;")
 end_year<- as.numeric(end.year)
-print(end_year)
+#print(end_year)
 
 # #min number of data points needed to interpolate/extrapolate the data
 min.data=2
@@ -64,14 +68,20 @@ for (i in 1:length(cityIDs[ ,1])) {
   cityID<-as.character(cityIDs[i, ])
   getdata1<- paste0("SELECT cityID, population, year FROM cityPopulation WHERE cityID=\"", cityID, "\" ;")
   my_data<-dbGetQuery(dbConn, getdata1) 
-  print(my_data)
+ # print(my_data)
   
   #get the year of the first observation
   getdata2<- paste0("SELECT min(year) FROM cityPopulation  WHERE cityID=\"", cityID, "\" ;")
   start.year <- dbGetQuery(dbConn, getdata2)
   start_year<- as.numeric(start.year)
-  print(start_year)
+  #print(start_year)
 
+  #get the year of the first observation
+  getdata3<- paste0("SELECT max(year) FROM cityPopulation  WHERE cityID=\"", cityID, "\" ;")
+  end.year <- dbGetQuery(dbConn, getdata3)
+  end_year<- as.numeric(end.year)
+  #print(start_year)
+  
   year<-seq(start_year, end_year)
   #create a data frame with the years and data needed for the intrapolation
   popul_data<-as.data.frame(year)
@@ -85,16 +95,16 @@ for (i in 1:length(cityIDs[ ,1])) {
     popul_data$population[match(my_data$year, popul_data$year)]<-my_data$population
     #interpolate the data 
     popul_data$population<-na.spline(popul_data$population)
-    print(match(my_data$year, popul_data$year))
+   # print(match(my_data$year, popul_data$year))
     import.data<-popul_data[-match(my_data$year, popul_data$year), ]
-    print(import.data)
+    #print(import.data)
   }
 
   if (nrow(import.data)>0) {
     for (j in 1:nrow(import.data)){
-      if (import.data$year[j]<= 2013){
+      
       inserts <- c(inserts, paste0("(\"", import.data$cityID[j], "\",", import.data$year[j] , ",", import.data$population[j], ", true )"))
-      }
+    
     }
   }
   
@@ -112,11 +122,11 @@ for (i in 1:length(cityIDs[ ,1])) {
 # ----------------------------------------------------------------------
 
 
-countryIDs <- dbGetQuery(dbConn, "SELECT countryID FROM countryPopulation group by countryID;")
+countryIDs <- dbGetQuery(dbConn, "SELECT countryID FROM countryPopulation WHERE countryID != \"SK\" group by countryID;")
 
 end.year<- dbGetQuery(dbConn, "SELECT max(year) FROM countryPopulation;")
 end_year<- as.numeric(end.year)
-print(end_year)
+#print(end_year)
 
 # #min number of data points needed to interpolate/extrapolate the data
 min.data=2
@@ -126,13 +136,19 @@ for (i in 1:length(countryIDs[ ,1])) {
   countryID<-as.character(countryIDs[i, ])
   getdata1<- paste0("SELECT countryID, population, year FROM countryPopulation WHERE countryID=\"", countryID, "\" ;")
   my_data<-dbGetQuery(dbConn, getdata1) 
-  print(my_data)
+ # print(my_data)
   
   #get data about the year of the first observation
   getdata2<- paste0("SELECT min(year) FROM countryPopulation  WHERE countryID=\"", countryID, "\" ;")
   start.year <- dbGetQuery(dbConn, getdata2)
   start_year<- as.numeric(start.year)
-  print(start_year)
+  #print(start_year)
+  
+  #get the year of the last observation
+  getdata3<- paste0("SELECT max(year) FROM countryPopulation  WHERE countryID=\"", countryID, "\" ;")
+  end.year <- dbGetQuery(dbConn, getdata3)
+  end_year<- as.numeric(end.year)
+  #print(end_year)
   
 #create a data frame with the years and data needed fo the interpolation
   year<-seq(start_year, end_year)
@@ -147,16 +163,16 @@ for (i in 1:length(countryIDs[ ,1])) {
     popul_data$population[match(my_data$year, popul_data$year)]<-my_data$population
     #interpolate the data 
     popul_data$population<-na.spline(popul_data$population)
-    print(match(my_data$year, popul_data$year))
+    #print(match(my_data$year, popul_data$year))
     import.data<-popul_data[-match(my_data$year, popul_data$year), ]
-    print(import.data)
+    #print(import.data)
   }
 
   if (nrow(import.data)>0) {
     for (j in 1:nrow(import.data)){
-      if (import.data$year[j]<=2013){
+     
       inserts <- c(inserts, paste0("(\"", import.data$countryID[j], "\",", import.data$year[j] , ",", import.data$population[j], ", true )"))
-      }
+      
     }
   }
   
