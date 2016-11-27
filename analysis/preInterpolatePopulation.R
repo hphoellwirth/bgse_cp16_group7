@@ -56,10 +56,6 @@ dbGetQuery(dbConn, "DELETE FROM countryPopulation WHERE interpolation = TRUE;")
 
 cityIDs <- dbGetQuery(dbConn, "SELECT cityID FROM cityPopulation group by cityID;")
 
-end.year<- dbGetQuery(dbConn, "SELECT max(year) FROM cityPopulation;")
-end_year<- as.numeric(end.year)
-#print(end_year)
-
 # #min number of data points needed to interpolate/extrapolate the data
 min.data=2
 
@@ -86,6 +82,7 @@ for (i in 1:length(cityIDs[ ,1])) {
   #create a data frame with the years and data needed for the intrapolation
   popul_data<-as.data.frame(year)
   inserts <- c()
+  import.data<-data.frame()
   
   if (length(my_data$year) >= min.data) {
     #add column for population and city name
@@ -112,7 +109,7 @@ for (i in 1:length(cityIDs[ ,1])) {
     query <- paste("INSERT INTO cityPopulation",
                    "(cityID, year, population, interpolation)",
                    "VALUES", paste(inserts,collapse = ", "))
-    dbGetQuery(dbConn, query)
+    invisible(dbGetQuery(dbConn, query))
   }
 }
 
@@ -122,11 +119,8 @@ for (i in 1:length(cityIDs[ ,1])) {
 # ----------------------------------------------------------------------
 
 
-countryIDs <- dbGetQuery(dbConn, "SELECT countryID FROM countryPopulation WHERE countryID != \"SK\" group by countryID;")
+countryIDs <- dbGetQuery(dbConn, "SELECT countryID FROM countryPopulation group by countryID;")
 
-end.year<- dbGetQuery(dbConn, "SELECT max(year) FROM countryPopulation;")
-end_year<- as.numeric(end.year)
-#print(end_year)
 
 # #min number of data points needed to interpolate/extrapolate the data
 min.data=2
@@ -153,7 +147,10 @@ for (i in 1:length(countryIDs[ ,1])) {
 #create a data frame with the years and data needed fo the interpolation
   year<-seq(start_year, end_year)
   popul_data<-as.data.frame(year)
+  
   inserts <- c()
+  import.data<-data.frame()
+  
   if (length(my_data$year) >= min.data) {
     
     #add column for population and city name
@@ -180,7 +177,7 @@ for (i in 1:length(countryIDs[ ,1])) {
     query <- paste("INSERT INTO countryPopulation",
                    "(countryID, year, population, interpolation)",
                    "VALUES", paste(inserts,collapse = ", "))
-    dbGetQuery(dbConn, query)
+    invisible(dbGetQuery(dbConn, query))
   }
 }
 
