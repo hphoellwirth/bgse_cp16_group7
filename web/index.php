@@ -15,23 +15,26 @@
   <head>
     <title>airpollution</title>    
     <link rel="stylesheet" type="text/css" href="style.css" />  
+    
     <!--Google charts-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script type="text/javascript">
+    <script type="text/javascript">  
     
     // Load the Visualization API and the piechart package.
     google.charts.load('current', {'packages':['corechart']});
       
     // Set a callback to run when the Google Visualization API is loaded.
-    google.charts.setOnLoadCallback(drawLineChart);
-    google.charts.setOnLoadCallback(drawPieChart);
+    //google.charts.setOnLoadCallback(drawLineChart);
+    //google.charts.setOnLoadCallback(drawPieChart);
       
-    function drawLineChart() {
+    function drawLineChart(countryID) {
       var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
           url: "functions.php?function=query_and_return_json",
           dataType: "json",
-          async: false
+          async: false         
           }).responseText;
           
       // Create our data table out of JSON data loaded from server.
@@ -48,11 +51,13 @@
       chart.draw(data, options);
     }
     
-    function drawPieChart() {
+    function drawPieChart(countryID) {
       var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},            
           url: "functions.php?function=query_and_return_json",
-          dataType: "json",
-          async: false
+          dataType: "json",         
+          async: false         
           }).responseText;
           
       // Create our data table out of JSON data loaded from server.
@@ -66,6 +71,7 @@
     </script>    
   </head>
   
+  <!-- Menu selection functions --> 
   <script>
     /**
     * Given an element, or an element ID, blank its style's display
@@ -109,6 +115,45 @@
 	    }
     }
   </script>
+  
+  <!-- Country dropdown box functions --> 
+  <script>  
+    function showCountries(prefix) {
+      document.getElementById(prefix.concat("CtryDropdown")).classList.toggle("show");
+    }
+
+    function filterFunction(prefix) {
+      var input, filter, ul, li, a, i;
+      input = document.getElementById(prefix.concat("Countries"));
+      filter = input.value.toUpperCase();
+      div = document.getElementById(prefix.concat("CtryDropdown"));
+      a = div.getElementsByTagName("a");
+      for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+          a[i].style.display = "";
+        } else {
+          a[i].style.display = "none";
+        }
+      }
+    }   
+    
+    function updateHeader(prefix, countryName) {
+      var header;
+      header = document.getElementById(prefix.concat("H2"));
+      header.innerText = countryName;    
+    }
+    
+    function selectCountry(prefix, countryID, countryName) {
+      updateHeader(prefix, countryName);
+      showCountries(prefix);
+      
+      if (prefix == 'da') {
+        drawPieChart(countryID);
+      } else { 
+        drawLineChart(countryID);
+      }
+    }      
+  </script>   
   
   <!-- Body -->
   <body>

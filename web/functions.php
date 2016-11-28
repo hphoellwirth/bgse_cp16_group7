@@ -222,38 +222,42 @@ MY_MARKER;
 
 function query_and_return_json() {
 
-    //open connection to database
-    connect_to_db(); 
-    $url = $_SERVER['REQUEST_URI'];
+    if (isset($_POST["countryID"])) {
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+      //$url = $_SERVER['REQUEST_URI'];
     
-    // perform Query
-    $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT'";
-    $result = mysql_query($query);
+      // perform Query
+      $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = '" . $countryID . "'";
+      $result = mysql_query($query);
 
-    //create an array  
-    $table = array();
-    $table['cols'] = array(  
-      array('label' => 'year', 'type' => 'string'),
-      array('label' => 'emission', 'type' => 'number')
-    );
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'emission', 'type' => 'number')
+      );
 
-    $rows = array();
-    while ($row = mysql_fetch_array($result)) {
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
     
-      $temp = array();
-      $temp[] = array('v' => (string) $row['year']); 
-      $temp[] = array('v' => (double) $row['emission']); 
-      $rows[] = array('c' => $temp);    
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['emission']); 
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
     }
-    
-    // encode in JSON
-    $table['rows'] = $rows;
-    $jsonTable = json_encode($table);    
-    echo $jsonTable;
 }
 
 
-function query_countries() {
+function query_countries($site) {
 
     //open connection to database
     connect_to_db(); 
@@ -263,7 +267,16 @@ function query_countries() {
     $result = mysql_query($query);
 
     while ($row = mysql_fetch_array($result)) {
-      echo "<a href='#" . $row['countryID'] . "'>" . $row['countryName'] . "</a>"; 
+      //echo "<a href='#" . $row['countryID'] . "'>" . $row['countryName'] . "</a>";
+      echo "<a href='javascript:selectCountry(\""
+           . $site
+           . "\", \"" 
+           . $row['countryID'] 
+           . "\", \"" 
+           . $row['countryName']            
+           . "\");'>" 
+           . $row['countryName'] 
+           . "</a>"; 
     }
 }
 
