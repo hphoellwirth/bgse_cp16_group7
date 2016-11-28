@@ -224,6 +224,7 @@ function query_and_return_json() {
 
     //open connection to database
     connect_to_db(); 
+    $url = $_SERVER['REQUEST_URI'];
     
     // perform Query
     $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT'";
@@ -251,6 +252,20 @@ function query_and_return_json() {
     echo $jsonTable;
 }
 
+
+function query_countries() {
+
+    //open connection to database
+    connect_to_db(); 
+
+    // perform Query
+    $query = "SELECT countryID, countryName FROM airpollution.country ORDER BY countryName";
+    $result = mysql_query($query);
+
+    while ($row = mysql_fetch_array($result)) {
+      echo "<a href='#" . $row['countryID'] . "'>" . $row['countryName'] . "</a>"; 
+    }
+}
 
 
 ?>
