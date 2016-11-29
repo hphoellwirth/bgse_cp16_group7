@@ -265,37 +265,41 @@ function query_years() {
 
 // geo map of cities and their concentrations
 function query_city_map() {
-         
-    //open connection to database
-    connect_to_db(); 
+
+    if (isset($_POST["year"])) {
+      $year = $_POST["year"]; 
+               
+      //open connection to database
+      connect_to_db(); 
   
-    // perform query
-    $query = "SELECT latitude, longitude, cityName, concentration FROM airpollution.cityGeoMap WHERE year = 2012 AND pollutantID = 'NO2'";
-    $result = mysql_query($query);
+      // perform query
+      $query = "SELECT latitude, longitude, cityName, concentration FROM airpollution.cityGeoMap WHERE year = " . $year . " AND pollutantID = 'NO2'";
+      $result = mysql_query($query);
 
-    //create an array  
-    $table = array();
-    $table['cols'] = array(  
-      array('label' => 'Latitude', 'type' => 'number'),
-      array('label' => 'Longitude', 'type' => 'number'),
-      array('label' => 'City', 'type' => 'string'),
-      array('label' => 'PM10', 'type' => 'number')
-    );
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'Latitude', 'type' => 'number'),
+        array('label' => 'Longitude', 'type' => 'number'),
+        array('label' => 'City', 'type' => 'string'),
+        array('label' => 'PM10', 'type' => 'number')
+      );
 
-    $rows = array();
-    while ($row = mysql_fetch_array($result)) {
-      $temp = array();
-      $temp[] = array('v' => (double) $row['latitude']);
-      $temp[] = array('v' => (double) $row['longitude']);      
-      $temp[] = array('v' => (string) $row['cityName']); 
-      $temp[] = array('v' => (double) $row['concentration']);
-      $rows[] = array('c' => $temp);    
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (double) $row['latitude']);
+        $temp[] = array('v' => (double) $row['longitude']);      
+        $temp[] = array('v' => (string) $row['cityName']); 
+        $temp[] = array('v' => (double) $row['concentration']);
+        $rows[] = array('c' => $temp);    
+      }
+  
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
     }
-  
-    // encode in JSON
-    $table['rows'] = $rows;
-    $jsonTable = json_encode($table);    
-    echo $jsonTable;
 
 }
 

@@ -189,7 +189,7 @@ h4 {
     border: none;
 }
 
-#years {
+#yearsInput {
     border-box: box-sizing;
     background-image: url('background/searchicon.png');
     background-position: 12px 8px;
