@@ -32,24 +32,118 @@
       var jsonData = $.ajax({
           type: "POST",
           data: {countryID: countryID},      
-          url: "functions.php?function=query_and_return_json",
+          url: "functions.php?function=query_ctry_pollutants",
           dataType: "json",
           async: false         
           }).responseText;
-          
-      // Create our data table out of JSON data loaded from server.
       var data = new google.visualization.DataTable(jsonData);
       
       var options = {
-          title: 'Company Performance',
+          title: 'Pollutant concentration',
           curveType: 'function',
           legend: { position: 'bottom' }
       };
 
-      // Instantiate and draw our chart, passing in some options.
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       chart.draw(data, options);
     }
+    
+    // NO2 pollutant chart for specific country
+    function drawNO2Chart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_ctry_no2",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Nitrogen dioxide (NO2) concentration',
+          legend: 'none',
+          colors: ['red', 'blue'],
+          crosshair: { trigger: 'both' },
+          vAxis: {minValue: 0,
+                  title: 'mean \u03BCg/m3',
+                  gridlines: {count: 6}}          
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_no2'));
+      chart.draw(data, options);
+    }
+    
+    // O3 pollutant chart for specific country
+    function drawO3Chart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_ctry_o3",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Ozone (O3) concentration',
+          legend: 'none',
+          colors: ['red', 'purple'],
+          vAxis: {minValue: 0, 
+                  title: 'P93.2 \u03BCg/m3',
+                  gridlines: {count: 6}}           
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_o3'));
+      chart.draw(data, options);
+    }        
+    
+    // PM10 pollutant chart for specific country
+    function drawPM10Chart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_ctry_pm10",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Particulate matter < 10 \u03BCm (PM10) concentration',
+          legend: 'none',
+          colors: ['red', 'orange'],
+          vAxis: {minValue: 0, 
+                  title: 'P90.4 \u03BCg/m3',
+                  gridlines: {count: 6}}
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_pm10'));
+      chart.draw(data, options);
+    }   
+    
+    // PM2.5 pollutant chart for specific country
+    function drawPM25Chart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_ctry_pm2_5",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Particulate matter < 2.5 \u03BCm (PM2.5) concentration',
+          legend: 'none',
+          colors: ['red', 'green'],
+          vAxis: {minValue: 0, 
+                  title: 'mean \u03BCg/m3',
+                  gridlines: {count: 6}}
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_pm2_5'));
+      chart.draw(data, options);
+    }      
     
     function drawPieChart(countryID) {
       var jsonData = $.ajax({
@@ -58,12 +152,9 @@
           url: "functions.php?function=query_and_return_json",
           dataType: "json",         
           async: false         
-          }).responseText;
-          
-      // Create our data table out of JSON data loaded from server.
+          }).responseText;  
       var data = new google.visualization.DataTable(jsonData);
 
-      // Instantiate and draw our chart, passing in some options.
       var chart = new google.visualization.PieChart(document.getElementById('chart_pie'));
       chart.draw(data, {width: 400, height: 240});
     }    
@@ -118,10 +209,12 @@
   
   <!-- Country dropdown box functions --> 
   <script>  
+    // show/hide country dropdown list
     function showCountries(prefix) {
       document.getElementById(prefix.concat("CtryDropdown")).classList.toggle("show");
     }
 
+    // filter function in dropdown list
     function filterFunction(prefix) {
       var input, filter, ul, li, a, i;
       input = document.getElementById(prefix.concat("Countries"));
@@ -137,20 +230,25 @@
       }
     }   
     
+    // update header in section upon country selection
     function updateHeader(prefix, countryName) {
       var header;
       header = document.getElementById(prefix.concat("H2"));
       header.innerText = countryName;    
     }
     
+    // update charts and header in section upon country selection
     function selectCountry(prefix, countryID, countryName) {
       updateHeader(prefix, countryName);
       showCountries(prefix);
       
       if (prefix == 'da') {
-        drawPieChart(countryID);
+        drawNO2Chart(countryID);
+        drawO3Chart(countryID);
+        drawPM10Chart(countryID);
+        drawPM25Chart(countryID);
       } else { 
-        drawLineChart(countryID);
+        drawPieChart(countryID);
       }
     }      
   </script>   

@@ -14,9 +14,7 @@
   
    	  
 	<h2 id="paH2">Prescriptive Analysis</h2>
-
-  <h3>The findings</h3>
-  <div id="chart_div"></div>
+  <div id="chart_pie">Pie chart</div>	
 	
 </div>	
 <?php?>

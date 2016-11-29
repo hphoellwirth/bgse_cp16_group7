@@ -13,9 +13,17 @@
   </div>  
 
   <h2 id="daH2">Descriptive Analysis</h2>
-  <p>The section analysis the main drivers of observed air pollution concentrations for different pollutants across observed countries in Europe.</p>
-  <div id="chart_pie">Pie chart</div>	
-
+  <h3>Pollutant concentrations</h3>
+  <p>National annual mean</p>
+  <div>
+    <div id="chart_no2" style="width: 550px; height: 300px; float: left;"></div>
+    <div id="chart_o3" style="width: 550px; height: 300px; float: left;"></div>
+    <div id="chart_pm10" style="width: 550px; height: 300px; float: left;"></div>   
+    <div id="chart_pm2_5" style="width: 550px; height: 300px; float: left;"></div>
+  </div>
+  
+  <h3>Emissions</h3>
+  <h3>Population</h3>
 
 </div>	
 <?php?>
