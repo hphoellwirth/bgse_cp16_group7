@@ -29,12 +29,15 @@
       
     // Set a callback to run when the Google Visualization API is loaded.
     //google.charts.setOnLoadCallback(drawMarkersMap);
+    var geoMapYear = 2013;
+    var geoMapPollutant = 'NO2';
     
     // draw geo map with city pollutant concentrations
-    function drawMarkersMap(year) {
+    function drawMarkersMap(pollutant, year) {
       var jsonData = $.ajax({
           type: "POST",     
-          data: {year: year}, 
+          data: {pollutant: pollutant,
+                 year: year}, 
           url: "functions.php?function=query_city_map",
           dataType: "json",
           async: false         
@@ -97,6 +100,8 @@
       var options = {
           title: 'Nitrogen dioxide (NO2) concentration',
           legend: 'none',
+          width: 550,
+          height: 300,
           colors: ['red', 'blue'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
@@ -123,6 +128,8 @@
       var options = {
           title: 'Ozone (O3) concentration',
           legend: 'none',
+          width: 550,
+          height: 300,          
           colors: ['red', 'purple'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
@@ -149,6 +156,8 @@
       var options = {
           title: 'Particulate matter < 10 \u03BCm (PM10) concentration',
           legend: 'none',
+          width: 550,
+          height: 300,          
           colors: ['red', 'orange'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
@@ -175,6 +184,8 @@
       var options = {
           title: 'Particulate matter < 2.5 \u03BCm (PM2.5) concentration',
           legend: 'none',
+          width: 550,
+          height: 300,          
           colors: ['red', 'green'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
@@ -295,6 +306,46 @@
     }      
   </script> 
   
+  <!-- Pollutant dropdown box functions --> 
+  <script>  
+    // show/hide pollutant dropdown list
+    function showPollutants() {
+      document.getElementById("pollutantDropdown").classList.toggle("show");
+    }
+
+    // filter year function in dropdown list
+    function filterPollutants() {
+      var input, filter, ul, li, a, i;
+      input = document.getElementById("pollutantsInput");
+      filter = input.value.toUpperCase();
+      div = document.getElementById("pollutantDropdown");
+      a = div.getElementsByTagName("a");
+      for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+          a[i].style.display = "";
+        } else {
+          a[i].style.display = "none";
+        }
+      }
+    }   
+    
+    // update header in section upon year selection
+    function updateMapHeader(pollutant, year) {
+      var prefix = "City Concentration of Pollutant ";
+      var header;
+      header = document.getElementById("dataH2");
+      header.innerText = prefix.concat(pollutant, " in ", year);    
+    }
+    
+    // update map and header in section upon year selection
+    function selectPollutant(pollutant) {
+      geoMapPollutant = pollutant;
+      updateMapHeader(pollutant, geoMapYear);
+      showPollutants();
+      drawMarkersMap(pollutant, geoMapYear);
+    }    
+  </script>   
+  
   <!-- Year dropdown box functions --> 
   <script>  
     // show/hide year dropdown list
@@ -318,25 +369,33 @@
       }
     }   
     
-    // update header in section upon year selection
-    function updateMapHeader(year) {
-      var prefix = "City Pollutant Concentration in ";
-      var header;
-      header = document.getElementById("dataH2");
-      header.innerText = prefix.concat(year);    
-    }
-    
     // update map and header in section upon year selection
     function selectYear(year) {
-      updateMapHeader(year);
+      geoMapYear = year;
+      updateMapHeader(geoMapPollutant, year);
       showYears();
-      drawMarkersMap(year);
+      drawMarkersMap(geoMapPollutant, year);
     }    
   </script>     
  
+  <!-- Initialize graphs --> 
+  <script>  
+    function initGraphs() {
+      // initialize geo map
+      updateMapHeader(geoMapPollutant, geoMapYear);
+      drawMarkersMap(geoMapPollutant, geoMapYear);
+      
+      // initialize concentration line graphs
+      updateHeader('da', 'Spain');
+      drawNO2Chart('ES');
+      drawO3Chart('ES');
+      drawPM10Chart('ES');
+      drawPM25Chart('ES');      
+    }   
+  </script>   
   
   <!-- Body -->
-  <body>
+  <body onload=initGraphs()>
     <div id="header"><h1>European air pollution analysis</h1></div>
     
     <div id="menu">

@@ -266,14 +266,15 @@ function query_years() {
 // geo map of cities and their concentrations
 function query_city_map() {
 
-    if (isset($_POST["year"])) {
-      $year = $_POST["year"]; 
-               
+    if (isset($_POST["pollutant"]) and isset($_POST["year"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $year = $_POST["year"];
+                
       //open connection to database
       connect_to_db(); 
   
       // perform query
-      $query = "SELECT latitude, longitude, cityName, concentration FROM airpollution.cityGeoMap WHERE year = " . $year . " AND pollutantID = 'NO2'";
+      $query = "SELECT latitude, longitude, cityName, concentration FROM airpollution.cityGeoMap WHERE year = " . $year . " AND pollutantID = '" . $pollutant . "'";
       $result = mysql_query($query);
 
       //create an array  
