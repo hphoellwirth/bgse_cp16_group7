@@ -275,6 +275,15 @@ create view cityConcentrations as
          (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'O3') as cO3,
          (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'BaP') as cBaP 
     from cityConcentration c;
+    
+create view cityGeoMap as
+  select cityId, cityName, latitude, longitude, year, pollutantID, concentration
+    from cityConcentration
+   where latitude is not null
+     and longitude is not null
+     and cityName not rlike '[^\x00-\x7F]';
+  
+    
 
 
 

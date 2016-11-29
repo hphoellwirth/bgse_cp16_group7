@@ -19,15 +19,48 @@
     <!--Google charts-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyDeBdHxE2Pw2z1YHYe4A_8IXmBsu8TPAK0" async="" defer="defer"></script>
     <script type="text/javascript">  
-    
-    // Load the Visualization API and the piechart package.
+  
+    // Load the visualization API for Google charts
     google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', {'packages':['line']});
+    google.charts.load('upcoming', {'packages': ['geochart']});
       
     // Set a callback to run when the Google Visualization API is loaded.
-    //google.charts.setOnLoadCallback(drawLineChart);
-    //google.charts.setOnLoadCallback(drawPieChart);
-      
+    google.charts.setOnLoadCallback(drawMarkersMap);
+    
+    // draw geo map with city pollutant concentrations
+    function drawMarkersMap() {
+      var jsonData = $.ajax({
+          type: "POST",     
+          url: "functions.php?function=query_city_map",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);    
+      /*
+      var data = google.visualization.arrayToDataTable([
+        ['Latitude',   'Longitude', 'City', 'Concentration'],
+        [48.2000152800,  16.3666389600, 'Wien', 28.633750],
+        [51.2203735500, 4.4150170480, 'Antwerpen', 41.123333]
+      ]);
+      */
+
+      var options = {
+        //sizeAxis: { minValue: 0, maxValue: 100 },
+        region: '150', // Europe
+        width: 1100,
+        displayMode: 'markers',
+        colorAxis: {colors: ['green', 'red']} // orange to blue
+        //colorAxis: {colors: ['#e7711c', '#4374e0']} // orange to blue
+      };
+
+      var chart = new google.visualization.GeoChart(document.getElementById('chart_map'));
+      chart.draw(data, options);
+    };    
+    
+    /*
     function drawLineChart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
@@ -47,8 +80,9 @@
       var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       chart.draw(data, options);
     }
+    */
     
-    // NO2 pollutant chart for specific country
+    // draw NO2 pollutant chart for specific country
     function drawNO2Chart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
@@ -63,7 +97,8 @@
           title: 'Nitrogen dioxide (NO2) concentration',
           legend: 'none',
           colors: ['red', 'blue'],
-          crosshair: { trigger: 'both' },
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5,
           vAxis: {minValue: 0,
                   title: 'mean \u03BCg/m3',
                   gridlines: {count: 6}}          
@@ -73,7 +108,7 @@
       chart.draw(data, options);
     }
     
-    // O3 pollutant chart for specific country
+    // draw O3 pollutant chart for specific country
     function drawO3Chart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
@@ -88,6 +123,8 @@
           title: 'Ozone (O3) concentration',
           legend: 'none',
           colors: ['red', 'purple'],
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5,
           vAxis: {minValue: 0, 
                   title: 'P93.2 \u03BCg/m3',
                   gridlines: {count: 6}}           
@@ -97,7 +134,7 @@
       chart.draw(data, options);
     }        
     
-    // PM10 pollutant chart for specific country
+    // draw PM10 pollutant chart for specific country
     function drawPM10Chart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
@@ -112,6 +149,8 @@
           title: 'Particulate matter < 10 \u03BCm (PM10) concentration',
           legend: 'none',
           colors: ['red', 'orange'],
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5,
           vAxis: {minValue: 0, 
                   title: 'P90.4 \u03BCg/m3',
                   gridlines: {count: 6}}
@@ -121,7 +160,7 @@
       chart.draw(data, options);
     }   
     
-    // PM2.5 pollutant chart for specific country
+    // draw PM2.5 pollutant chart for specific country
     function drawPM25Chart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
@@ -136,6 +175,8 @@
           title: 'Particulate matter < 2.5 \u03BCm (PM2.5) concentration',
           legend: 'none',
           colors: ['red', 'green'],
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5,
           vAxis: {minValue: 0, 
                   title: 'mean \u03BCg/m3',
                   gridlines: {count: 6}}
@@ -252,6 +293,7 @@
       }
     }      
   </script>   
+ 
   
   <!-- Body -->
   <body>

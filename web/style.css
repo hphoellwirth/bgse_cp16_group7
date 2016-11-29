@@ -167,17 +167,6 @@ h4 {
     background-color: #3e8e41;
 }
 
-#dataCountries {
-    border-box: box-sizing;
-    background-image: url('background/searchicon.png');
-    background-position: 12px 8px;
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-    font-size: 16px;
-    padding: 14px 20px 12px 45px;
-    border: none;
-}
-
 #daCountries {
     border-box: box-sizing;
     background-image: url('background/searchicon.png');
@@ -190,6 +179,17 @@ h4 {
 }
 
 #paCountries {
+    border-box: box-sizing;
+    background-image: url('background/searchicon.png');
+    background-position: 12px 8px;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+}
+
+#years {
     border-box: box-sizing;
     background-image: url('background/searchicon.png');
     background-position: 12px 8px;
@@ -226,6 +226,13 @@ h4 {
 .dropdown a:hover {background-color: #ddd}
 
 .show {display:block;}
+
+div#chart_no2 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
+div#chart_o3 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
+div#chart_pm10 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
+div#chart_pm2_5 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
+
+
 
 
 

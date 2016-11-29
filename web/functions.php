@@ -1,8 +1,9 @@
 <?php
 
-// list of approved function calls
+// list of approved AJAX function calls
 $approved_functions = array('query_and_return_json', 
                             'query_ctry_pollutants',
+                            'query_city_map',
                             'query_ctry_no2',
                             'query_ctry_o3',
                             'query_ctry_pm10',
@@ -247,6 +248,55 @@ function query_countries($site) {
            . $row['countryName'] 
            . "</a>"; 
     }
+}
+
+// Query years for dropdown menu
+function query_years() {
+
+    // create list of years
+    for ($year = 2013; $year >= 1985; $year--) {
+      echo "<a href='javascript:selectYear(\"" 
+           . $year 
+           . "\");'>" 
+           . $year 
+           . "</a>"; 
+    }
+}
+
+// geo map of cities and their concentrations
+function query_city_map() {
+         
+    //open connection to database
+    connect_to_db(); 
+  
+    // perform query
+    $query = "SELECT latitude, longitude, cityName, concentration FROM airpollution.cityGeoMap WHERE year = 2012 AND pollutantID = 'NO2'";
+    $result = mysql_query($query);
+
+    //create an array  
+    $table = array();
+    $table['cols'] = array(  
+      array('label' => 'Latitude', 'type' => 'number'),
+      array('label' => 'Longitude', 'type' => 'number'),
+      array('label' => 'City', 'type' => 'string'),
+      array('label' => 'PM10', 'type' => 'number')
+    );
+
+    $rows = array();
+    while ($row = mysql_fetch_array($result)) {
+      $temp = array();
+      $temp[] = array('v' => (double) $row['latitude']);
+      $temp[] = array('v' => (double) $row['longitude']);      
+      $temp[] = array('v' => (string) $row['cityName']); 
+      $temp[] = array('v' => (double) $row['concentration']);
+      $rows[] = array('c' => $temp);    
+    }
+  
+    // encode in JSON
+    $table['rows'] = $rows;
+    $jsonTable = json_encode($table);    
+    echo $jsonTable;
+
 }
 
 // graph of NO2 pollutation for given country
