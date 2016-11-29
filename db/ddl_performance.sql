@@ -9,6 +9,7 @@ use airpollution;
 /************************/
 /* Create table indexes */
 /************************/
+
 create index idx_concentration 
   on concentration (pollutantID, stationID, year);
   
@@ -19,14 +20,21 @@ create index idx_countryPopulation
   on countryPopulation (countryID, year);
   
 create index idx_cityPopulation
-  on cityPopulation (cityID, year);  
+  on cityPopulation (cityID, year); 
+   
   
 /* note: primary and foreign keys are automatically indexed */  
 
 
-/****************/
-/* Create views */
-/****************/
+/********************************/
+/* Create general purpose views */
+/********************************/
+drop view if exists concEvaluation;
+drop view if exists countryConcentration;
+drop view if exists cityConcentration;
+drop view if exists countryPollutantFactor;
+drop view if exists countryConcentrations;
+drop view if exists cityConcentrations;
 
 -- concEvaluation
 create view concEvaluation as
@@ -66,19 +74,22 @@ create view countryConcentration as
      and s.stationID = e.stationID
    group by c.countryID, e.pollutantID, e.year;
   
-
 -- cityConcentration
 create view cityConcentration as
   select c.cityID             as cityID,
          c.cityName           as cityName, 
+         c.countryID          as countryID,
+         c.longitude          as longitude,
+         c.latitude           as latitude,
          e.pollutantID        as pollutantID, 
          e.year               as year, 
+         avg(e.concentration) as concentration,
          count(s.stationID)   as stations, 
          sum(e.exceededLimit) as noExceededLimit,
          sum(e.population)    as stationPopulation,
          (select p.population
             from cityPopulation p
-		   where p.cityID = c.cityID
+		       where p.cityID = c.cityID
              and p.year   = e.year) as population         
     from city c,
          station s, 
@@ -87,7 +98,9 @@ create view cityConcentration as
      and s.stationID = e.stationID
    group by s.cityID, e.pollutantID, e.year;
    
--- Descriptive analysis regression
+/************************************/
+/* Create regression analysis views */
+/************************************/
 create view countryPollutantFactor as
   select c.countryID,
          c.countryName,
@@ -230,3 +243,38 @@ create view countryPollutantFactor as
          (select emission from emission e where e.countryID = c.countryID and e.pollutantID = c.pollutantID and e.year = c.year and e.sectorID = '6A') as e6A,
          (select emission from emission e where e.countryID = c.countryID and e.pollutantID = c.pollutantID and e.year = c.year and e.sectorID = '6B') as e6B
     from countryConcentration c;
+
+/**************************/
+/* Create dashboard views */
+/**************************/  
+create view countryConcentrations as
+  select countryID,
+         year,
+         (select concentration from countryConcentration s where s.countryID = c.countryID and s.year = c.year and s.pollutantID = 'PM10') as cPM10,
+         (select concentration from countryConcentration s where s.countryID = c.countryID and s.year = c.year and s.pollutantID = 'PM2.5') as cPM2_5,
+         (select concentration from countryConcentration s where s.countryID = c.countryID and s.year = c.year and s.pollutantID = 'NO2') as cNO2,
+         (select concentration from countryConcentration s where s.countryID = c.countryID and s.year = c.year and s.pollutantID = 'O3') as cO3,
+         (select concentration from countryConcentration s where s.countryID = c.countryID and s.year = c.year and s.pollutantID = 'BaP') as cBaP,
+         (select limitConc from pollutant where pollutantID = 'PM10') as lPM10, 
+         (select limitConc from pollutant where pollutantID = 'PM2.5') as lPM2_5, 
+         (select limitConc from pollutant where pollutantID = 'NO2') as lNO2, 
+         (select limitConc from pollutant where pollutantID = 'O3') as lO3, 
+         (select limitConc from pollutant where pollutantID = 'BaP') as lBaP 
+    from countryConcentration c
+   group by countryID, year;
+
+create view cityConcentrations as
+  select countryID,
+         cityID,
+         cityName,
+         year,
+         population,
+         (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'PM10') as cPM10,
+         (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'PM2.5') as cPM2_5,
+         (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'NO2') as cNO2,
+         (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'O3') as cO3,
+         (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'BaP') as cBaP 
+    from cityConcentration c;
+
+
+
