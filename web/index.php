@@ -247,7 +247,7 @@
     }
 
     function show_content(optionsId) {
-	    var ids = new Array('home','data','desc_analysis','pres_analysis');
+	    var ids = new Array('home','map','desc_analysis','pres_analysis');
 	    show(optionsId);
 	    document.getElementById(optionsId + '_link').className = 'active';
 
@@ -285,9 +285,11 @@
     
     // update header in section upon country selection
     function updateHeader(prefix, countryName) {
-      var header;
+      var header, button;
       header = document.getElementById(prefix.concat("H2"));
-      header.innerText = countryName;    
+      header.innerText = countryName; 
+      button = document.getElementById(prefix.concat("CtryButton"));
+      button.innerText = countryName;             
     }
     
     // update charts and header in section upon country selection
@@ -331,10 +333,13 @@
     
     // update header in section upon year selection
     function updateMapHeader(pollutant, year) {
-      var prefix = "City Concentration of Pollutant ";
-      var header;
-      header = document.getElementById("dataH2");
-      header.innerText = prefix.concat(pollutant, " in ", year);    
+      var header, yearButton, pollutantButton;
+      header = document.getElementById("mapH2");
+      header.innerText = "City Concentration of Pollutant ".concat(pollutant, " in ", year);  
+      yearButton = document.getElementById("yearButton");
+      yearButton.innerText = year;
+      pollutantButton = document.getElementById("pollutantButton");
+      pollutantButton.innerText = pollutant;
     }
     
     // update map and header in section upon year selection
@@ -400,7 +405,7 @@
     
     <div id="menu">
 		<a id="home_link" href="#" class="active" onclick="show_content('home'); return false;">Home</a> &middot;
-		<a id="data_link" href="#" onclick="show_content('data'); update_data_charts(); return false;">Data</a> &middot;
+		<a id="map_link" href="#" onclick="show_content('map'); update_data_charts(); return false;">Pollutant Map</a> &middot;
 		<a id="desc_analysis_link" href="#" onclick="show_content('desc_analysis'); return false;">Descriptive Analysis</a> &middot;
 		<a id="pres_analysis_link" href="#" onclick="show_content('pres_analysis'); return false;">Prescriptive Analysis</a> 
 		<!-- <a id="pres_analysis_link" href="javascript:void(0)" onclick="myFunction()">Prescriptive Analysis</a> -->
@@ -426,7 +431,7 @@
 			  <p>TBD</p>
 		  </div>	    
         	    
-	    <?php include 'data.php' ?>
+	    <?php include 'map.php' ?>
 	    <?php include 'descriptive.php' ?>
 	    <?php include 'prescriptive.php' ?>       
     </div>

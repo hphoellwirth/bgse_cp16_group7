@@ -1,9 +1,9 @@
 <?php?>
-<div id="data" style="display: none">
+<div id="map" style="display: none">
 
   <!-- Year dropdown box -->
   <div class="dropdown" style="float: right;">
-    <button onclick="showYears()" class="dropbtn">Year</button>
+    <button id="yearButton" onclick="showYears()" class="dropbtn">Year</button>
     <div id="yearDropdown" class="dropdown-content">
       <input type="text" placeholder="Search.." id="yearsInput" onkeyup="filterYear()">     
       <?php
@@ -14,7 +14,7 @@
 
   <!-- Pollutant dropdown box -->
   <div class="dropdown" style="float: right;">
-    <button onclick="showPollutants()" class="dropbtn">Pollutant</button>
+    <button id="pollutantButton" onclick="showPollutants()" class="dropbtn">Pollutant</button>
     <div id="pollutantDropdown" class="dropdown-content">
       <input type="text" placeholder="Search.." id="pollutantsInput" onkeyup="filterPollutants()">     
         <a href='javascript:selectPollutant("NO2");'>NO2</a> 
@@ -24,7 +24,7 @@
     </div>
   </div> 
 
-	<h2 id="dataH2">City Pollutant Concentration</h2>
+	<h2 id="mapH2">City Pollutant Concentration</h2>
 	<div id="chart_map"></div>	
 </div>
 <?php?>

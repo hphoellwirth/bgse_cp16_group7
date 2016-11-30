@@ -3,7 +3,7 @@
 
   <!-- Country dropdown box -->
   <div class="dropdown" style="float: right;">
-    <button onclick="showCountries('da')" class="dropbtn">Country</button>
+    <button id="daCtryButton" onclick="showCountries('da')" class="dropbtn">Country</button>
     <div id="daCtryDropdown" class="dropdown-content">
       <input type="text" placeholder="Search.." id="daCountries" onkeyup="filterFunction('da')">
       <?php
