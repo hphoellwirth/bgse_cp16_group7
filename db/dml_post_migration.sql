@@ -36,7 +36,6 @@ delete
                       from sector);
 
 
-
 /*********************/
 /* Update city codes */
 /*********************/
@@ -143,3 +142,48 @@ DELIMITER ;
 -- run update of Turkish city IDs
 call updateTrCityID();
 
+
+/**************************************/
+/* Compute largest cities per country */
+/**************************************/
+DELIMITER $$
+create procedure getLargestCities (
+  kLargest int (10)
+)
+begin
+  declare done int default false;
+  declare ctryID varchar(2);
+  declare curCountry cursor for
+      select countryID
+        from country;
+        
+  declare continue handler for not found set done = true;        
+
+  /* loop over all countries */
+  open curCountry;
+  read_loop: loop   
+    fetch curCountry into ctryID; 
+
+    if done then
+      leave read_loop;
+    end if;
+
+    /* insert k largest cities into table largestCitis */
+    /* based on the maximum population over years */
+    insert into largestCities (cityID, countryID) 
+      select c.cityID, c.countryID
+        from cityPopulation p, city c
+       where c.cityID = p.cityID
+         and c.countryID = ctryID
+       group by c.cityID
+       order by max(p.population) desc
+       limit kLargest;  
+
+  end loop;  
+  close curCountry;  
+
+end$$
+DELIMITER ;
+
+-- find 3 largest cities for each country
+call getLargestCities(3);

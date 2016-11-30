@@ -106,6 +106,12 @@ create table cityPopulation (
   
   primary key (popID)
 );
+
+create table largestCities (
+  cityID     varchar(7),                           -- city code 
+  countryID  varchar(2),                           -- country code  
+  primary key (cityID)
+);
   
 /***********************/
 /* Create foreign keys */
@@ -138,6 +144,11 @@ alter table countryPopulation
   
 alter table cityPopulation 
   add foreign key (cityID) references city (cityID);   
+
+alter table largestCities 
+  add foreign key (cityID) references city (cityID);
+alter table largestCities 
+  add foreign key (countryID) references country (countryID);
 
 /********************/
 /* Create functions */
