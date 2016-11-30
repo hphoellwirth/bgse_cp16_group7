@@ -225,8 +225,34 @@
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_population'));
       chart.draw(data, options);
-    }        
+    }     
     
+    // draw emission chart for specific country
+    function drawEmissionChart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_emission",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'National and sector emissions',
+          legend: 'none',
+          width: 550,
+          height: 300, 
+          vAxis: {title: 'Gg (1000 tonnes)'},            
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_emission'));
+      chart.draw(data, options);
+    }         
+    
+    /*
     function drawPieChart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
@@ -239,7 +265,7 @@
 
       var chart = new google.visualization.PieChart(document.getElementById('chart_pie'));
       chart.draw(data, {width: 400, height: 240});
-    }    
+    }   */  
 
     </script>    
   </head>
@@ -331,6 +357,7 @@
         drawO3Chart(countryID);
         drawPM10Chart(countryID);
         drawPM25Chart(countryID);
+        drawEmissionChart(countryID);
         drawPopulationChart(countryID);
       } else { 
         drawPieChart(countryID);
@@ -426,6 +453,7 @@
       drawO3Chart('ES');
       drawPM10Chart('ES');
       drawPM25Chart('ES');   
+      drawEmissionChart('ES');
       drawPopulationChart('ES');   
     }   
   </script>   
@@ -446,17 +474,47 @@
 		  <div id="home">
 			  <h2>Home</h2>
 			  <h3>The goal</h3>
-			  <p>The main goal of this project is to shed light on the possible measures that an emission (reduction) government policy could consider in order to reduce the air pollution most efficiently, and to predict city pollutant concentrations for future years, assuming no policy changes. For this purpose, we want to learn which emission sectors impact the measured air pollutants most in a country (and to what extend) and also try to relate the measured pollutions to the size of city populations.</p>						
-
+			  <p>The main goal of this project is to shed light on the possible measures that an 
+			     emission (reduction) government policy could consider in order to reduce the 
+			     air pollution most efficiently, and to predict city pollutant concentrations 
+			     for future years, assuming no policy changes. For this purpose, 
+			     we want to learn which emission sectors impact the measured air pollutants 
+			     most in a country (and to what extend) and also try to relate 
+			     the measured pollutions to the size of city populations.</p>						
 
 			  <h3>The dataset</h3>
+			  <p>The analysis is based on 3 different datasets, provided by the <a href="http://www.eea.europa.eu">European Environment Agency (EEA)</a></p>
+        <ol>
+          <li>The <a href="http://www.eea.europa.eu/data-and-maps/data/air-pollutant-concentrations-at-station#tab-metadata">first dataset</a> 
+              captures annual air pollutant concentrations at station, city, and national level 
+              from 36 states (EU28, BIH, ISL, LIE, MKD, MNE, SRB, SUI, TUR). 
+              The dataset assesses the population's exposure to 5 types of air pollutants: 
+              <ul style="list-style-type:circle">
+                <li>Nitrogen dioxide (NO2)</li>
+                <li>Ozone (O3)</li>
+                <li>Particulate matter < 2.5&mu;m (PM2.5) / < 10&mu;m (PM10)</li> 
+                <li>Benzo(a)pyrene (BaP)</li> 
+              </ul>
+              as measured from roughly 1,000 official monitoring stations in European 
+              cities over several years (depending on station) until 2012. Data for 2013 was provided in a separate data file. 
+              The stationary dataset consists of roughly 50,000 records.</li>
+          <li>The <a href="http://www.eea.europa.eu/data-and-maps/data/national-emissions-reported-to-the-convention-on-long-range-transboundary-air-pollution-lrtap-convention-10#tab-metadata">second dataset</a> 
+              captures national annual emissions reported to the convention 
+              on long-range transboundary air pollution by 31 states (EU28, ISL, NOR, SUI). 
+              The dataset breaks down emissions in terms of pollutants,including NO2, PM2.5, PM10 (but not O3 and BaP), 
+              as well as sectors such as transport, residential, agriculture and natural emissions
+              for the years 1990 - 2014. The dataset consists of over 3 million records.</li>
+          <li>In addition to that, we loaded <a href="http://ec.europa.eu/eurostat/web/cities/data/database">annual population data</a> for the national and city level.</li>
+        </ol>
+      
+			  <!--
         <?php
           // Emission data
-          $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT'";
-          $title = "PM10 emission in AT (sector 1A3ai(i))";
-          query_and_print_graph($query,$title,"Gg");
+          //$query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT'";
+          //$title = "PM10 emission in AT (sector 1A3ai(i))";
+          //query_and_print_graph($query,$title,"Gg");
         ?>			
-			  <p>TBD</p>
+        -->
 
 			  <h3>The findings</h3>
 			  <p>TBD</p>

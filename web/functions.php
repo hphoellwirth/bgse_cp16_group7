@@ -1,20 +1,17 @@
 <?php
 
 // list of approved AJAX function calls
-$approved_functions = array('query_and_return_json', 
-                            'query_ctry_pollutants',
+$approved_functions = array('query_ctry_pollutants',
                             'query_city_map',
                             'query_ctry_no2',
                             'query_ctry_o3',
                             'query_ctry_pm10',
                             'query_ctry_pm2_5',
-                            'query_population');
+                            'query_population',
+                            'query_emission');
 
 $func = (isset($_GET['function']) ? $_GET['function'] : null);
-
-// check the $_GET['function'] and see if it matches an approved function
 if(in_array($func, $approved_functions)) {
-    // call the approved function
     $func();
 }
 
@@ -33,6 +30,7 @@ function connect_to_db() {
     return $link;  
 }
 
+
 function document_header() {
     $str = <<<MY_MARKER
 <link rel='stylesheet' href='files/nv.d3.css' type='text/css'>
@@ -48,8 +46,9 @@ function document_header() {
 </script>
 MY_MARKER;
     echo $str;
-}
+} 
 
+/*
 function query_and_print_table($query,$title) {
     // Perform Query
     $result = mysql_query($query);
@@ -89,9 +88,9 @@ function query_and_print_table($query,$title) {
     // Free the resources associated with the result set
     // This is done automatically at the end of the script
     mysql_free_result($result);
-}
+} */
 
-
+/*
 function query_and_print_graph($query,$title,$ylabel) {
     $id = "graph" . $GLOBALS['graphid'];
     $GLOBALS['graphid'] = $GLOBALS['graphid'] + 1;
@@ -147,8 +146,9 @@ MY_MARKER;
     $str = $str . '] } ] }</script>';
     echo $str;
 
-}
+} */
 
+/*
 function query_and_print_series($query,$title,$label) {
     $id = "graph" . $GLOBALS['graphid'];
     $GLOBALS['graphid'] = $GLOBALS['graphid'] + 1;
@@ -225,7 +225,7 @@ MY_MARKER;
 
     echo $str;
 
-}
+} */
 
 // Query all countries for dropdown menu
 function query_countries($site) {
@@ -508,6 +508,43 @@ function query_population() {
     }
 }
 
+// graph of emissions for given country
+function query_emission() {
+
+    if (isset($_POST["countryID"])) {
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, emission, emission1A3 FROM airpollution.emissionView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'total', 'type' => 'number'),
+        array('label' => 'transport', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['emission']);
+        $temp[] = array('v' => (double) $row['emission1A3']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
 function query_ctry_pollutants() {
 
     if (isset($_POST["countryID"])) {
@@ -548,6 +585,7 @@ function query_ctry_pollutants() {
     }
 }
 
+/*
 function query_and_return_json() {
 
     if (isset($_POST["countryID"])) {
@@ -582,7 +620,7 @@ function query_and_return_json() {
       $jsonTable = json_encode($table);    
       echo $jsonTable;
     }
-}
+} */
 
 
 

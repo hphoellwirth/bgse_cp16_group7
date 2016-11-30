@@ -23,6 +23,8 @@
   </div>
   
   <h3>Emissions</h3>
+  <div id="chart_emission" style="float: left;"></div>
+  
   <h3>Population</h3>
   <div id="chart_population" style="float: left;"></div>
 
