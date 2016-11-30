@@ -14,8 +14,9 @@ The project sources are organized in the following folder structure:
 TBD
 
 ### TODO list
-- [ ] Interpolate missing years in population data (new script)
 - [ ] Add missing geo data (roughly 300 cities) with DML script
+- [ ] Add mySQL function to replace UNICODE characters in cityNames for geo mapping
+- [ ] Check why some cities (eg London) have different city code in population data
 
 ### Required packages
 
