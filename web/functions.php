@@ -518,7 +518,7 @@ function query_emission() {
       connect_to_db(); 
     
       // perform query
-      $query = "SELECT year, emission, emission1A3 FROM airpollution.emissionView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
+      $query = "SELECT year, emission, emission1A3, emission1Ax, emission1B, emission2, emission3, emission5 FROM airpollution.emissionView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
       $result = mysql_query($query);
       
       //create an array  
@@ -526,7 +526,12 @@ function query_emission() {
       $table['cols'] = array(  
         array('label' => 'year', 'type' => 'string'),
         array('label' => 'total', 'type' => 'number'),
-        array('label' => 'transport', 'type' => 'number')
+        array('label' => 'transport', 'type' => 'number'),
+        array('label' => 'heating/combustion', 'type' => 'number'),
+        array('label' => 'energy production', 'type' => 'number'),
+        array('label' => 'production industry', 'type' => 'number'),
+        array('label' => 'agriculture', 'type' => 'number'),
+        array('label' => 'waste', 'type' => 'number')
       );
 
       $rows = array();
@@ -535,6 +540,11 @@ function query_emission() {
         $temp[] = array('v' => (string) $row['year']); 
         $temp[] = array('v' => (double) $row['emission']);
         $temp[] = array('v' => (double) $row['emission1A3']);
+        $temp[] = array('v' => (double) $row['emission1Ax']);
+        $temp[] = array('v' => (double) $row['emission1B']);
+        $temp[] = array('v' => (double) $row['emission2']);
+        $temp[] = array('v' => (double) $row['emission3']);
+        $temp[] = array('v' => (double) $row['emission5']);
         $rows[] = array('c' => $temp);    
       }
     
@@ -545,6 +555,7 @@ function query_emission() {
     }
 }
 
+/*
 function query_ctry_pollutants() {
 
     if (isset($_POST["countryID"])) {
@@ -583,7 +594,7 @@ function query_ctry_pollutants() {
       $jsonTable = json_encode($table);    
       echo $jsonTable;
     }
-}
+} */
 
 /*
 function query_and_return_json() {

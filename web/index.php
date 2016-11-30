@@ -341,8 +341,8 @@
     // update header in section upon country selection
     function updateHeader(prefix, countryName) {
       var header, button;
-      header = document.getElementById(prefix.concat("H2"));
-      header.innerText = countryName; 
+      //header = document.getElementById(prefix.concat("H2"));
+      //header.innerText = countryName; 
       button = document.getElementById(prefix.concat("CtryButton"));
       button.innerText = countryName;             
     }
@@ -490,10 +490,10 @@
               from 36 states (EU28, BIH, ISL, LIE, MKD, MNE, SRB, SUI, TUR). 
               The dataset assesses the population's exposure to 5 types of air pollutants: 
               <ul style="list-style-type:circle">
-                <li>Nitrogen dioxide (NO2)</li>
-                <li>Ozone (O3)</li>
-                <li>Particulate matter < 2.5&mu;m (PM2.5) / < 10&mu;m (PM10)</li> 
-                <li>Benzo(a)pyrene (BaP)</li> 
+                <li>Nitrogen dioxide (<b>NO2</b>)</li>
+                <li>Ozone (<b>O3</b>)</li>
+                <li>Particulate matter < 2.5&mu;m (<b>PM2.5</b>) / < 10&mu;m (<b>PM10</b>)</li> 
+                <li>Benzo(a)pyrene (<b>BaP</b>)</li> 
               </ul>
               as measured from roughly 1,000 official monitoring stations in European 
               cities over several years (depending on station) until 2012. Data for 2013 was provided in a separate data file. 

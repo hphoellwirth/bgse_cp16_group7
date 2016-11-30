@@ -9,6 +9,26 @@ use airpollution;
 /*******************************/
 /* Add sector parent structure */
 /*******************************/
+-- add missing parent nodes
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('11', 'Natural emissions', null, false);
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('1Ax', 'Heating/combustion', null, false);
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('1B', 'Energy production', null, false);
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('2', 'Production industry', null, false);
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('3', 'Agriculture', null, false);
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('5', 'Waste', null, false);  
+
+-- natural emissions
+update sector set parentID = '11' where sectorID = '11A';
+update sector set parentID = '11' where sectorID = '11B';
+update sector set parentID = '11' where sectorID = '11C';
+
+-- transport
 update sector set parentID = '1A3' where sectorID = '1A3ai(i)';
 update sector set parentID = '1A3' where sectorID = '1A3ai(ii)';
 update sector set parentID = '1A3' where sectorID = '1A3aii(i)';
@@ -25,6 +45,128 @@ update sector set parentID = '1A3' where sectorID = '1A3di(ii)';
 update sector set parentID = '1A3' where sectorID = '1A3dii';
 update sector set parentID = '1A3' where sectorID = '1A3ei';
 update sector set parentID = '1A3' where sectorID = '1A3eii';
+
+-- heating/combustion
+update sector set parentID = '1Ax' where sectorID = '1A1a';
+update sector set parentID = '1Ax' where sectorID = '1A1b';
+update sector set parentID = '1Ax' where sectorID = '1A1c';
+update sector set parentID = '1Ax' where sectorID = '1A2a';
+update sector set parentID = '1Ax' where sectorID = '1A1b';
+update sector set parentID = '1Ax' where sectorID = '1A1c';
+update sector set parentID = '1Ax' where sectorID = '1A1d';
+update sector set parentID = '1Ax' where sectorID = '1A1e';
+update sector set parentID = '1Ax' where sectorID = '1A1f';
+update sector set parentID = '1Ax' where sectorID = '1A2gvii';
+update sector set parentID = '1Ax' where sectorID = '1A2gviii';
+update sector set parentID = '1Ax' where sectorID = '1A4ai';
+update sector set parentID = '1Ax' where sectorID = '1A4aii';
+update sector set parentID = '1Ax' where sectorID = '1A4bi';
+update sector set parentID = '1Ax' where sectorID = '1A4bii';
+update sector set parentID = '1Ax' where sectorID = '1A4ci';
+update sector set parentID = '1Ax' where sectorID = '1A4cii';
+update sector set parentID = '1Ax' where sectorID = '1A4ciii';
+update sector set parentID = '1Ax' where sectorID = '1A5a';
+update sector set parentID = '1Ax' where sectorID = '1A5b';
+update sector set parentID = '1Ax' where sectorID = '1A5c';
+
+-- energy production
+update sector set parentID = '1B' where sectorID = '1B1a';
+update sector set parentID = '1B' where sectorID = '1B1b';
+update sector set parentID = '1B' where sectorID = '1B1c';
+update sector set parentID = '1B' where sectorID = '1B2ai';
+update sector set parentID = '1B' where sectorID = '1B2aiv';
+update sector set parentID = '1B' where sectorID = '1B2av';
+update sector set parentID = '1B' where sectorID = '1B2b';
+update sector set parentID = '1B' where sectorID = '1B2c';
+update sector set parentID = '1B' where sectorID = '1B2d';
+
+-- production industry
+update sector set parentID = '2' where sectorID = '2A1';
+update sector set parentID = '2' where sectorID = '2A2';
+update sector set parentID = '2' where sectorID = '2A3';
+update sector set parentID = '2' where sectorID = '2A5a';
+update sector set parentID = '2' where sectorID = '2A5b';
+update sector set parentID = '2' where sectorID = '2A5c';
+update sector set parentID = '2' where sectorID = '2A6';
+update sector set parentID = '2' where sectorID = '2B1';
+update sector set parentID = '2' where sectorID = '2B10a';
+update sector set parentID = '2' where sectorID = '2B10b';
+update sector set parentID = '2' where sectorID = '2B2';
+update sector set parentID = '2' where sectorID = '2B3';
+update sector set parentID = '2' where sectorID = '2B5';
+update sector set parentID = '2' where sectorID = '2B6';
+update sector set parentID = '2' where sectorID = '2B7';
+update sector set parentID = '2' where sectorID = '2C1';
+update sector set parentID = '2' where sectorID = '2C2';
+update sector set parentID = '2' where sectorID = '2C3';
+update sector set parentID = '2' where sectorID = '2C4';
+update sector set parentID = '2' where sectorID = '2C5';
+update sector set parentID = '2' where sectorID = '2C6';
+update sector set parentID = '2' where sectorID = '2C7a';
+update sector set parentID = '2' where sectorID = '2C7b';
+update sector set parentID = '2' where sectorID = '2C7c';
+update sector set parentID = '2' where sectorID = '2C7d';
+update sector set parentID = '2' where sectorID = '2D3a';
+update sector set parentID = '2' where sectorID = '2D3b';
+update sector set parentID = '2' where sectorID = '2D3c';
+update sector set parentID = '2' where sectorID = '2D3d';
+update sector set parentID = '2' where sectorID = '2D3e';
+update sector set parentID = '2' where sectorID = '2D3f';
+update sector set parentID = '2' where sectorID = '2D3g';
+update sector set parentID = '2' where sectorID = '2D3h';
+update sector set parentID = '2' where sectorID = '2D3i';
+update sector set parentID = '2' where sectorID = '2G';
+update sector set parentID = '2' where sectorID = '2H1';
+update sector set parentID = '2' where sectorID = '2H2';
+update sector set parentID = '2' where sectorID = '2H3';
+update sector set parentID = '2' where sectorID = '2I';
+update sector set parentID = '2' where sectorID = '2K';
+update sector set parentID = '2' where sectorID = '2L';
+
+-- agriculture
+update sector set parentID = '3' where sectorID = '3B1a';
+update sector set parentID = '3' where sectorID = '3B1b';
+update sector set parentID = '3' where sectorID = '3B2';
+update sector set parentID = '3' where sectorID = '3B3';
+update sector set parentID = '3' where sectorID = '3B4a';
+update sector set parentID = '3' where sectorID = '3B4d';
+update sector set parentID = '3' where sectorID = '3B4e';
+update sector set parentID = '3' where sectorID = '3B4f';
+update sector set parentID = '3' where sectorID = '3B4gi';
+update sector set parentID = '3' where sectorID = '3B4gii';
+update sector set parentID = '3' where sectorID = '3B4giii';
+update sector set parentID = '3' where sectorID = '3B4giv';
+update sector set parentID = '3' where sectorID = '3Da1';
+update sector set parentID = '3' where sectorID = '3Da2a';
+update sector set parentID = '3' where sectorID = '3Da2b';
+update sector set parentID = '3' where sectorID = '3Da2c';
+update sector set parentID = '3' where sectorID = '3Da3';
+update sector set parentID = '3' where sectorID = '3Da4';
+update sector set parentID = '3' where sectorID = '3Db';
+update sector set parentID = '3' where sectorID = '3Dc';
+update sector set parentID = '3' where sectorID = '3Dd';
+update sector set parentID = '3' where sectorID = '3De';
+update sector set parentID = '3' where sectorID = '3Df';
+update sector set parentID = '3' where sectorID = '3F';
+update sector set parentID = '3' where sectorID = '3I';
+
+-- waste
+update sector set parentID = '5' where sectorID = '5A';
+update sector set parentID = '5' where sectorID = '5B1';
+update sector set parentID = '5' where sectorID = '5B2';
+update sector set parentID = '5' where sectorID = '5C1a';
+update sector set parentID = '5' where sectorID = '5C1bi';
+update sector set parentID = '5' where sectorID = '5C1bii';
+update sector set parentID = '5' where sectorID = '5C1biii';
+update sector set parentID = '5' where sectorID = '5C1biv';
+update sector set parentID = '5' where sectorID = '5C1bv';
+update sector set parentID = '5' where sectorID = '5C1bvi';
+update sector set parentID = '5' where sectorID = '5C2';
+update sector set parentID = '5' where sectorID = '5D1';
+update sector set parentID = '5' where sectorID = '5D2';
+update sector set parentID = '5' where sectorID = '5D3';
+update sector set parentID = '5' where sectorID = '5E';
+
 
 
 /**********************************/
