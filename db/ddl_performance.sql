@@ -98,6 +98,7 @@ create view cityConcentration as
      and s.stationID = e.stationID
    group by s.cityID, e.pollutantID, e.year;
    
+   
 /************************************/
 /* Create regression analysis views */
 /************************************/
@@ -315,5 +316,12 @@ create view populationView as
              and c.cityID    = l.cityID
              and l.rank      = 3) as popCityR3
     from countryPopulation p;
-   
 
+-- view on annual national total and particular sector emissions   
+create view emissionView as
+  select countryID, pollutantID, year,
+         sum(emission) as emission,
+         sum(case when parentID = '1A3' then emission else 0 end) as emission1A3
+    from emission e, sector s
+   where e.sectorID = s.sectorID
+   group by countryID, pollutantID, year;
