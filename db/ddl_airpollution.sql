@@ -110,6 +110,7 @@ create table cityPopulation (
 create table largestCities (
   cityID     varchar(7),                           -- city code 
   countryID  varchar(2),                           -- country code  
+  rank       int(2),                               -- rank of city within country
   primary key (cityID)
 );
   

@@ -148,37 +148,60 @@ call updateTrCityID();
 /**************************************/
 DELIMITER $$
 create procedure getLargestCities (
-  kLargest int (10)
+  kLargest int(2)
 )
 begin
   declare done int default false;
+  declare cityCode varchar(7);     
   declare ctryID varchar(2);
+  declare ctryRank int(2);
+  
   declare curCountry cursor for
       select countryID
         from country;
         
-  declare continue handler for not found set done = true;        
-
-  /* loop over all countries */
-  open curCountry;
-  read_loop: loop   
-    fetch curCountry into ctryID; 
-
-    if done then
-      leave read_loop;
-    end if;
-
-    /* insert k largest cities into table largestCitis */
-    /* based on the maximum population over years */
-    insert into largestCities (cityID, countryID) 
-      select c.cityID, c.countryID
+  declare curCity cursor for
+      select c.cityID
         from cityPopulation p, city c
        where c.cityID = p.cityID
          and c.countryID = ctryID
        group by c.cityID
        order by max(p.population) desc
-       limit kLargest;  
+       limit kLargest;            
+     
+  declare continue handler for not found set done = true;   
+  
+  /* clear table */
+  delete from largestCities;     
+  
+  /* loop over all countries */
+  open curCountry;
+  ctry_loop: loop   
+    fetch curCountry into ctryID; 
 
+    if done then
+      leave ctry_loop;
+    end if;
+
+    /* insert k largest cities into table largestCitis */
+    /* based on the maximum population over years */    
+    set ctryRank = 0;
+    open curCity;
+    city_loop: loop 
+      fetch curCity into cityCode;
+      
+      if done then
+        set done = false; 
+        leave city_loop;
+      end if;      
+      
+      set ctryRank = ctryRank + 1;
+      insert into largestCities (cityID, countryID, rank)
+        values(cityCode, ctryID, ctryRank);
+      
+    end loop;
+    close curCity;
+    
   end loop;  
   close curCountry;  
 
