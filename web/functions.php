@@ -7,7 +7,8 @@ $approved_functions = array('query_and_return_json',
                             'query_ctry_no2',
                             'query_ctry_o3',
                             'query_ctry_pm10',
-                            'query_ctry_pm2_5');
+                            'query_ctry_pm2_5',
+                            'query_population');
 
 $func = (isset($_GET['function']) ? $_GET['function'] : null);
 
@@ -442,6 +443,61 @@ function query_ctry_pm2_5() {
         $temp[] = array('v' => (string) $row['year']); 
         $temp[] = array('v' => (double) $row['lPM2_5']);
         $temp[] = array('v' => (double) $row['cPM2_5']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+function query_cityName($countryID, $rank) {
+
+    //open connection to database
+    connect_to_db();
+
+    // perform query
+    $query = "SELECT CONVERT(cityName USING ascii) as cityName FROM airpollution.largestCities l, airpollution.city c WHERE l.cityID = c.cityID AND l.countryID = '" . $countryID . "' AND rank = " . $rank;
+    $result = mysql_query($query);
+    
+    $row = mysql_fetch_array($result);
+    return $row['cityName'];
+    
+}
+
+// graph of population for given country
+function query_population() {
+
+    if (isset($_POST["countryID"])) {
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, population, popCityR1, popCityR2, popCityR3 FROM airpollution.populationView WHERE countryID = '" . $countryID . "' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'national', 'type' => 'number'),
+        array('label' => query_cityName($countryID, 1), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 2), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 3), 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['population']);
+        $temp[] = array('v' => (double) $row['popCityR1']);
+        $temp[] = array('v' => (double) $row['popCityR2']);
+        $temp[] = array('v' => (double) $row['popCityR3']);
         $rows[] = array('c' => $temp);    
       }
     

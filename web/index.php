@@ -196,7 +196,36 @@
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_pm2_5'));
       chart.draw(data, options);
-    }      
+    }  
+    
+    // draw population chart for specific country
+    function drawPopulationChart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_population",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'National and large city populations',
+          legend: 'none',
+          width: 550,
+          height: 300, 
+          series: {0:{targetAxisIndex:0},
+                   1:{targetAxisIndex:1},
+                   2:{targetAxisIndex:1},
+                   3:{targetAxisIndex:1}
+                  },                   
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_population'));
+      chart.draw(data, options);
+    }        
     
     function drawPieChart(countryID) {
       var jsonData = $.ajax({
@@ -302,6 +331,7 @@
         drawO3Chart(countryID);
         drawPM10Chart(countryID);
         drawPM25Chart(countryID);
+        drawPopulationChart(countryID);
       } else { 
         drawPieChart(countryID);
       }
@@ -395,7 +425,8 @@
       drawNO2Chart('ES');
       drawO3Chart('ES');
       drawPM10Chart('ES');
-      drawPM25Chart('ES');      
+      drawPM25Chart('ES');   
+      drawPopulationChart('ES');   
     }   
   </script>   
   

@@ -24,6 +24,7 @@
   
   <h3>Emissions</h3>
   <h3>Population</h3>
+  <div id="chart_population" style="float: left;"></div>
 
 </div>	
 <?php?>

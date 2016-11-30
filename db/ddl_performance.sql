@@ -246,7 +246,16 @@ create view countryPollutantFactor as
 
 /**************************/
 /* Create dashboard views */
-/**************************/  
+/**************************/ 
+
+-- view for geo map of city concentrations
+create view cityGeoMap as
+  select cityId, cityName, latitude, longitude, year, pollutantID, concentration
+    from cityConcentration
+   where latitude is not null
+     and longitude is not null
+     and cityName not rlike '[^\x00-\x7F]'; -- TBD: replace unicode characters with new function
+      
 create view countryConcentrations as
   select countryID,
          year,
@@ -274,16 +283,37 @@ create view cityConcentrations as
          (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'NO2') as cNO2,
          (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'O3') as cO3,
          (select concentration from cityConcentration s where s.cityID = c.cityID and s.year = c.year and s.pollutantID = 'BaP') as cBaP 
-    from cityConcentration c;
-    
-create view cityGeoMap as
-  select cityId, cityName, latitude, longitude, year, pollutantID, concentration
-    from cityConcentration
-   where latitude is not null
-     and longitude is not null
-     and cityName not rlike '[^\x00-\x7F]';
-  
-    
+    from cityConcentration c
+   where cityID in (select l.cityID
+                      from largestCities l
+                     where l.countryID = c.countryID);
 
-
+-- view on national and countries' largest cities population    
+create view populationView as
+  select countryID, year, population,
+         (select cityName
+            from city c, largestCities l
+           where l.countryID = p.countryID
+             and city.cityID = largestCities.cityID
+             and l.rank      = 1) as R1CityName,
+         (select population
+            from cityPopulation c, largestCities l
+           where l.countryID = p.countryID
+             and c.year      = p.year
+             and c.cityID    = l.cityID
+             and l.rank      = 1) as R1CityPop,
+         (select population
+            from cityPopulation c, largestCities l
+           where l.countryID = p.countryID
+             and c.year      = p.year
+             and c.cityID    = l.cityID
+             and l.rank      = 2) as popCityR2,
+         (select population
+            from cityPopulation c, largestCities l
+           where l.countryID = p.countryID
+             and c.year      = p.year
+             and c.cityID    = l.cityID
+             and l.rank      = 3) as popCityR3
+    from countryPopulation p;
+   
 
