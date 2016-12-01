@@ -251,6 +251,31 @@
       var chart = new google.visualization.LineChart(document.getElementById('chart_emission'));
       chart.draw(data, options);
     }         
+ 
+    // draw percentage of stations exceeding limit chart for specific country
+    function drawExcStationChart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_excStation",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Percentage of stations exceeding limit',
+          legend: 'none',
+          width: 550,
+          height: 300, 
+          vAxis: {format:"#%"},            
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_excStation'));
+      chart.draw(data, options);
+    }  
     
     /*
     function drawPieChart(countryID) {
@@ -357,6 +382,7 @@
         drawO3Chart(countryID);
         drawPM10Chart(countryID);
         drawPM25Chart(countryID);
+        drawExcStationChart(countryID);
         drawEmissionChart(countryID);
         drawPopulationChart(countryID);
       } else { 
@@ -453,6 +479,7 @@
       drawO3Chart('ES');
       drawPM10Chart('ES');
       drawPM25Chart('ES');   
+      drawExcStationChart('ES');
       drawEmissionChart('ES');
       drawPopulationChart('ES');   
     }   

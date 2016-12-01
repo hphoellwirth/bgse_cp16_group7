@@ -39,6 +39,7 @@ install)
 
     # 5. Create web dashboard
     echo "... setting up dashboard"
+    mysql -u $user -p$pswd < db/ddl_dashboard.sql 
     sudo mkdir -p "$target_dir/airpollution"
     sudo cp -rf web/* "$target_dir/airpollution"
 
@@ -60,7 +61,7 @@ uninstall)
 run)
 	echo "Running"
 	echo "... interpolating population data"	
-	#Rscript analysis/preInterpolatePopulation.R $user $pswd
+	Rscript analysis/preInterpolatePopulation.R $user $pswd
 	echo "... computing descriptive analysis"	
 	#Rscript analysis/descPollutantCountry.R $user $pswd
 	echo "... computing predictive analysis"

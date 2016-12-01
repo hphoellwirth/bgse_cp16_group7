@@ -8,7 +8,8 @@ $approved_functions = array('query_ctry_pollutants',
                             'query_ctry_pm10',
                             'query_ctry_pm2_5',
                             'query_population',
-                            'query_emission');
+                            'query_emission',
+                            'query_excStation');
 
 $func = (isset($_GET['function']) ? $_GET['function'] : null);
 if(in_array($func, $approved_functions)) {
@@ -545,6 +546,41 @@ function query_emission() {
         $temp[] = array('v' => (double) $row['emission2']);
         $temp[] = array('v' => (double) $row['emission3']);
         $temp[] = array('v' => (double) $row['emission5']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph showing percentage of stations exceeding limit for given country
+function query_excStation() {
+
+    if (isset($_POST["countryID"])) {
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, pctExcStations FROM airpollution.excStationView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'national', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['pctExcStations']);
         $rows[] = array('c' => $temp);    
       }
     

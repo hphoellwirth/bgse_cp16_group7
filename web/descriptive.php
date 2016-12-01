@@ -20,6 +20,7 @@
     <div id="chart_pm2_5" style="float: left;"></div>
   </div>
   
+  <div id="chart_excStation" style="float: left;"></div>
   <div id="chart_emission" style="float: left;"></div>
   <div id="chart_population" style="float: left;"></div>
 
