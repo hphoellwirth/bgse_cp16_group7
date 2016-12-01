@@ -59,7 +59,7 @@
     function updateDescHeader(pollutant, countryID) {
       var yearButton, pollutantButton;  
       daCtryButton = document.getElementById("daCtryButton");
-      daCtryButton.innerText = countryID;
+      daCtryButton.innerText = getCountryName(countryID);
       daPollutantButton = document.getElementById("daPollutantButton");
       daPollutantButton.innerText = pollutant;
     }
@@ -67,7 +67,7 @@
     // update charts and header in section upon country selection
     function selectDescCountry(countryID, countryName) {
       descCountry = countryID;
-      updateDescHeader(descPollutant, countryName);
+      updateDescHeader(descPollutant, countryID);
       showDescCountries();
       drawDescGraphs(descPollutant, countryID);
     }      

@@ -32,10 +32,44 @@
     var geoMapYear = 2013;
     var geoMapPollutant = 'NO2';
     
-    var descCountry = 'DE';
+    var descCountry = 'ES';
     var descPollutant = 'NO2';
     
-    var prescCountry = 'DE';
+    var prescCountry = 'ES';
+    
+    function getPollutantTitle(pollutantID) {
+      switch(pollutantID) {
+        case 'NO2': text = 'Nitrogen dioxide (NO2) concentration'; break;
+        case 'O3': text = 'Ozone (O3) concentration'; break;
+        case 'PM10': text = 'Particulate matter < 10 \u03BCm (PM10) concentration'; break;
+        case 'PM2.5': text = 'Particulate matter < 2.5 \u03BCm (PM2.5) concentration'; break;
+        default: text = "None";
+      }     
+      return text;
+    }
+    
+    function getPollutantUnit(pollutantID) {
+      switch(pollutantID) {
+        case 'NO2': text = 'mean \u03BCg/m3'; break;
+        case 'O3': text = 'P93.2 \u03BCg/m3'; break;
+        case 'PM10': text = 'P90.4 \u03BCg/m3'; break;
+        case 'PM2.5': text = 'mean \u03BCg/m3'; break;
+        default: text = "None";
+      }     
+      return text;
+    }    
+    
+    // get country name for button label
+    function getCountryName(countryID) {
+      var countryName = $.ajax({
+          type: "POST",     
+          data: {countryID: countryID}, 
+          url: "functions.php?function=query_countryName",
+          dataType: "text",
+          async: false         
+          }).responseText;    
+      return countryName;
+    }
     
     // draw geo map with city pollutant concentrations
     function drawMarkersMap(pollutant, year) {
@@ -67,7 +101,7 @@
       chart.draw(data, options);
     }; 
     
-    // draw percentage of stations exceeding limit chart for specific country
+    // draw pollutant concentration chart for specific country
     function drawConcentrationChart(pollutant, countryID) {
       var jsonData = $.ajax({
           type: "POST",
@@ -80,16 +114,16 @@
       var data = new google.visualization.DataTable(jsonData);
       
       var options = {
-          title: 'Nitrogen dioxide (NO2) concentration',
+          title: getPollutantTitle(pollutant),
           legend: 'none',
           width: 550,
           height: 300,
-          colors: ['red', 'blue'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
           vAxis: {minValue: 0,
-                  title: 'mean \u03BCg/m3',
-                  gridlines: {count: 6}}          
+                  title: getPollutantUnit(pollutant),
+                  gridlines: {count: 6}},
+          hAxis: {slantedText: true}          
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_concentration'));
@@ -114,9 +148,10 @@
           legend: 'none',
           width: 550,
           height: 300, 
-          vAxis: {format:"#%"},            
           crosshair: { trigger: 'both', opacity: 0.5 },
-          dataOpaque: 0.5
+          dataOpaque: 0.5,          
+          vAxis: {format:"#%"},  
+          hAxis: {slantedText: true}          
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_excStation'));
@@ -139,10 +174,11 @@
           title: 'National and sector emissions',
           legend: 'none',
           width: 550,
-          height: 300, 
-          vAxis: {title: 'Gg (1000 tonnes)'},            
+          height: 300,
           crosshair: { trigger: 'both', opacity: 0.5 },
-          dataOpaque: 0.5
+          dataOpaque: 0.5,           
+          vAxis: {title: 'Gg (1000 tonnes)'},  
+          hAxis: {slantedText: true}            
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_emission'));
@@ -171,7 +207,8 @@
                    3:{targetAxisIndex:1}
                   },                   
           crosshair: { trigger: 'both', opacity: 0.5 },
-          dataOpaque: 0.5
+          dataOpaque: 0.5,
+          hAxis: {slantedText: true} 
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_population'));
@@ -199,7 +236,8 @@
           dataOpaque: 0.5,
           vAxis: {minValue: 0,
                   title: 'mean \u03BCg/m3',
-                  gridlines: {count: 6}}          
+                  gridlines: {count: 6}},
+          hAxis: {slantedText: true}                    
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_no2'));
@@ -227,7 +265,8 @@
           dataOpaque: 0.5,
           vAxis: {minValue: 0, 
                   title: 'P93.2 \u03BCg/m3',
-                  gridlines: {count: 6}}           
+                  gridlines: {count: 6}},
+          hAxis: {slantedText: true}                     
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_o3'));
@@ -255,7 +294,8 @@
           dataOpaque: 0.5,
           vAxis: {minValue: 0, 
                   title: 'P90.4 \u03BCg/m3',
-                  gridlines: {count: 6}}
+                  gridlines: {count: 6}},
+          hAxis: {slantedText: true}          
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_pm10'));
@@ -283,7 +323,8 @@
           dataOpaque: 0.5,
           vAxis: {minValue: 0, 
                   title: 'mean \u03BCg/m3',
-                  gridlines: {count: 6}}
+                  gridlines: {count: 6}},
+          hAxis: {slantedText: true}          
       };
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_pm2_5'));

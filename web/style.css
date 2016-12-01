@@ -267,13 +267,15 @@ div#chart_excStation path:nth-child(2) {stroke:rgba(210, 105, 30, 0.3) !importan
 div#chart_excStation path:nth-child(3) {stroke:rgba(169, 169, 169, 0.3) !important;}
 div#chart_excStation path:nth-child(4) {stroke:rgba(0, 153, 51, 0.3) !important;}
 
-div#chart_emission path:nth-child(1) {stroke:rgba(255, 140, 0, 1.0) !important;}
-div#chart_emission path:nth-child(2) {stroke:rgba(0, 100, 0, 0.5) !important;}
-div#chart_emission path:nth-child(3) {stroke:rgba(0, 100, 0, 0.5) !important;}
-div#chart_emission path:nth-child(4) {stroke:rgba(0, 100, 0, 0.5) !important;}
-div#chart_emission path:nth-child(5) {stroke:rgba(0, 100, 0, 0.5) !important;}
-div#chart_emission path:nth-child(6) {stroke:rgba(0, 100, 0, 0.5) !important;}
-div#chart_emission path:nth-child(7) {stroke:rgba(0, 100, 0, 0.5) !important;}
+div#chart_emission path:nth-child(1) {stroke:rgba(128, 0, 128, 1.0) !important;}
+div#chart_emission path:nth-child(2) {stroke:rgba(200, 0, 0, 0.5) !important;}
+div#chart_emission path:nth-child(3) {stroke:rgba(200, 0, 0, 0.5) !important;}
+div#chart_emission path:nth-child(4) {stroke:rgba(200, 0, 0, 0.5) !important;}
+div#chart_emission path:nth-child(5) {stroke:rgba(200, 0, 0, 0.5) !important;}
+div#chart_emission path:nth-child(6) {stroke:rgba(200, 0, 0, 0.5) !important;}
+div#chart_emission path:nth-child(7) {stroke:rgba(200, 0, 0, 0.5) !important;}
+div#chart_emission path:nth-child(8) {stroke:rgba(200, 0, 0, 0.5) !important;}
+div#chart_emission path:nth-child(9) {stroke:rgba(200, 0, 0, 0.5) !important;}
 
 div#chart_population path:nth-child(1) {stroke:rgba(0, 0, 255, 1.0) !important;}
 div#chart_population path:nth-child(2) {stroke:rgba(210, 105, 30, 0.5) !important;}

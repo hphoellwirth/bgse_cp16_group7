@@ -36,16 +36,16 @@
     }   
     
     // update header in section upon country selection
-    function updatePrescHeader(countryName) {
+    function updatePrescHeader(countryID) {
       var button;
       button = document.getElementById("paCtryButton");
-      button.innerText = countryName;             
+      button.innerText = getCountryName(countryID);             
     }
     
     // update charts and header in section upon country selection
     function selectPrescCountry(countryID, countryName) {
       prescCountry = countryID;
-      updatePrescHeader(countryName);
+      updatePrescHeader(countryID);
       showPrescCountries();
       
       drawNO2Chart(countryID);
