@@ -117,6 +117,8 @@ create view emissionView as
   select countryID, pollutantID, year,
          sum(emission) as emission,
          sum(case when parentID = '11' then emission else 0 end) as emission11,
+         sum(case when parentID = '1A1' then emission else 0 end) as emission1A1,
+         sum(case when parentID = '1A2' then emission else 0 end) as emission1A2,
          sum(case when parentID = '1A3' then emission else 0 end) as emission1A3,
          sum(case when parentID = '1Ax' then emission else 0 end) as emission1Ax,
          sum(case when parentID = '1B' then emission else 0 end) as emission1B,

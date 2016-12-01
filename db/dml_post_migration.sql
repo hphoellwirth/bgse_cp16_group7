@@ -13,9 +13,13 @@ use airpollution;
 insert into sector (sectorID, sectorName, parentID, treeLeaf)
   values ('11', 'Natural emissions', null, false);
 insert into sector (sectorID, sectorName, parentID, treeLeaf)
-  values ('1Ax', 'Heating/combustion', null, false);
+  values ('1A1', 'Energy production', null, false);  
 insert into sector (sectorID, sectorName, parentID, treeLeaf)
-  values ('1B', 'Energy production', null, false);
+  values ('1A2', 'Combustion', null, false);
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('1Ax', 'Commercial/residential', null, false);  
+insert into sector (sectorID, sectorName, parentID, treeLeaf)
+  values ('1B', 'Fugitive emissions', null, false);
 insert into sector (sectorID, sectorName, parentID, treeLeaf)
   values ('2', 'Production industry', null, false);
 insert into sector (sectorID, sectorName, parentID, treeLeaf)
@@ -27,6 +31,21 @@ insert into sector (sectorID, sectorName, parentID, treeLeaf)
 update sector set parentID = '11' where sectorID = '11A';
 update sector set parentID = '11' where sectorID = '11B';
 update sector set parentID = '11' where sectorID = '11C';
+
+-- energy production
+update sector set parentID = '1A1' where sectorID = '1A1a';
+update sector set parentID = '1A1' where sectorID = '1A1b';
+update sector set parentID = '1A1' where sectorID = '1A1c';
+
+-- combustion
+update sector set parentID = '1A2' where sectorID = '1A2a';
+update sector set parentID = '1A2' where sectorID = '1A2b';
+update sector set parentID = '1A2' where sectorID = '1A2c';
+update sector set parentID = '1A2' where sectorID = '1A2d';
+update sector set parentID = '1A2' where sectorID = '1A2e';
+update sector set parentID = '1A2' where sectorID = '1A2f';
+update sector set parentID = '1A2' where sectorID = '1A2gvii';
+update sector set parentID = '1A2' where sectorID = '1A2gviii';
 
 -- transport
 update sector set parentID = '1A3' where sectorID = '1A3ai(i)';
@@ -46,18 +65,7 @@ update sector set parentID = '1A3' where sectorID = '1A3dii';
 update sector set parentID = '1A3' where sectorID = '1A3ei';
 update sector set parentID = '1A3' where sectorID = '1A3eii';
 
--- heating/combustion
-update sector set parentID = '1Ax' where sectorID = '1A1a';
-update sector set parentID = '1Ax' where sectorID = '1A1b';
-update sector set parentID = '1Ax' where sectorID = '1A1c';
-update sector set parentID = '1Ax' where sectorID = '1A2a';
-update sector set parentID = '1Ax' where sectorID = '1A1b';
-update sector set parentID = '1Ax' where sectorID = '1A1c';
-update sector set parentID = '1Ax' where sectorID = '1A1d';
-update sector set parentID = '1Ax' where sectorID = '1A1e';
-update sector set parentID = '1Ax' where sectorID = '1A1f';
-update sector set parentID = '1Ax' where sectorID = '1A2gvii';
-update sector set parentID = '1Ax' where sectorID = '1A2gviii';
+-- other (residential)
 update sector set parentID = '1Ax' where sectorID = '1A4ai';
 update sector set parentID = '1Ax' where sectorID = '1A4aii';
 update sector set parentID = '1Ax' where sectorID = '1A4bi';
@@ -69,7 +77,7 @@ update sector set parentID = '1Ax' where sectorID = '1A5a';
 update sector set parentID = '1Ax' where sectorID = '1A5b';
 update sector set parentID = '1Ax' where sectorID = '1A5c';
 
--- energy production
+-- fugitive emissions
 update sector set parentID = '1B' where sectorID = '1B1a';
 update sector set parentID = '1B' where sectorID = '1B1b';
 update sector set parentID = '1B' where sectorID = '1B1c';
