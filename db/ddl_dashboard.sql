@@ -17,7 +17,8 @@ create view cityGeoMap as
    where latitude is not null
      and longitude is not null
      and cityName not rlike '[^\x00-\x7F]'; -- TBD: replace unicode characters with new function
-      
+
+-- obsolete      
 create view countryConcentrations as
   select countryID,
          year,
@@ -34,6 +35,7 @@ create view countryConcentrations as
     from countryConcentration c
    group by countryID, year;
 
+-- obsolete
 create view cityConcentrations as
   select countryID,
          cityID,
@@ -50,33 +52,65 @@ create view cityConcentrations as
                       from largestCities l
                      where l.countryID = c.countryID);
 
--- view on national and countries' largest cities population    
-create view populationView as
-  select countryID, year, population,
-         (select cityName
-            from city c, largestCities l
-           where l.countryID = p.countryID
-             and city.cityID = largestCities.cityID
-             and l.rank      = 1) as R1CityName,
-         (select population
-            from cityPopulation c, largestCities l
-           where l.countryID = p.countryID
-             and c.year      = p.year
-             and c.cityID    = l.cityID
-             and l.rank      = 1) as R1CityPop,
-         (select population
-            from cityPopulation c, largestCities l
-           where l.countryID = p.countryID
-             and c.year      = p.year
-             and c.cityID    = l.cityID
-             and l.rank      = 2) as popCityR2,
-         (select population
-            from cityPopulation c, largestCities l
-           where l.countryID = p.countryID
-             and c.year      = p.year
-             and c.cityID    = l.cityID
-             and l.rank      = 3) as popCityR3
-    from countryPopulation p;
+-- view annual national concentration level averages    
+create view concentrationView as
+  select countryID,
+         pollutantID,
+         year,
+         concentration,
+         (select limitConc 
+            from pollutant p 
+           where p.pollutantID = n.pollutantID) as cLimit,          
+         (select concentration
+            from cityConcentration c, largestCities l
+           where l.countryID   = n.countryID
+             and c.pollutantID = n.pollutantID
+             and c.year        = n.year
+             and c.cityID      = l.cityID
+             and l.rank        = 1) as concCityR1,
+         (select concentration
+            from cityConcentration c, largestCities l
+           where l.countryID   = n.countryID
+             and c.pollutantID = n.pollutantID
+             and c.year        = n.year
+             and c.cityID      = l.cityID
+             and l.rank        = 2) as concCityR2,
+         (select concentration
+            from cityConcentration c, largestCities l
+           where l.countryID   = n.countryID
+             and c.pollutantID = n.pollutantID
+             and c.year        = n.year
+             and c.cityID      = l.cityID
+             and l.rank        = 3) as concCityR3                          
+    from countryConcentration n
+   group by countryID, pollutantID, year;
+
+-- view on percentage of stations exceeding limit on average in a year
+create view excStationView as   
+  select countryID, pollutantID, year,
+         (case when totStations = 0 then 0 else (excStations/totStations) end) as pctExcStations,
+         (select (case when c.totStations = 0 then 0 else (c.excStations/c.totStations) end)
+            from cityConcentration c, largestCities l
+           where l.countryID   = n.countryID
+             and c.pollutantID = n.pollutantID
+             and c.year        = n.year
+             and c.cityID      = l.cityID
+             and l.rank        = 1) as pctExcCityR1,
+         (select (case when c.totStations = 0 then 0 else (c.excStations/c.totStations) end)
+            from cityConcentration c, largestCities l
+           where l.countryID   = n.countryID
+             and c.pollutantID = n.pollutantID
+             and c.year        = n.year
+             and c.cityID      = l.cityID
+             and l.rank        = 2) as pctExcCityR2,
+         (select (case when c.totStations = 0 then 0 else (c.excStations/c.totStations) end)
+            from cityConcentration c, largestCities l
+           where l.countryID   = n.countryID
+             and c.pollutantID = n.pollutantID
+             and c.year        = n.year
+             and c.cityID      = l.cityID
+             and l.rank        = 3) as pctExcCityR3                                      
+    from countryConcentration n; 
 
 -- view on annual national total and particular sector emissions   
 create view emissionView as
@@ -93,21 +127,31 @@ create view emissionView as
    where e.sectorID = s.sectorID
    group by countryID, pollutantID, year;
 
--- view on percentage of stations exceeding limit on average in a year
-create view excStationView as   
-  select countryID, pollutantID, year,
-         (case when totStations = 0 then 0 else (excStations/totStations) end) as pctExcStations
-    from countryConcentration; 
+-- view on national and countries' largest cities population    
+create view populationView as
+  select countryID, year, population,
+         (select population
+            from cityPopulation c, largestCities l
+           where l.countryID = p.countryID
+             and c.year      = p.year
+             and c.cityID    = l.cityID
+             and l.rank      = 1) as popCityR1,
+         (select population
+            from cityPopulation c, largestCities l
+           where l.countryID = p.countryID
+             and c.year      = p.year
+             and c.cityID    = l.cityID
+             and l.rank      = 2) as popCityR2,
+         (select population
+            from cityPopulation c, largestCities l
+           where l.countryID = p.countryID
+             and c.year      = p.year
+             and c.cityID    = l.cityID
+             and l.rank      = 3) as popCityR3
+    from countryPopulation p;
 
--- view annual national concentration level averages    
-create view concentrationView as
-  select countryID,
-         pollutantID,
-         year,
-         (select concentration from countryConcentration s where s.countryID = c.countryID and s.year = c.year and s.pollutantID = c.pollutantID) as concentration, 
-         (select limitConc from pollutant p where p.pollutantID = c.pollutantID) as cLimit
-    from countryConcentration c
-   group by countryID, pollutantID, year;
+   
+
    
    
    

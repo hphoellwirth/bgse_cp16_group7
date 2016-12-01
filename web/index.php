@@ -32,6 +32,11 @@
     var geoMapYear = 2013;
     var geoMapPollutant = 'NO2';
     
+    var descCountry = 'DE';
+    var descPollutant = 'NO2';
+    
+    var prescCountry = 'DE';
+    
     // draw geo map with city pollutant concentrations
     function drawMarkersMap(pollutant, year) {
       var jsonData = $.ajax({
@@ -52,39 +57,126 @@
       */
 
       var options = {
-        //sizeAxis: { minValue: 0, maxValue: 100 },
         region: '150', // Europe
         width: 1100,
         displayMode: 'markers',
-        colorAxis: {colors: ['green', 'red']} // orange to blue
-        //colorAxis: {colors: ['#e7711c', '#4374e0']} // orange to blue
+        colorAxis: {colors: ['green', 'red']} // green to red
       };
 
       var chart = new google.visualization.GeoChart(document.getElementById('chart_map'));
       chart.draw(data, options);
-    };    
+    }; 
     
-    /*
-    function drawLineChart(countryID) {
+    // draw percentage of stations exceeding limit chart for specific country
+    function drawConcentrationChart(pollutant, countryID) {
       var jsonData = $.ajax({
           type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_ctry_pollutants",
+          data: {pollutant: pollutant,
+                 countryID: countryID},      
+          url: "functions.php?function=query_concentration",
           dataType: "json",
           async: false         
           }).responseText;
       var data = new google.visualization.DataTable(jsonData);
       
       var options = {
-          title: 'Pollutant concentration',
-          curveType: 'function',
-          legend: { position: 'bottom' }
+          title: 'Nitrogen dioxide (NO2) concentration',
+          legend: 'none',
+          width: 550,
+          height: 300,
+          colors: ['red', 'blue'],
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5,
+          vAxis: {minValue: 0,
+                  title: 'mean \u03BCg/m3',
+                  gridlines: {count: 6}}          
       };
 
-      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      var chart = new google.visualization.LineChart(document.getElementById('chart_concentration'));
+      chart.draw(data, options);
+    }  
+    
+ 
+    // draw percentage of stations exceeding limit chart for specific country
+    function drawExcStationChart(pollutant, countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {pollutant: pollutant,
+                 countryID: countryID},        
+          url: "functions.php?function=query_excStation",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Percentage of stations exceeding limit',
+          legend: 'none',
+          width: 550,
+          height: 300, 
+          vAxis: {format:"#%"},            
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_excStation'));
       chart.draw(data, options);
     }
-    */
+    
+    // draw emission chart for specific country
+    function drawEmissionChart(pollutant, countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {pollutant: pollutant,
+                 countryID: countryID},         
+          url: "functions.php?function=query_emission",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'National and sector emissions',
+          legend: 'none',
+          width: 550,
+          height: 300, 
+          vAxis: {title: 'Gg (1000 tonnes)'},            
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_emission'));
+      chart.draw(data, options);
+    } 
+    
+    // draw population chart for specific country
+    function drawPopulationChart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_population",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'National and large city populations',
+          legend: 'none',
+          width: 550,
+          height: 300, 
+          series: {0:{targetAxisIndex:0},
+                   1:{targetAxisIndex:1},
+                   2:{targetAxisIndex:1},
+                   3:{targetAxisIndex:1}
+                  },                   
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_population'));
+      chart.draw(data, options);
+    }                  
     
     // draw NO2 pollutant chart for specific country
     function drawNO2Chart(countryID) {
@@ -196,114 +288,29 @@
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_pm2_5'));
       chart.draw(data, options);
-    }  
-    
-    // draw population chart for specific country
-    function drawPopulationChart(countryID) {
+    }                 
+
+    /*
+    function drawLineChart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
           data: {countryID: countryID},      
-          url: "functions.php?function=query_population",
+          url: "functions.php?function=query_ctry_pollutants",
           dataType: "json",
           async: false         
           }).responseText;
       var data = new google.visualization.DataTable(jsonData);
       
       var options = {
-          title: 'National and large city populations',
-          legend: 'none',
-          width: 550,
-          height: 300, 
-          series: {0:{targetAxisIndex:0},
-                   1:{targetAxisIndex:1},
-                   2:{targetAxisIndex:1},
-                   3:{targetAxisIndex:1}
-                  },                   
-          crosshair: { trigger: 'both', opacity: 0.5 },
-          dataOpaque: 0.5
+          title: 'Pollutant concentration',
+          curveType: 'function',
+          legend: { position: 'bottom' }
       };
 
-      var chart = new google.visualization.LineChart(document.getElementById('chart_population'));
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
       chart.draw(data, options);
-    }     
-    
-    // draw emission chart for specific country
-    function drawEmissionChart(countryID) {
-      var jsonData = $.ajax({
-          type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_emission",
-          dataType: "json",
-          async: false         
-          }).responseText;
-      var data = new google.visualization.DataTable(jsonData);
-      
-      var options = {
-          title: 'National and sector emissions',
-          legend: 'none',
-          width: 550,
-          height: 300, 
-          vAxis: {title: 'Gg (1000 tonnes)'},            
-          crosshair: { trigger: 'both', opacity: 0.5 },
-          dataOpaque: 0.5
-      };
-
-      var chart = new google.visualization.LineChart(document.getElementById('chart_emission'));
-      chart.draw(data, options);
-    }         
- 
-    // draw percentage of stations exceeding limit chart for specific country
-    function drawExcStationChart(countryID) {
-      var jsonData = $.ajax({
-          type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_excStation",
-          dataType: "json",
-          async: false         
-          }).responseText;
-      var data = new google.visualization.DataTable(jsonData);
-      
-      var options = {
-          title: 'Percentage of stations exceeding limit',
-          legend: 'none',
-          width: 550,
-          height: 300, 
-          vAxis: {format:"#%"},            
-          crosshair: { trigger: 'both', opacity: 0.5 },
-          dataOpaque: 0.5
-      };
-
-      var chart = new google.visualization.LineChart(document.getElementById('chart_excStation'));
-      chart.draw(data, options);
-    }  
-
-    // draw percentage of stations exceeding limit chart for specific country
-    function drawConcentrationChart(countryID) {
-      var jsonData = $.ajax({
-          type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_concentration",
-          dataType: "json",
-          async: false         
-          }).responseText;
-      var data = new google.visualization.DataTable(jsonData);
-      
-      var options = {
-          title: 'Nitrogen dioxide (NO2) concentration',
-          legend: 'none',
-          width: 550,
-          height: 300,
-          colors: ['red', 'blue'],
-          crosshair: { trigger: 'both', opacity: 0.5 },
-          dataOpaque: 0.5,
-          vAxis: {minValue: 0,
-                  title: 'mean \u03BCg/m3',
-                  gridlines: {count: 6}}          
-      };
-
-      var chart = new google.visualization.LineChart(document.getElementById('chart_concentration'));
-      chart.draw(data, options);
-    } 
+    }
+    */
     
     /*
     function drawPieChart(countryID) {
@@ -366,132 +373,6 @@
 	      document.getElementById(ids[i] + '_link').className = '';
 	    }
     }
-  </script>
-  
-  <!-- Country dropdown box functions --> 
-  <script>  
-    // show/hide country dropdown list
-    function showCountries(prefix) {
-      document.getElementById(prefix.concat("CtryDropdown")).classList.toggle("show");
-    }
-
-    // filter function in dropdown list
-    function filterFunction(prefix) {
-      var input, filter, ul, li, a, i;
-      input = document.getElementById(prefix.concat("Countries"));
-      filter = input.value.toUpperCase();
-      div = document.getElementById(prefix.concat("CtryDropdown"));
-      a = div.getElementsByTagName("a");
-      for (i = 0; i < a.length; i++) {
-        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
-          a[i].style.display = "";
-        } else {
-          a[i].style.display = "none";
-        }
-      }
-    }   
-    
-    // update header in section upon country selection
-    function updateHeader(prefix, countryName) {
-      var header, button;
-      //header = document.getElementById(prefix.concat("H2"));
-      //header.innerText = countryName; 
-      button = document.getElementById(prefix.concat("CtryButton"));
-      button.innerText = countryName;             
-    }
-    
-    // update charts and header in section upon country selection
-    function selectCountry(prefix, countryID, countryName) {
-      updateHeader(prefix, countryName);
-      showCountries(prefix);
-      
-      if (prefix == 'da') {
-        drawConcentrationChart(countryID);
-        drawExcStationChart(countryID);
-        drawEmissionChart(countryID);
-        drawPopulationChart(countryID);
-      } else { 
-        drawNO2Chart(countryID);
-        drawO3Chart(countryID);
-        drawPM10Chart(countryID);
-        drawPM25Chart(countryID);
-      }
-    }      
-  </script> 
-  
-  <!-- Pollutant dropdown box functions --> 
-  <script>  
-    // show/hide pollutant dropdown list
-    function showPollutants() {
-      document.getElementById("pollutantDropdown").classList.toggle("show");
-    }
-
-    // filter year function in dropdown list
-    function filterPollutants() {
-      var input, filter, ul, li, a, i;
-      input = document.getElementById("pollutantsInput");
-      filter = input.value.toUpperCase();
-      div = document.getElementById("pollutantDropdown");
-      a = div.getElementsByTagName("a");
-      for (i = 0; i < a.length; i++) {
-        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
-          a[i].style.display = "";
-        } else {
-          a[i].style.display = "none";
-        }
-      }
-    }   
-    
-    // update header in section upon year selection
-    function updateMapHeader(pollutant, year) {
-      var header, yearButton, pollutantButton;
-      header = document.getElementById("mapH2");
-      header.innerText = "City Concentration of Pollutant ".concat(pollutant, " in ", year);  
-      yearButton = document.getElementById("yearButton");
-      yearButton.innerText = year;
-      pollutantButton = document.getElementById("pollutantButton");
-      pollutantButton.innerText = pollutant;
-    }
-    
-    // update map and header in section upon year selection
-    function selectPollutant(pollutant) {
-      geoMapPollutant = pollutant;
-      updateMapHeader(pollutant, geoMapYear);
-      showPollutants();
-      drawMarkersMap(pollutant, geoMapYear);
-    }    
-  </script>   
-  
-  <!-- Year dropdown box functions --> 
-  <script>  
-    // show/hide year dropdown list
-    function showYears() {
-      document.getElementById("yearDropdown").classList.toggle("show");
-    }
-
-    // filter year function in dropdown list
-    function filterYear() {
-      var input, filter, ul, li, a, i;
-      input = document.getElementById("yearsInput");
-      filter = input.value.toUpperCase();
-      div = document.getElementById("yearDropdown");
-      a = div.getElementsByTagName("a");
-      for (i = 0; i < a.length; i++) {
-        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
-          a[i].style.display = "";
-        } else {
-          a[i].style.display = "none";
-        }
-      }
-    }   
-    
-    // update map and header in section upon year selection
-    function selectYear(year) {
-      geoMapYear = year;
-      updateMapHeader(geoMapPollutant, year);
-      showYears();
-      drawMarkersMap(geoMapPollutant, year);
-    }    
   </script>     
  
   <!-- Initialize graphs --> 
@@ -500,17 +381,20 @@
       // initialize geo map
       updateMapHeader(geoMapPollutant, geoMapYear);
       drawMarkersMap(geoMapPollutant, geoMapYear);
+
+      // initialize descriptive analysis graphs
+      updateDescHeader(descPollutant, descCountry);
+      drawConcentrationChart(descPollutant, descCountry); 
+      drawExcStationChart(descPollutant, descCountry);
+      drawEmissionChart(descPollutant, descCountry);
+      drawPopulationChart(descCountry);  
       
       // initialize concentration line graphs
-      updateHeader('da', 'Germany');
-      drawNO2Chart('DE');
-      drawO3Chart('DE');
-      drawPM10Chart('DE');
-      drawPM25Chart('DE');  
-      drawConcentrationChart('DE'); 
-      drawExcStationChart('DE');
-      drawEmissionChart('DE');
-      drawPopulationChart('DE');   
+      updatePrescHeader(prescCountry);      
+      drawNO2Chart(prescCountry);
+      drawO3Chart(prescCountry);
+      drawPM10Chart(prescCountry);
+      drawPM25Chart(prescCountry);   
     }   
   </script>   
   
@@ -523,7 +407,6 @@
 		<a id="map_link" href="#" onclick="show_content('map'); update_data_charts(); return false;">Pollutant Map</a> &middot;
 		<a id="desc_analysis_link" href="#" onclick="show_content('desc_analysis'); return false;">Descriptive Analysis</a> &middot;
 		<a id="pres_analysis_link" href="#" onclick="show_content('pres_analysis'); return false;">Prescriptive Analysis</a> 
-		<!-- <a id="pres_analysis_link" href="javascript:void(0)" onclick="myFunction()">Prescriptive Analysis</a> -->
     </div>
     
     <div id="main">

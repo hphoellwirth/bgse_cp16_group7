@@ -230,7 +230,7 @@ MY_MARKER;
 } */
 
 // Query all countries for dropdown menu
-function query_countries($site) {
+function dropdown_countries($selectFunction) {
 
     //open connection to database
     connect_to_db(); 
@@ -241,9 +241,9 @@ function query_countries($site) {
 
     // create list of countries
     while ($row = mysql_fetch_array($result)) {
-      echo "<a href='javascript:selectCountry(\""
-           . $site
-           . "\", \"" 
+      echo "<a href='javascript:"
+           . $selectFunction
+           . "(\""
            . $row['countryID'] 
            . "\", \"" 
            . $row['countryName']            
@@ -254,11 +254,13 @@ function query_countries($site) {
 }
 
 // Query years for dropdown menu
-function query_years() {
+function dropdown_years($selectFunction) {
 
     // create list of years
     for ($year = 2013; $year >= 1985; $year--) {
-      echo "<a href='javascript:selectYear(\"" 
+      echo "<a href='javascript:"
+           . $selectFunction
+           . "(\"" 
            . $year 
            . "\");'>" 
            . $year 
@@ -305,6 +307,195 @@ function query_city_map() {
       echo $jsonTable;
     }
 
+}
+
+function query_cityName($countryID, $rank) {
+
+    //open connection to database
+    connect_to_db();
+
+    // perform query
+    $query = "SELECT CONVERT(cityName USING ascii) as cityName FROM airpollution.largestCities l, airpollution.city c WHERE l.cityID = c.cityID AND l.countryID = '" . $countryID . "' AND rank = " . $rank;
+    $result = mysql_query($query);
+    
+    $row = mysql_fetch_array($result);
+    return $row['cityName'];
+    
+}
+
+// graph showing annual concentrations for given country
+function query_concentration() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, cLimit, concentration, concCityR1, concCityR2, concCityR3 FROM airpollution.concentrationView WHERE countryID = '" . $countryID . "' AND pollutantID = '" . $pollutant . "' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => query_cityName($countryID, 3), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 2), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 1), 'type' => 'number'),
+        array('label' => 'limit', 'type' => 'number'),
+        array('label' => 'national', 'type' => 'number')                
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['concCityR3']);
+        $temp[] = array('v' => (double) $row['concCityR2']);
+        $temp[] = array('v' => (double) $row['concCityR1']);
+        $temp[] = array('v' => (double) $row['cLimit']);        
+        $temp[] = array('v' => (double) $row['concentration']);        
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph showing percentage of stations exceeding limit for given country
+function query_excStation() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"];  
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, pctExcStations, pctExcCityR1, pctExcCityR2, pctExcCityR3 FROM airpollution.excStationView WHERE countryID = '" . $countryID . "' AND pollutantID = '" . $pollutant . "' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'national', 'type' => 'number'),
+        array('label' => query_cityName($countryID, 1), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 2), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 3), 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['pctExcStations']);
+        $temp[] = array('v' => (double) $row['pctExcCityR1']);
+        $temp[] = array('v' => (double) $row['pctExcCityR2']);
+        $temp[] = array('v' => (double) $row['pctExcCityR3']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph of emissions for given country
+function query_emission() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, emission, emission1A3, emission1Ax, emission1B, emission2, emission3, emission5 FROM airpollution.emissionView WHERE countryID = '" . $countryID . "' AND pollutantID = '" . $pollutant . "' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'total', 'type' => 'number'),
+        array('label' => 'transport', 'type' => 'number'),
+        array('label' => 'heating/combustion', 'type' => 'number'),
+        array('label' => 'energy production', 'type' => 'number'),
+        array('label' => 'production industry', 'type' => 'number'),
+        array('label' => 'agriculture', 'type' => 'number'),
+        array('label' => 'waste', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['emission']);
+        $temp[] = array('v' => (double) $row['emission1A3']);
+        $temp[] = array('v' => (double) $row['emission1Ax']);
+        $temp[] = array('v' => (double) $row['emission1B']);
+        $temp[] = array('v' => (double) $row['emission2']);
+        $temp[] = array('v' => (double) $row['emission3']);
+        $temp[] = array('v' => (double) $row['emission5']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph of population for given country
+function query_population() {
+
+    if (isset($_POST["countryID"])) {
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, population, popCityR1, popCityR2, popCityR3 FROM airpollution.populationView WHERE countryID = '" . $countryID . "' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'national', 'type' => 'number'),
+        array('label' => query_cityName($countryID, 1), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 2), 'type' => 'number'),
+        array('label' => query_cityName($countryID, 3), 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['population']);
+        $temp[] = array('v' => (double) $row['popCityR1']);
+        $temp[] = array('v' => (double) $row['popCityR2']);
+        $temp[] = array('v' => (double) $row['popCityR3']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
 }
 
 // graph of NO2 pollutation for given country
@@ -445,180 +636,6 @@ function query_ctry_pm2_5() {
         $temp[] = array('v' => (string) $row['year']); 
         $temp[] = array('v' => (double) $row['lPM2_5']);
         $temp[] = array('v' => (double) $row['cPM2_5']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-
-function query_cityName($countryID, $rank) {
-
-    //open connection to database
-    connect_to_db();
-
-    // perform query
-    $query = "SELECT CONVERT(cityName USING ascii) as cityName FROM airpollution.largestCities l, airpollution.city c WHERE l.cityID = c.cityID AND l.countryID = '" . $countryID . "' AND rank = " . $rank;
-    $result = mysql_query($query);
-    
-    $row = mysql_fetch_array($result);
-    return $row['cityName'];
-    
-}
-
-// graph of population for given country
-function query_population() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, population, popCityR1, popCityR2, popCityR3 FROM airpollution.populationView WHERE countryID = '" . $countryID . "' ORDER BY year";
-      $result = mysql_query($query);
-      
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'national', 'type' => 'number'),
-        array('label' => query_cityName($countryID, 1), 'type' => 'number'),
-        array('label' => query_cityName($countryID, 2), 'type' => 'number'),
-        array('label' => query_cityName($countryID, 3), 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['population']);
-        $temp[] = array('v' => (double) $row['popCityR1']);
-        $temp[] = array('v' => (double) $row['popCityR2']);
-        $temp[] = array('v' => (double) $row['popCityR3']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-
-// graph of emissions for given country
-function query_emission() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, emission, emission1A3, emission1Ax, emission1B, emission2, emission3, emission5 FROM airpollution.emissionView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
-      $result = mysql_query($query);
-      
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'total', 'type' => 'number'),
-        array('label' => 'transport', 'type' => 'number'),
-        array('label' => 'heating/combustion', 'type' => 'number'),
-        array('label' => 'energy production', 'type' => 'number'),
-        array('label' => 'production industry', 'type' => 'number'),
-        array('label' => 'agriculture', 'type' => 'number'),
-        array('label' => 'waste', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['emission']);
-        $temp[] = array('v' => (double) $row['emission1A3']);
-        $temp[] = array('v' => (double) $row['emission1Ax']);
-        $temp[] = array('v' => (double) $row['emission1B']);
-        $temp[] = array('v' => (double) $row['emission2']);
-        $temp[] = array('v' => (double) $row['emission3']);
-        $temp[] = array('v' => (double) $row['emission5']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-
-// graph showing percentage of stations exceeding limit for given country
-function query_excStation() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, pctExcStations FROM airpollution.excStationView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
-      $result = mysql_query($query);
-      
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'national', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['pctExcStations']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-
-// graph showing annual concentrations for given country
-function query_concentration() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, cLimit, concentration FROM airpollution.concentrationView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
-      $result = mysql_query($query);
-      
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'limit', 'type' => 'number'),
-        array('label' => 'national', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['cLimit']);        
-        $temp[] = array('v' => (double) $row['concentration']);
         $rows[] = array('c' => $temp);    
       }
     

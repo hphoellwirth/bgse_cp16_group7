@@ -84,9 +84,9 @@ create view cityConcentration as
          e.pollutantID        as pollutantID, 
          e.year               as year, 
          avg(e.concentration) as concentration,
-         count(s.stationID)   as stations, 
-         sum(e.exceededLimit) as noExceededLimit,
-         sum(e.population)    as stationPopulation,
+         count(s.stationID)   as totStations, 
+         sum(e.exceededLimit) as excStations,
+         sum(e.population)    as totStationsPop,
          (select p.population
             from cityPopulation p
 		       where p.cityID = c.cityID
