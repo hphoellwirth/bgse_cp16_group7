@@ -276,6 +276,34 @@
       var chart = new google.visualization.LineChart(document.getElementById('chart_excStation'));
       chart.draw(data, options);
     }  
+
+    // draw percentage of stations exceeding limit chart for specific country
+    function drawConcentrationChart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID},      
+          url: "functions.php?function=query_concentration",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Nitrogen dioxide (NO2) concentration',
+          legend: 'none',
+          width: 550,
+          height: 300,
+          colors: ['red', 'blue'],
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5,
+          vAxis: {minValue: 0,
+                  title: 'mean \u03BCg/m3',
+                  gridlines: {count: 6}}          
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_concentration'));
+      chart.draw(data, options);
+    } 
     
     /*
     function drawPieChart(countryID) {
@@ -378,15 +406,15 @@
       showCountries(prefix);
       
       if (prefix == 'da') {
-        drawNO2Chart(countryID);
-        drawO3Chart(countryID);
-        drawPM10Chart(countryID);
-        drawPM25Chart(countryID);
+        drawConcentrationChart(countryID);
         drawExcStationChart(countryID);
         drawEmissionChart(countryID);
         drawPopulationChart(countryID);
       } else { 
-        drawPieChart(countryID);
+        drawNO2Chart(countryID);
+        drawO3Chart(countryID);
+        drawPM10Chart(countryID);
+        drawPM25Chart(countryID);
       }
     }      
   </script> 
@@ -474,14 +502,15 @@
       drawMarkersMap(geoMapPollutant, geoMapYear);
       
       // initialize concentration line graphs
-      updateHeader('da', 'Spain');
-      drawNO2Chart('ES');
-      drawO3Chart('ES');
-      drawPM10Chart('ES');
-      drawPM25Chart('ES');   
-      drawExcStationChart('ES');
-      drawEmissionChart('ES');
-      drawPopulationChart('ES');   
+      updateHeader('da', 'Germany');
+      drawNO2Chart('DE');
+      drawO3Chart('DE');
+      drawPM10Chart('DE');
+      drawPM25Chart('DE');  
+      drawConcentrationChart('DE'); 
+      drawExcStationChart('DE');
+      drawEmissionChart('DE');
+      drawPopulationChart('DE');   
     }   
   </script>   
   

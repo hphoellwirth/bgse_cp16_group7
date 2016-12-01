@@ -244,6 +244,8 @@ div#chart_o3 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
 div#chart_pm10 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
 div#chart_pm2_5 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
 
+div#chart_excStation path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
+
 div#chart_excStation path:nth-child(1) {stroke:rgba(128, 0, 128, 1.0) !important;}
 
 div#chart_emission path:nth-child(1) {stroke:rgba(255, 140, 0, 1.0) !important;}

@@ -98,8 +98,16 @@ create view excStationView as
   select countryID, pollutantID, year,
          (case when totStations = 0 then 0 else (excStations/totStations) end) as pctExcStations
     from countryConcentration; 
-   
 
+-- view annual national concentration level averages    
+create view concentrationView as
+  select countryID,
+         pollutantID,
+         year,
+         (select concentration from countryConcentration s where s.countryID = c.countryID and s.year = c.year and s.pollutantID = c.pollutantID) as concentration, 
+         (select limitConc from pollutant p where p.pollutantID = c.pollutantID) as cLimit
+    from countryConcentration c
+   group by countryID, pollutantID, year;
    
    
    

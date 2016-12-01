@@ -14,7 +14,12 @@
   
    	  
 	<h2 id="paH2">Prescriptive Analysis</h2>
-  <!--<div id="chart_pie">Pie chart</div>	-->
+  <div>
+    <div id="chart_no2" style="float: left;"></div>
+    <div id="chart_o3" style="float: left;"></div>
+    <div id="chart_pm10" style="float: left;"></div>   
+    <div id="chart_pm2_5" style="float: left;"></div>
+  </div>
 	
 </div>	
 <?php?>

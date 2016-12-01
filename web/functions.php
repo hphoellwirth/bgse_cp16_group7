@@ -9,7 +9,8 @@ $approved_functions = array('query_ctry_pollutants',
                             'query_ctry_pm2_5',
                             'query_population',
                             'query_emission',
-                            'query_excStation');
+                            'query_excStation',
+                            'query_concentration');
 
 $func = (isset($_GET['function']) ? $_GET['function'] : null);
 if(in_array($func, $approved_functions)) {
@@ -581,6 +582,43 @@ function query_excStation() {
         $temp = array();
         $temp[] = array('v' => (string) $row['year']); 
         $temp[] = array('v' => (double) $row['pctExcStations']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph showing annual concentrations for given country
+function query_concentration() {
+
+    if (isset($_POST["countryID"])) {
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, cLimit, concentration FROM airpollution.concentrationView WHERE countryID = '" . $countryID . "' AND pollutantID = 'NO2' ORDER BY year";
+      $result = mysql_query($query);
+      
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'limit', 'type' => 'number'),
+        array('label' => 'national', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['cLimit']);        
+        $temp[] = array('v' => (double) $row['concentration']);
         $rows[] = array('c' => $temp);    
       }
     
