@@ -176,7 +176,6 @@ update sector set parentID = '5' where sectorID = '5D3';
 update sector set parentID = '5' where sectorID = '5E';
 
 
-
 /**********************************/
 /* Remove aggregate emission data */
 /**********************************/
@@ -184,6 +183,12 @@ delete
   from emission
  where sectorID in (select parentID
                       from sector);
+
+/************************/
+/* Add missing geo data */
+/************************/
+update city set longitude = 16.3666389600, latitude = 48.2000152800 where cityID = 'AT001C1';
+-- TBD
 
 
 /*********************/
