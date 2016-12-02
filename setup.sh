@@ -63,6 +63,7 @@ run)
 	echo "... interpolating population data"	
 	Rscript analysis/preInterpolatePopulation.R $user $pswd
 	echo "... computing descriptive analysis"	
+	mysql -u $user -p$pswd < db/ddl_analysis.sql 
 	#Rscript analysis/descPollutantCountry.R $user $pswd
 	echo "... computing predictive analysis"
 	#R CMD BATCH analysis/analysis.R 

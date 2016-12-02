@@ -19,7 +19,7 @@ rm(list = ls())
 
 # load libraries
 suppressMessages(if(!require(RMySQL)){install.packages("RMySQL")})
-suppressMessages(if(!require(RMySQL)){install.packages("zoo")})
+suppressMessages(if(!require(zoo)){install.packages("zoo")})
 suppressMessages(library("zoo")) 
 suppressMessages(library("RMySQL")) 
 
@@ -42,18 +42,14 @@ dbConn = dbConnect(MySQL(),
 invisible(dbGetQuery(dbConn, "set names utf8"))
 
 # ----------------------------------------------------------------------
-# Interpolating country population data
+# Undo existing interpolation
 # ----------------------------------------------------------------------
-
-# TBD: add regression
+invisible(dbGetQuery(dbConn, "DELETE FROM cityPopulation WHERE interpolation = TRUE;"))
+invisible(dbGetQuery(dbConn, "DELETE FROM countryPopulation WHERE interpolation = TRUE;"))
 
 # ----------------------------------------------------------------------
 # Interpolating city population data
 # ----------------------------------------------------------------------
-dbGetQuery(dbConn, "DELETE FROM cityPopulation WHERE interpolation = TRUE;")
-dbGetQuery(dbConn, "DELETE FROM countryPopulation WHERE interpolation = TRUE;")
-
-
 cityIDs <- dbGetQuery(dbConn, "SELECT cityID FROM cityPopulation group by cityID;")
 
 # #min number of data points needed to interpolate/extrapolate the data
@@ -78,8 +74,8 @@ for (i in 1:length(cityIDs[ ,1])) {
   end_year<- as.numeric(end.year)
   #print(start_year)
   
-  year<-seq(start_year, end_year)
   #create a data frame with the years and data needed for the intrapolation
+  year<-seq(start_year, end_year)
   popul_data<-as.data.frame(year)
   inserts <- c()
   import.data<-data.frame()
@@ -99,9 +95,7 @@ for (i in 1:length(cityIDs[ ,1])) {
 
   if (nrow(import.data)>0) {
     for (j in 1:nrow(import.data)){
-      
       inserts <- c(inserts, paste0("(\"", import.data$cityID[j], "\",", import.data$year[j] , ",", import.data$population[j], ", true )"))
-    
     }
   }
   
@@ -117,10 +111,7 @@ for (i in 1:length(cityIDs[ ,1])) {
 #----------------------------------------------------------------------
 # Interpolating country population data
 # ----------------------------------------------------------------------
-
-
 countryIDs <- dbGetQuery(dbConn, "SELECT countryID FROM countryPopulation group by countryID;")
-
 
 # #min number of data points needed to interpolate/extrapolate the data
 min.data=2
@@ -144,10 +135,9 @@ for (i in 1:length(countryIDs[ ,1])) {
   end_year<- as.numeric(end.year)
   #print(end_year)
   
-#create a data frame with the years and data needed fo the interpolation
+  #create a data frame with the years and data needed fo the interpolation
   year<-seq(start_year, end_year)
   popul_data<-as.data.frame(year)
-  
   inserts <- c()
   import.data<-data.frame()
   
@@ -167,9 +157,7 @@ for (i in 1:length(countryIDs[ ,1])) {
 
   if (nrow(import.data)>0) {
     for (j in 1:nrow(import.data)){
-     
       inserts <- c(inserts, paste0("(\"", import.data$countryID[j], "\",", import.data$year[j] , ",", import.data$population[j], ", true )"))
-      
     }
   }
   
