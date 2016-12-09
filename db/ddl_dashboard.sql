@@ -6,9 +6,9 @@
 
 use airpollution;
 
-/**************************/
-/* Create dashboard views */
-/**************************/ 
+/************************/
+/* Create geo map views */
+/************************/ 
 
 -- view for geo map of city concentrations
 create view cityGeoMap as
@@ -51,6 +51,12 @@ create view cityConcentrations as
    where cityID in (select l.cityID
                       from largestCities l
                      where l.countryID = c.countryID);
+
+
+
+/*********************************/
+/* Create data descriptive views */
+/*********************************/ 
 
 -- view annual national concentration level averages    
 create view concentrationView as
@@ -151,8 +157,6 @@ create view populationView as
              and c.cityID    = l.cityID
              and l.rank      = 3) as popCityR3
     from countryPopulation p;
-
-   
 
    
    

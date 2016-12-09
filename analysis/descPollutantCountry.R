@@ -68,10 +68,10 @@ dat <- data
 
 # filter country and pollutant
 dat <- dat[dat$pollutantID == 'PM10',]
-dat <- dat[dat$countryID == 'DE',]
+dat <- dat[dat$countryID == 'FR',]
 
 # remove non-factors from data frame
-drops <- c("countryID","countryName", "pollutantID", "year","population")
+drops <- c("countryID","countryName", "pollutantID", "year")
 dat <- dat[ , !(names(dat) %in% drops)]
 
 # remove columns with all NAs
@@ -122,12 +122,48 @@ print(out)
 dat <- data
 #dat[is.na(dat)] <- 0
 emissions <- rowSums(dat[,7:140], na.rm = TRUE)
+transport <- rowSums(dat[,21:32], na.rm = TRUE)
 dat["totEmission"] <- emissions
 dat["totEmissionAdj"] <- emissions/dat$population *1000000000
+dat["totTransport"] <- transport
+dat["totTransportAdj"] <- transport/dat$population *1000000000
 dat <- dat[dat$pollutantID == 'PM10',]
 #dat <- dat[dat$countryID == 'DE',]
-dat <- dat[ , (names(dat) %in% c("concentration","totEmissionAdj"))]
+dat <- dat[ , (names(dat) %in% c("concentration","totTransportAdj","population"))]
 
 fit <- lm(concentration ~ ., data = dat, na.action = na.exclude)
 out <- summary(fit)
 print(out)
+
+
+# ----------------------------------------------------------------------
+# Compute correlations of differences
+# ----------------------------------------------------------------------
+dat <- data
+
+# filter country and pollutant
+dat <- dat[dat$pollutantID == 'PM10',]
+dat <- dat[dat$countryID == 'FR',]
+
+# remove non-factors from data frame
+drops <- c("countryID","countryName", "pollutantID")
+dat <- dat[ , !(names(dat) %in% drops)]
+
+# remove columns with all NAs
+dat <- dat[,colSums(is.na(dat)) == 0]
+
+# compute annual changes
+dat <- dat[order(-dat$year),]
+
+# compute annual differences
+diff <- dat[-1,]
+for (i in 2:nrow(dat)) {
+    diff[i-1,] <- dat[i-1,] - dat[i,]
+}
+diff <- diff[ , !(names(diff) %in% c("year"))]
+
+# compute correlation between differences
+corr <- cor(diff, diff$concentration, use = "complete")
+corr
+
+

@@ -92,7 +92,7 @@ create view cityConcentration as
      and s.stationID = e.stationID
    group by s.cityID, e.pollutantID, e.year;
    
-   
+  
 
    
    

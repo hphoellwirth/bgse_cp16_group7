@@ -113,6 +113,21 @@ create table largestCities (
   rank       int(2),                               -- rank of city within country
   primary key (cityID)
 );
+
+create table forecastConcentration (
+  forecastID      int(11) not null auto_increment, -- system ID 
+  pollutantID     varchar(5),                      -- reference to pollutant table 
+  stationID       varchar(7),                      -- reference to station table 
+  year            int(4),                          -- statistics year 
+  concentration   decimal(7,2),                    -- mean concentration 
+  low95           decimal(7,2),                    -- .95 lower bound 
+  high95          decimal(7,2),                    -- .95 higher bound    
+  
+  primary key (forecastID)
+);
+
+
+station,pollutant,year,prediction,low_95,up_95
   
 /***********************/
 /* Create foreign keys */

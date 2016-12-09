@@ -154,8 +154,60 @@ create view countryPollutantFactor as
          (select emission from emission e where e.countryID = c.countryID and e.pollutantID = c.pollutantID and e.year = c.year and e.sectorID = '6B') as e6B
     from countryConcentration c;
 
-   
 
+/*****************************************/
+/* Create post-regression forecast views */
+/*****************************************/
+
+-- countryConcentrationForecast
+create view countryConcentrationForecast as
+  select n.countryID          as countryID, 
+         n.countryName        as countryName,
+         f.pollutantID        as pollutantID, 
+         f.year               as year, 
+         avg(f.concentration) as concentration,
+         avg(f.low95)         as low95,
+         avg(f.high95)        as high95
+    from country n, 
+         city c, 
+         station s, 
+         forecastConcentration f
+   where n.countryID = c.CountryID
+     and c.cityID    = s.cityID
+     and s.stationID = f.stationID
+     and f.year     >= 2014
+   group by c.countryID, f.pollutantID, f.year; 
+  
+   
+/**************************/
+/* Create dashboard views */
+/**************************/ 
+
+-- view annual country concentrations including forecasts until 2018  
+create view concentrationForecastView as
+  select countryID,
+         pollutantID,
+         year,
+         concentration,
+         (select limitConc 
+            from pollutant p 
+           where p.pollutantID = n.pollutantID) as cLimit,          
+         concentration as low95,
+         concentration as high95                       
+    from countryConcentration n
+   group by countryID, pollutantID, year
+   union
+  select countryID,
+         pollutantID,
+         year,
+         concentration,
+         (select limitConc 
+            from pollutant p 
+           where p.pollutantID = f.pollutantID) as cLimit,          
+         low95,
+         high95                       
+    from countryConcentrationForecast f
+   group by countryID, pollutantID, year;
    
    
    
