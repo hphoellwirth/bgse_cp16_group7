@@ -255,17 +255,17 @@ div#chart_o3 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
 div#chart_pm10 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
 div#chart_pm2_5 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
 
-div#chart_concentration path:nth-child(1) {stroke:rgba(0, 153, 51, 0.3) !important;}
-div#chart_concentration path:nth-child(2) {stroke:rgba(169, 169, 169, 0.3) !important;}
-div#chart_concentration path:nth-child(3) {stroke:rgba(210, 105, 30, 0.3) !important;}
+div#chart_concentration path:nth-child(1) {stroke:rgba(0, 153, 51, 0.5) !important;}
+div#chart_concentration path:nth-child(2) {stroke:rgba(169, 169, 169, 0.5) !important;}
+div#chart_concentration path:nth-child(3) {stroke:rgba(210, 105, 30, 0.5) !important;}
 div#chart_concentration path:nth-child(4) {stroke:rgba(255, 0, 0, 1.0) !important;}
 div#chart_concentration path:nth-child(5) {stroke:rgba(0, 0, 255, 1.0) !important;}
 
 
 div#chart_excStation path:nth-child(1) {stroke:rgba(0, 0, 255, 1.0) !important;}
-div#chart_excStation path:nth-child(2) {stroke:rgba(210, 105, 30, 0.3) !important;}
-div#chart_excStation path:nth-child(3) {stroke:rgba(169, 169, 169, 0.3) !important;}
-div#chart_excStation path:nth-child(4) {stroke:rgba(0, 153, 51, 0.3) !important;}
+div#chart_excStation path:nth-child(2) {stroke:rgba(210, 105, 30, 0.5) !important;}
+div#chart_excStation path:nth-child(3) {stroke:rgba(169, 169, 169, 0.5) !important;}
+div#chart_excStation path:nth-child(4) {stroke:rgba(0, 153, 51, 0.5) !important;}
 
 div#chart_emission path:nth-child(1) {stroke:rgba(128, 0, 128, 1.0) !important;}
 div#chart_emission path:nth-child(2) {stroke:rgba(200, 0, 0, 0.5) !important;}

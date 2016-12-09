@@ -3,6 +3,7 @@
 // list of approved AJAX function calls
 $approved_functions = array('query_ctry_pollutants',
                             'query_city_map',
+                            'query_ctry_no2_forecast',
                             'query_ctry_no2',
                             'query_ctry_o3',
                             'query_ctry_pm10',
@@ -320,7 +321,7 @@ function query_city_map() {
         array('label' => 'Latitude', 'type' => 'number'),
         array('label' => 'Longitude', 'type' => 'number'),
         array('label' => 'City', 'type' => 'string'),
-        array('label' => 'PM10', 'type' => 'number')
+        array('label' => $pollutant, 'type' => 'number')
       );
 
       $rows = array();
@@ -510,6 +511,47 @@ function query_population() {
         $temp[] = array('v' => (double) $row['popCityR1']);
         $temp[] = array('v' => (double) $row['popCityR2']);
         $temp[] = array('v' => (double) $row['popCityR3']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph of NO2 pollutation forecast for given country
+function query_ctry_no2_forecast() {
+
+    if (isset($_POST["countryID"])) {
+      $countryID = $_POST["countryID"]; 
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, concentration, low95, high95, cLimit FROM airpollution.concentrationForecastView WHERE pollutantID = 'NO2' AND countryID = '" . $countryID . "'";
+      $result = mysql_query($query);
+
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'limit', 'type' => 'number'),
+        array('label' => 'lower bound', 'type' => 'number'),
+        array('label' => 'upper bound', 'type' => 'number'),
+        array('label' => 'concentration', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['cLimit']);
+        $temp[] = array('v' => (double) $row['low95']);
+        $temp[] = array('v' => (double) $row['high95']);
+        $temp[] = array('v' => (double) $row['concentration']);
         $rows[] = array('c' => $temp);    
       }
     

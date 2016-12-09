@@ -43,6 +43,7 @@
         case 'O3': text = 'Ozone (O3) concentration'; break;
         case 'PM10': text = 'Particulate matter < 10 \u03BCm (PM10) concentration'; break;
         case 'PM2.5': text = 'Particulate matter < 2.5 \u03BCm (PM2.5) concentration'; break;
+        case 'BaP': text = 'Benzo(a)pyrene concentration'; break;
         default: text = "None";
       }     
       return text;
@@ -54,6 +55,7 @@
         case 'O3': text = 'P93.2 \u03BCg/m3'; break;
         case 'PM10': text = 'P90.4 \u03BCg/m3'; break;
         case 'PM2.5': text = 'mean \u03BCg/m3'; break;
+        case 'BaP': text = 'mean ng/m3'; break;
         default: text = "None";
       }     
       return text;
@@ -220,18 +222,20 @@
       var jsonData = $.ajax({
           type: "POST",
           data: {countryID: countryID},      
-          url: "functions.php?function=query_ctry_no2",
+          url: "functions.php?function=query_ctry_no2_forecast",
           dataType: "json",
           async: false         
           }).responseText;
       var data = new google.visualization.DataTable(jsonData);
       
       var options = {
-          title: 'Nitrogen dioxide (NO2) concentration',
+          title: 'Nitrogen dioxide (NO2) concentration forecast',
+          //curveType:'function',
+          //intervals: { 'style':'area' },          
           legend: 'none',
           width: 550,
           height: 300,
-          colors: ['red', 'blue'],
+          colors: ['red', 'green', 'green', 'blue'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
           vAxis: {minValue: 0,
@@ -496,8 +500,8 @@
         ?>			
         -->
 
-			  <h3>The findings</h3>
-			  <p>TBD</p>
+			  <h3>Motivation</h3>
+			  <p>Air pollution causes 467,000 premature deaths a year in Europe (<a href="http://www.bbc.com/news/world-europe-38078488">BBC</a>).</p>
 		  </div>	    
         	    
 	    <?php include 'map.php' ?>

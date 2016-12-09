@@ -20,7 +20,8 @@
         <a href='javascript:selectDescPollutant("NO2");'>NO2</a> 
         <a href='javascript:selectDescPollutant("O3");'>O3</a> 
         <a href='javascript:selectDescPollutant("PM10");'>PM10</a> 
-        <a href='javascript:selectDescPollutant("PM2.5");'>PM2.5</a>         
+        <a href='javascript:selectDescPollutant("PM2.5");'>PM2.5</a>   
+        <a href='javascript:selectDescPollutant("BaP");'>BaP</a>       
     </div>
   </div> 
   
