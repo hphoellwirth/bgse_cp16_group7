@@ -18,9 +18,9 @@ TBD
 - [ ] Add mySQL function to replace UNICODE characters in cityNames for geo mapping
 - [ ] Check why some cities (eg London) have different city code in population data
 - [ ] Correlation analysis emission high-level sectors
-- [ ] Analyse impact of added stations on concentration means (did it cause reduced means?)
-- [ ] Plot time-series forecasts (already started for NO2)
 - [ ] Analyse correlation of city population size and above-national concentration levels
+- [ ] Correlation analysis of geodata with concentration levels
+
 
 ### Required packages
 
