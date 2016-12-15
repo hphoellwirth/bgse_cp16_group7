@@ -126,8 +126,6 @@ create table forecastConcentration (
   primary key (forecastID)
 );
 
-
-station,pollutant,year,prediction,low_95,up_95
   
 /***********************/
 /* Create foreign keys */

@@ -21,21 +21,51 @@
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyDeBdHxE2Pw2z1YHYe4A_8IXmBsu8TPAK0" async="" defer="defer"></script>
     <script type="text/javascript">  
-  
+    
     // Load the visualization API for Google charts
     google.charts.load('current', {'packages':['corechart']});
     google.charts.load('current', {'packages':['line']});
-    google.charts.load('upcoming', {'packages': ['geochart']});
+    google.charts.load('current', {'packages': ['geochart']});     
       
     // Set a callback to run when the Google Visualization API is loaded.
-    //google.charts.setOnLoadCallback(drawMarkersMap);
     var geoMapYear = 2013;
     var geoMapPollutant = 'NO2';
+
+    var dataCountry = 'ES';
+    var dataPollutant = 'NO2';
     
     var descCountry = 'ES';
     var descPollutant = 'NO2';
     
     var prescCountry = 'ES';
+    
+    
+    function initGraphs() {   
+    
+      console.log(google.visualization);
+    
+      // initialize geo map
+      updateMapHeader(geoMapPollutant, geoMapYear);
+      drawMarkersMap(geoMapPollutant, geoMapYear);
+
+      // initialize data view graphs
+      updateDataHeader(dataPollutant, dataCountry);
+      drawConcentrationChart(dataPollutant, dataCountry); 
+      drawExcStationChart(dataPollutant, dataCountry);
+      drawEmissionChart(dataPollutant, dataCountry);
+      drawPopulationChart(dataCountry);  
+
+      // initialize descriptive analysis graphs
+      updateDescHeader(descPollutant, descCountry);
+      drawNewStationsImpactChart(descPollutant, descCountry); 
+      
+      // initialize concentration line graphs
+      updatePrescHeader(prescCountry);      
+      drawNO2Chart(prescCountry);
+      drawO3Chart(prescCountry);
+      drawPM10Chart(prescCountry);
+      drawPM25Chart(prescCountry);   
+    }       
     
     function getPollutantTitle(pollutantID) {
       switch(pollutantID) {
@@ -72,6 +102,8 @@
           }).responseText;    
       return countryName;
     }
+    
+    //google.charts.setOnLoadCallback(drawConcentrationChart('NO2','DE'));    
     
     // draw geo map with city pollutant concentrations
     function drawMarkersMap(pollutant, year) {
@@ -215,23 +247,51 @@
 
       var chart = new google.visualization.LineChart(document.getElementById('chart_population'));
       chart.draw(data, options);
-    }                  
+    }  
     
-    // draw NO2 pollutant chart for specific country
-    function drawNO2Chart(countryID) {
+    // draw new stations impact chart for specific country
+    function drawNewStationsImpactChart(pollutant, countryID) {
       var jsonData = $.ajax({
           type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_ctry_no2_forecast",
+          data: {pollutant: pollutant,
+                 countryID: countryID},     
+          url: "functions.php?function=query_ctry_new_station_impact",
           dataType: "json",
           async: false         
           }).responseText;
       var data = new google.visualization.DataTable(jsonData);
       
       var options = {
-          title: 'Nitrogen dioxide (NO2) concentration forecast',
-          //curveType:'function',
-          //intervals: { 'style':'area' },          
+          title: 'Impact of added stations on national concentration averages',
+          legend: 'none',
+          width: 550,
+          height: 300,                   
+          crosshair: { trigger: 'both', opacity: 0.5 },
+          dataOpaque: 0.5,
+          vAxis: {minValue: 0,
+                  title: getPollutantUnit(pollutant),
+                  gridlines: {count: 6}},
+          hAxis: {slantedText: true}
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_newstations'));
+      chart.draw(data, options);
+    }                     
+    
+    // draw NO2 pollutant chart for specific country
+    function drawNO2Chart(countryID) {
+      var jsonData = $.ajax({
+          type: "POST",
+          data: {countryID: countryID,
+                 pollutant: 'NO2'},      
+          url: "functions.php?function=query_ctry_forecast",
+          dataType: "json",
+          async: false         
+          }).responseText;
+      var data = new google.visualization.DataTable(jsonData);
+      
+      var options = {
+          title: 'Nitrogen dioxide (NO2) concentration forecast',       
           legend: 'none',
           width: 550,
           height: 300,
@@ -251,9 +311,10 @@
     // draw O3 pollutant chart for specific country
     function drawO3Chart(countryID) {
       var jsonData = $.ajax({
-          type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_ctry_o3",
+          type: "POST",     
+          data: {countryID: countryID,
+                 pollutant: 'O3'},      
+          url: "functions.php?function=query_ctry_forecast",
           dataType: "json",
           async: false         
           }).responseText;
@@ -264,7 +325,7 @@
           legend: 'none',
           width: 550,
           height: 300,          
-          colors: ['red', 'purple'],
+          colors: ['red', 'green', 'green', 'purple'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
           vAxis: {minValue: 0, 
@@ -281,8 +342,9 @@
     function drawPM10Chart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_ctry_pm10",
+          data: {countryID: countryID,
+                 pollutant: 'PM10'},      
+          url: "functions.php?function=query_ctry_forecast",
           dataType: "json",
           async: false         
           }).responseText;
@@ -293,7 +355,7 @@
           legend: 'none',
           width: 550,
           height: 300,          
-          colors: ['red', 'orange'],
+          colors: ['red', 'green', 'green', 'orange'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
           vAxis: {minValue: 0, 
@@ -310,8 +372,9 @@
     function drawPM25Chart(countryID) {
       var jsonData = $.ajax({
           type: "POST",
-          data: {countryID: countryID},      
-          url: "functions.php?function=query_ctry_pm2_5",
+          data: {countryID: countryID,
+                 pollutant: 'PM2.5'},      
+          url: "functions.php?function=query_ctry_forecast",
           dataType: "json",
           async: false         
           }).responseText;
@@ -322,7 +385,7 @@
           legend: 'none',
           width: 550,
           height: 300,          
-          colors: ['red', 'green'],
+          colors: ['red', 'orange', 'orange', 'green'],
           crosshair: { trigger: 'both', opacity: 0.5 },
           dataOpaque: 0.5,
           vAxis: {minValue: 0, 
@@ -371,6 +434,8 @@
       var chart = new google.visualization.PieChart(document.getElementById('chart_pie'));
       chart.draw(data, {width: 400, height: 240});
     }   */  
+    
+    google.charts.setOnLoadCallback(initGraphs);
 
     </script>    
   </head>
@@ -407,7 +472,7 @@
     }
 
     function show_content(optionsId) {
-	    var ids = new Array('home','map','desc_analysis','pres_analysis');
+	    var ids = new Array('home','map','data_view','desc_analysis','pres_analysis');
 	    show(optionsId);
 	    document.getElementById(optionsId + '_link').className = 'active';
 
@@ -419,37 +484,17 @@
 	    }
     }
   </script>     
- 
-  <!-- Initialize graphs --> 
-  <script>  
-    function initGraphs() {
-      // initialize geo map
-      updateMapHeader(geoMapPollutant, geoMapYear);
-      drawMarkersMap(geoMapPollutant, geoMapYear);
-
-      // initialize descriptive analysis graphs
-      updateDescHeader(descPollutant, descCountry);
-      drawConcentrationChart(descPollutant, descCountry); 
-      drawExcStationChart(descPollutant, descCountry);
-      drawEmissionChart(descPollutant, descCountry);
-      drawPopulationChart(descCountry);  
-      
-      // initialize concentration line graphs
-      updatePrescHeader(prescCountry);      
-      drawNO2Chart(prescCountry);
-      drawO3Chart(prescCountry);
-      drawPM10Chart(prescCountry);
-      drawPM25Chart(prescCountry);   
-    }   
-  </script>   
-  
+   
   <!-- Body -->
-  <body onload=initGraphs()>
+  <!--<body onload="setTimeout(function() {initGraphs();}, 5000);">-->
+  <!--<body onload="initGraphs();">-->
+  <body>
     <div id="header"><h1>European air pollution analysis</h1></div>
     
     <div id="menu">
 		<a id="home_link" href="#" class="active" onclick="show_content('home'); return false;">Home</a> &middot;
-		<a id="map_link" href="#" onclick="show_content('map'); update_data_charts(); return false;">Pollutant Map</a> &middot;
+		<a id="map_link" href="#" onclick="show_content('map'); return false;">Pollutant Map</a> &middot;
+		<a id="data_view_link" href="#" onclick="show_content('data_view'); return false;">Data View</a> &middot;
 		<a id="desc_analysis_link" href="#" onclick="show_content('desc_analysis'); return false;">Descriptive Analysis</a> &middot;
 		<a id="pres_analysis_link" href="#" onclick="show_content('pres_analysis'); return false;">Prescriptive Analysis</a> 
     </div>
@@ -505,6 +550,7 @@
 		  </div>	    
         	    
 	    <?php include 'map.php' ?>
+	    <?php include 'data.php' ?>
 	    <?php include 'descriptive.php' ?>
 	    <?php include 'prescriptive.php' ?>       
     </div>

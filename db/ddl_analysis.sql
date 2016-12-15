@@ -5,11 +5,56 @@
 # -------------------------------------------
 
 use airpollution;
+
+drop view if exists stationDetail;
+drop view if exists addedStationImpactView;
+drop view if exists countryPollutantFactor;
+drop view if exists countryConcentrationForecast;
+drop view if exists concentrationForecastView;
+
+/*************************************/
+/* Create descriptive analysis views */
+/*************************************/
+
+-- stationDetail
+create view stationDetail as
+  select stationID, cityID, stationType, areaType,
+         (select min(year)
+            from concentration c
+           where c.stationID = s.stationID) as startYear
+    from station s; 
+   
+-- addedStationImpactView
+create view addedStationImpactView as
+  select countryID,
+         pollutantID,
+         year,
+         concentration as concAll,
+         (select avg(concentration)
+            from city c, stationDetail s, concentration e
+           where c.countryID   = n.CountryID
+             and c.cityID      = s.cityID
+             and e.stationID   = s.stationID
+             and e.pollutantID = n.pollutantID
+             and e.year        = n.year
+             and s.startYear  <= 2005) as conc2005Stations,
+         (select avg(concentration)
+            from city c, stationDetail s, concentration e
+           where c.countryID   = n.CountryID
+             and c.cityID      = s.cityID
+             and e.stationID   = s.stationID
+             and e.pollutantID = n.pollutantID
+             and e.year        = n.year
+             and s.startYear  <= 2000) as conc2000Stations,
+         (select limitConc 
+            from pollutant p 
+           where p.pollutantID = n.pollutantID) as cLimit                            
+    from countryConcentration n;    
+   
    
 /************************************/
 /* Create regression analysis views */
 /************************************/
-drop view if exists countryPollutantFactor;
 
 create view countryPollutantFactor as
   select c.countryID,

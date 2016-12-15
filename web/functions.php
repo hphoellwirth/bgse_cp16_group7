@@ -1,18 +1,14 @@
 <?php
 
 // list of approved AJAX function calls
-$approved_functions = array('query_ctry_pollutants',
-                            'query_city_map',
-                            'query_ctry_no2_forecast',
-                            'query_ctry_no2',
-                            'query_ctry_o3',
-                            'query_ctry_pm10',
-                            'query_ctry_pm2_5',
+$approved_functions = array('query_city_map',
                             'query_population',
                             'query_emission',
                             'query_excStation',
                             'query_concentration',
-                            'query_countryName');
+                            'query_countryName',
+                            'query_ctry_new_station_impact',
+                            'query_ctry_forecast');
 
 $func = (isset($_GET['function']) ? $_GET['function'] : null);
 if(in_array($func, $approved_functions)) {
@@ -52,184 +48,9 @@ MY_MARKER;
     echo $str;
 } 
 
-/*
-function query_and_print_table($query,$title) {
-    // Perform Query
-    $result = mysql_query($query);
-
-    // Check result
-    // This shows the actual query sent to MySQL, and the error. Useful for debugging.
-    if (!$result) {
-        $message  = 'Invalid query: ' . mysql_error() . "\n";
-        $message .= 'Whole query: ' . $query;
-        die($message);
-    }
-
-    // Use result
-    // Attempting to print $result won't allow access to information in the resource
-    // One of the mysql result functions must be used
-    // See also mysql_result(), mysql_fetch_array(), mysql_fetch_row(), etc.
-    echo "<h2>" . $title . "</h2>";
-    echo "<table align='center'>";
-    echo "<thead><tr></tr>";
-    $row = mysql_fetch_assoc($result);
-    foreach ($row as $col => $value) {                
-        echo "<th>" . $col . "</th>";
-    }
-    echo "</tr></thead>";
-
-    // Write rows
-    mysql_data_seek($result, 0);
-    while ($row = mysql_fetch_assoc($result)) {
-        echo "<tr>";
-        foreach ($row as $e) {                
-            echo "<td>" . $e . "</td>";
-        }
-        echo "</tr>";
-    }
-    echo "</table>";
-
-    // Free the resources associated with the result set
-    // This is done automatically at the end of the script
-    mysql_free_result($result);
-} */
-
-/*
-function query_and_print_graph($query,$title,$ylabel) {
-    $id = "graph" . $GLOBALS['graphid'];
-    $GLOBALS['graphid'] = $GLOBALS['graphid'] + 1;
-    
-    echo "<h2>" . $title . "</h2>";
-    echo PHP_EOL,'<div id="'. $id . '"><svg style="height:300px"></svg></div>',PHP_EOL;
-
-    // Perform Query
-    $result = mysql_query($query);
-
-    // Check result
-    // This shows the actual query sent to MySQL, and the error. Useful for debugging.
-    if (!$result) {
-        $message  = 'Invalid query: ' . mysql_error() . "\n";
-        $message .= 'Whole query: ' . $query;
-        die($message);
-    }
-
-    $str = "<script type='text/javascript'>
-        function " . $id . "Chart() {";
-    $str = $str . <<<MY_MARKER
-    nv.addGraph(function() {
-        var chart = nv.models.discreteBarChart()
-          .x(function(d) { return d.label })    //Specify the data accessors.
-          .y(function(d) { return d.value })
-          .staggerLabels(true)    //Too many bars and not enough room? Try staggering labels.
-          .tooltips(false)        //Show tooltips
-          .showValues(true)       //...instead, show the bar value right on top of each bar.
-          .transitionDuration(350);
-MY_MARKER;
-    $str = $str . PHP_EOL . 'chart.yAxis.axisLabel("' . $ylabel . '").axisLabelDistance(30)';
-    $str = $str . PHP_EOL . "d3.select('#" . $id . " svg')
-          .datum(" . $id . "Data())
-          .call(chart);";
-    $str = $str . <<<MY_MARKER
-      nv.utils.windowResize(chart.update);
-
-      return chart;
-    });
-}    
-MY_MARKER;
-    $str = $str . PHP_EOL . $id . "Chart();" . PHP_EOL;
-    $str = $str . PHP_EOL . "mycharts.push(". $id . "Chart)" . PHP_EOL;
-    $str = $str . PHP_EOL . "function " . $id . "Data() {
- return  [ 
-    {
-      key:"; 
-    $str = $str . '"' . $title . '", values: [';
-
-    while ($row = mysql_fetch_array($result)) {
-        $str = $str . '{ "label":"' . $row[0] . '","value":' . $row[1] . '},' . PHP_EOL;
-    }    
-    $str = $str . '] } ] }</script>';
-    echo $str;
-
-} */
-
-/*
-function query_and_print_series($query,$title,$label) {
-    $id = "graph" . $GLOBALS['graphid'];
-    $GLOBALS['graphid'] = $GLOBALS['graphid'] + 1;
-    
-    echo "<h2>" . $title . "</h2>";
-    echo PHP_EOL,'<div align="center" id="'. $id . '"><svg style="height:500px; width:800px"></svg></div>',PHP_EOL;
-
-    // Perform Query
-    $result = mysql_query($query);
-
-    // Check result
-    // This shows the actual query sent to MySQL, and the error. Useful for debugging.
-    if (!$result) {
-        $message  = 'Invalid query: ' . mysql_error() . "\n";
-        $message .= 'Whole query: ' . $query;
-        die($message);
-    }
-
-    $str = "<script type='text/javascript'>
-        function " . $id . "Chart() {";
-    $str = $str . <<<MY_MARKER
-    nv.addGraph(function() {
-    var chart = nv.models.lineChart()
-                .margin({left: 100})  //Adjust chart margins to give the x-axis some breathing room.
-                .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
-                .transitionDuration(350)  //how fast do you want the lines to transition?
-                .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
-                .showYAxis(true)        //Show the y-axis
-                .showXAxis(true)        //Show the x-axis
-    ;
-
-    chart.xAxis     //Chart x-axis settings
-      .axisLabel('X')
-      .tickFormat(d3.format(',r'));
-
-    chart.yAxis     //Chart y-axis settings
-      .axisLabel('Y')
-      .tickFormat(d3.format('.02f'));
-
-MY_MARKER;
-
-    $str = $str . PHP_EOL . 'chart.yAxis.axisLabel("x").axisLabelDistance(30)';
-    $str = $str . PHP_EOL . "d3.select('#" . $id . " svg')
-          .datum(" . $id . "Data())
-          .call(chart);";
-    $str = $str . <<<MY_MARKER
-      nv.utils.windowResize(chart.update);
-
-      return chart;
-    });
-}    
-MY_MARKER;
-
-    $str = $str . PHP_EOL . $id . "Chart();" . PHP_EOL;
-    $str = $str . PHP_EOL . "mycharts.push(". $id . "Chart)" . PHP_EOL;
-    $str = $str . PHP_EOL . "function " . $id . "Data() { 
-    var fx = [];";
-  
-    while ($row = mysql_fetch_array($result)) {
-        $str = $str . "fx.push({x:" . $row[0] . ", y:" . $row[1] ."}); " . PHP_EOL;
-    }    
-
-    $str = $str . "
-    //Line chart data should be sent as an array of series objects.
-    return [
-    {
-      values: fx,
-      key: '" . $label . " ',
-      color: '#7777ff',
-      area: true      //area - set to true if you want this line to turn into a filled area chart.
-    }
-  ];
-}</script>";
-
-    echo $str;
-
-} */
+///////////////////////
+// Dropdown buttons  //
+///////////////////////
 
 // Query all countries for dropdown menu
 function dropdown_countries($selectFunction) {
@@ -301,6 +122,11 @@ function query_cityName($countryID, $rank) {
     
 }
 
+
+///////////////
+// Map view  //
+///////////////
+
 // geo map of cities and their concentrations
 function query_city_map() {
 
@@ -341,6 +167,11 @@ function query_city_map() {
     }
 
 }
+
+
+////////////////
+// Data view  //
+////////////////
 
 // graph showing annual concentrations for given country
 function query_concentration() {
@@ -521,6 +352,98 @@ function query_population() {
     }
 }
 
+///////////////////////
+// Descriptive view  //
+///////////////////////
+
+function query_ctry_new_station_impact() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"];
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, conc2000Stations, conc2005Stations, concAll, cLimit FROM airpollution.addedStationImpactView WHERE pollutantID = '" . $pollutant . "' AND countryID = '" . $countryID . "'";
+      $result = mysql_query($query);
+
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'limit', 'type' => 'number'),
+        array('label' => 'stations added before 2000', 'type' => 'number'),
+        array('label' => 'stations added before 2005', 'type' => 'number'),
+        array('label' => 'all stations', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['cLimit']);
+        $temp[] = array('v' => (double) $row['conc2000Stations']);
+        $temp[] = array('v' => (double) $row['conc2005Stations']);
+        $temp[] = array('v' => (double) $row['concAll']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+//////////////////////
+// Predictive view  //
+//////////////////////
+
+// graph of pollutation forecast for given country
+function query_ctry_forecast() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"];
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, concentration, low95, high95, cLimit FROM airpollution.concentrationForecastView WHERE pollutantID = '" . $pollutant . "' AND countryID = '" . $countryID . "'";
+      $result = mysql_query($query);
+
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'limit', 'type' => 'number'),
+        array('label' => 'lower bound', 'type' => 'number'),
+        array('label' => 'upper bound', 'type' => 'number'),
+        array('label' => 'concentration', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['cLimit']);
+        $temp[] = array('v' => (double) $row['low95']);
+        $temp[] = array('v' => (double) $row['high95']);
+        $temp[] = array('v' => (double) $row['concentration']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+/*
 // graph of NO2 pollutation forecast for given country
 function query_ctry_no2_forecast() {
 
@@ -709,87 +632,6 @@ function query_ctry_pm2_5() {
       echo $jsonTable;
     }
 }
-
-/*
-function query_ctry_pollutants() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, cPM10, cPM2_5, cNO2, cO3 FROM airpollution.countryConcentrations WHERE countryID = '" . $countryID . "'";
-      $result = mysql_query($query);
-
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'PM10', 'type' => 'number'),
-        array('label' => 'PM2.5', 'type' => 'number'),
-        array('label' => 'NO2', 'type' => 'number'),
-        array('label' => 'O3', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['cPM10']);
-        $temp[] = array('v' => (double) $row['cPM2_5']); 
-        $temp[] = array('v' => (double) $row['cNO2']); 
-        $temp[] = array('v' => (double) $row['cO3']);  
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-} */
-
-/*
-function query_and_return_json() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-      //$url = $_SERVER['REQUEST_URI'];
-    
-      // perform Query
-      $query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = '" . $countryID . "'";
-      $result = mysql_query($query);
-
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'emission', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-    
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['emission']); 
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-} */
-
-
-
-
+*/
 
 ?>

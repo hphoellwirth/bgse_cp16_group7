@@ -29,10 +29,7 @@
   <script>  
     // re-draw graphs 
     function drawDescGraphs(pollutant, countryID) {
-        drawConcentrationChart(pollutant, countryID);
-        drawExcStationChart(pollutant, countryID);
-        drawEmissionChart(pollutant, countryID);
-        drawPopulationChart(countryID);    
+        drawNewStationsImpactChart(pollutant, countryID);  
     }
     
     // show/hide country dropdown list
@@ -108,11 +105,7 @@
 
   <h2 id="daH2">Descriptive Analysis</h2>
   <div>
-    <div id="chart_concentration" style="float: left;"></div>  
-    <div id="chart_excStation" style="float: left;"></div>
-    <div id="chart_emission" style="float: left;"></div>
-    <div id="chart_population" style="float: left;"></div>
+    <div id="chart_newstations" style="float: left;"></div>  
   </div>
-
 </div>	
 <?php?>
