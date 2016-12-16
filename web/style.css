@@ -314,8 +314,11 @@ div#chart_newstations path:nth-child(2) {stroke:rgba(0, 255, 0, 0.8) !important;
 div#chart_newstations path:nth-child(3) {stroke:rgba(255, 255, 0, 0.8) !important;}
 div#chart_newstations path:nth-child(4) {stroke:rgba(0, 0, 255, 1.0) !important;}
 
-div#chart_no2 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
-div#chart_o3 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
-div#chart_pm10 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
-div#chart_pm2_5 path:nth-child(1) {stroke:rgba(255, 0, 0, 0.8) !important;}
+div#chart_concentration_forecast path:nth-child(1) {stroke:rgba(255, 0, 0, 1.0) !important;}
+div#chart_concentration_forecast path:nth-child(2) {stroke:rgba(0, 153, 51, 0.8) !important;}
+div#chart_concentration_forecast path:nth-child(3) {stroke:rgba(0, 153, 51, 0.8) !important;}
+div#chart_concentration_forecast path:nth-child(4) {stroke:rgba(0, 0, 255, 1.0) !important;}
 
+div#chart_excStation_forecast path:nth-child(1) {stroke:rgba(0, 153, 51, 0.8) !important;}
+div#chart_excStation_forecast path:nth-child(2) {stroke:rgba(0, 153, 51, 0.8) !important;}
+div#chart_excStation_forecast path:nth-child(3) {stroke:rgba(0, 0, 255, 1.0) !important;}

@@ -30,7 +30,7 @@ create index idx_cityPopulation
 /* Create general purpose views */
 /********************************/
 
--- concEvaluation
+-- evaluated concentration levels
 create view concEvaluation as
   select t.concID                                 as concID,
          t.pollutantID                            as pollutantID,
@@ -44,7 +44,7 @@ create view concEvaluation as
     from pollutant p, concentration t
    where p.pollutantID = t.pollutantID;   
 
--- countryConcentration
+-- country concentration
 create view countryConcentration as
   select n.countryID          as countryID, 
          n.countryName        as countryName,
@@ -55,7 +55,7 @@ create view countryConcentration as
             from countryPopulation p
 		       where p.countryID = n.countryID
              and p.year      = e.year) as population,
-	     count(s.stationID)   as totStations,
+	       count(s.stationID)   as totStations,
          sum(e.exceededLimit) as excStations,
          sum(e.population)    as totStationsPop,
          sum(if(e.exceededLimit,e.population,0)) as excStationsPop
@@ -68,7 +68,7 @@ create view countryConcentration as
      and s.stationID = e.stationID
    group by c.countryID, e.pollutantID, e.year;
   
--- cityConcentration
+-- city concentration
 create view cityConcentration as
   select c.cityID             as cityID,
          c.cityName           as cityName, 
@@ -91,8 +91,25 @@ create view cityConcentration as
    where c.cityID = s.CityID
      and s.stationID = e.stationID
    group by s.cityID, e.pollutantID, e.year;
-   
-  
+
+-- country emissions (annual national total and sector emissions)  
+create view countryEmission as
+  select countryID, 
+         pollutantID, 
+         year,
+         sum(emission) as emission,
+         sum(case when parentID = '11' then emission else 0 end) as emission11,
+         sum(case when parentID = '1A1' then emission else 0 end) as emission1A1,
+         sum(case when parentID = '1A2' then emission else 0 end) as emission1A2,
+         sum(case when parentID = '1A3' then emission else 0 end) as emission1A3,
+         sum(case when parentID = '1Ax' then emission else 0 end) as emission1Ax,
+         sum(case when parentID = '1B' then emission else 0 end) as emission1B,
+         sum(case when parentID = '2' then emission else 0 end) as emission2,
+         sum(case when parentID = '3' then emission else 0 end) as emission3,
+         sum(case when parentID = '5' then emission else 0 end) as emission5
+    from emission e, sector s
+   where e.sectorID = s.sectorID
+   group by countryID, pollutantID, year;  
 
    
    

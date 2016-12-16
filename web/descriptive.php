@@ -55,7 +55,6 @@
     
     // update header in section upon pollutant or country selection
     function updateDescHeader(pollutant, countryID) {
-      var yearButton, pollutantButton;  
       daCtryButton = document.getElementById("daCtryButton");
       daCtryButton.innerText = getCountryName(countryID);
       daPollutantButton = document.getElementById("daPollutantButton");

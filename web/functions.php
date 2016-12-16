@@ -8,7 +8,8 @@ $approved_functions = array('query_city_map',
                             'query_concentration',
                             'query_countryName',
                             'query_ctry_new_station_impact',
-                            'query_ctry_forecast');
+                            'query_ctry_forecast',
+                            'query_excStation_forecast');
 
 $func = (isset($_GET['function']) ? $_GET['function'] : null);
 if(in_array($func, $approved_functions)) {
@@ -30,23 +31,6 @@ function connect_to_db() {
     return $link;  
 }
 
-
-function document_header() {
-    $str = <<<MY_MARKER
-<link rel='stylesheet' href='files/nv.d3.css' type='text/css'>
-<script src='files/d3.v2.js' type='text/javascript' ></script>
-<script src='files/nv.d3.js' type='text/javascript' ></script>
-<script>
-    var mycharts = [];
-    function update_data_charts() {
-        for (i = 0; i < mycharts.length; i++) {
-            mycharts[i]();
-        }
-    }
-</script>
-MY_MARKER;
-    echo $str;
-} 
 
 ///////////////////////
 // Dropdown buttons  //
@@ -420,8 +404,8 @@ function query_ctry_forecast() {
       $table['cols'] = array(  
         array('label' => 'year', 'type' => 'string'),
         array('label' => 'limit', 'type' => 'number'),
-        array('label' => 'lower bound', 'type' => 'number'),
-        array('label' => 'upper bound', 'type' => 'number'),
+        array('label' => 'lower bound (95%)', 'type' => 'number'),
+        array('label' => 'upper bound (95%)', 'type' => 'number'),
         array('label' => 'concentration', 'type' => 'number')
       );
 
@@ -441,40 +425,38 @@ function query_ctry_forecast() {
       $jsonTable = json_encode($table);    
       echo $jsonTable;
     }
-}
+} 
 
-/*
-// graph of NO2 pollutation forecast for given country
-function query_ctry_no2_forecast() {
+// graph showing forecast of percentage of stations exceeding limit for given country
+function query_excStation_forecast() {
 
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"];  
          
       //open connection to database
       connect_to_db(); 
     
       // perform query
-      $query = "SELECT year, concentration, low95, high95, cLimit FROM airpollution.concentrationForecastView WHERE pollutantID = 'NO2' AND countryID = '" . $countryID . "'";
+      $query = "SELECT year, pctExcStations, pctExcStationsLow95, pctExcStationsHigh95 FROM airpollution.excStationForecastView WHERE countryID = '" . $countryID . "' AND pollutantID = '" . $pollutant . "' ORDER BY year";
       $result = mysql_query($query);
-
+      
       //create an array  
       $table = array();
       $table['cols'] = array(  
         array('label' => 'year', 'type' => 'string'),
-        array('label' => 'limit', 'type' => 'number'),
-        array('label' => 'lower bound', 'type' => 'number'),
-        array('label' => 'upper bound', 'type' => 'number'),
-        array('label' => 'concentration', 'type' => 'number')
+        array('label' => 'lower bound (95%)', 'type' => 'number'),
+        array('label' => 'upper bound (95%)', 'type' => 'number'),
+        array('label' => 'mean', 'type' => 'number')
       );
 
       $rows = array();
       while ($row = mysql_fetch_array($result)) {
         $temp = array();
         $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['cLimit']);
-        $temp[] = array('v' => (double) $row['low95']);
-        $temp[] = array('v' => (double) $row['high95']);
-        $temp[] = array('v' => (double) $row['concentration']);
+        $temp[] = array('v' => (double) $row['pctExcStationsLow95']);
+        $temp[] = array('v' => (double) $row['pctExcStationsHigh95']);
+        $temp[] = array('v' => (double) $row['pctExcStations']);
         $rows[] = array('c' => $temp);    
       }
     
@@ -484,154 +466,5 @@ function query_ctry_no2_forecast() {
       echo $jsonTable;
     }
 }
-
-// graph of NO2 pollutation for given country
-function query_ctry_no2() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, cNO2, lNO2 FROM airpollution.countryConcentrations WHERE countryID = '" . $countryID . "'";
-      $result = mysql_query($query);
-
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'limit', 'type' => 'number'),
-        array('label' => 'NO2', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['lNO2']);
-        $temp[] = array('v' => (double) $row['cNO2']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-
-// graph of O3 pollutation for given country
-function query_ctry_o3() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, cO3, lO3 FROM airpollution.countryConcentrations WHERE countryID = '" . $countryID . "'";
-      $result = mysql_query($query);
-
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'limit', 'type' => 'number'),
-        array('label' => 'O3', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['lO3']);
-        $temp[] = array('v' => (double) $row['cO3']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-
-// graph of PM10 pollutation for given country
-function query_ctry_pm10() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, cPM10, lPM10 FROM airpollution.countryConcentrations WHERE countryID = '" . $countryID . "'";
-      $result = mysql_query($query);
-
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'limit', 'type' => 'number'),
-        array('label' => 'PM10', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['lPM10']);
-        $temp[] = array('v' => (double) $row['cPM10']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-
-// graph of PM2.5 pollutation for given country
-function query_ctry_pm2_5() {
-
-    if (isset($_POST["countryID"])) {
-      $countryID = $_POST["countryID"]; 
-         
-      //open connection to database
-      connect_to_db(); 
-    
-      // perform query
-      $query = "SELECT year, cPM2_5, lPM2_5 FROM airpollution.countryConcentrations WHERE countryID = '" . $countryID . "'";
-      $result = mysql_query($query);
-
-      //create an array  
-      $table = array();
-      $table['cols'] = array(  
-        array('label' => 'year', 'type' => 'string'),
-        array('label' => 'limit', 'type' => 'number'),
-        array('label' => 'PM2.5', 'type' => 'number')
-      );
-
-      $rows = array();
-      while ($row = mysql_fetch_array($result)) {
-        $temp = array();
-        $temp[] = array('v' => (string) $row['year']); 
-        $temp[] = array('v' => (double) $row['lPM2_5']);
-        $temp[] = array('v' => (double) $row['cPM2_5']);
-        $rows[] = array('c' => $temp);    
-      }
-    
-      // encode in JSON
-      $table['rows'] = $rows;
-      $jsonTable = json_encode($table);    
-      echo $jsonTable;
-    }
-}
-*/
 
 ?>

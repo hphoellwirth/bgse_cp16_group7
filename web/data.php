@@ -57,8 +57,7 @@
     }   
     
     // update header in section upon pollutant or country selection
-    function updateDataHeader(pollutant, countryID) {
-      var yearButton, pollutantButton;  
+    function updateDataHeader(pollutant, countryID) { 
       dataCtryButton = document.getElementById("dataCtryButton");
       dataCtryButton.innerText = getCountryName(countryID);
       dataPollutantButton = document.getElementById("dataPollutantButton");

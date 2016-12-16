@@ -118,22 +118,10 @@ create view excStationView as
              and l.rank        = 3) as pctExcCityR3                                      
     from countryConcentration n; 
 
--- view on annual national total and particular sector emissions   
+-- view on annual national total and sector emissions   
 create view emissionView as
-  select countryID, pollutantID, year,
-         sum(emission) as emission,
-         sum(case when parentID = '11' then emission else 0 end) as emission11,
-         sum(case when parentID = '1A1' then emission else 0 end) as emission1A1,
-         sum(case when parentID = '1A2' then emission else 0 end) as emission1A2,
-         sum(case when parentID = '1A3' then emission else 0 end) as emission1A3,
-         sum(case when parentID = '1Ax' then emission else 0 end) as emission1Ax,
-         sum(case when parentID = '1B' then emission else 0 end) as emission1B,
-         sum(case when parentID = '2' then emission else 0 end) as emission2,
-         sum(case when parentID = '3' then emission else 0 end) as emission3,
-         sum(case when parentID = '5' then emission else 0 end) as emission5
-    from emission e, sector s
-   where e.sectorID = s.sectorID
-   group by countryID, pollutantID, year;
+  select *
+    from countryEmission;
 
 -- view on national and countries' largest cities population    
 create view populationView as

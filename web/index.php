@@ -3,9 +3,6 @@
 	include 'functions.php';
 	$GLOBALS['graphid'] = 0;
 
-	// Load libraries
-	document_header();
-
 	// Create connection
 	$link = connect_to_db();
 ?>

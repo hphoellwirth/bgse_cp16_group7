@@ -8,6 +8,7 @@ use airpollution;
 
 drop view if exists stationDetail;
 drop view if exists addedStationImpactView;
+drop view if exists countryConcAndEmission;
 drop view if exists countryPollutantFactor;
 drop view if exists countryConcentrationForecast;
 drop view if exists concentrationForecastView;
@@ -56,6 +57,29 @@ create view addedStationImpactView as
 /* Create regression analysis views */
 /************************************/
 
+-- combine annual national concentration and sector emission levels
+create view countryConcAndEmission as
+  select c.countryID,
+         c.countryName,
+         c.pollutantID,
+         c.year,
+         c.population,
+         c.concentration,
+         e.emission11,
+         e.emission1A1, 
+         e.emission1A2, 
+         e.emission1A3, 
+         e.emission1Ax, 
+         e.emission1B, 
+         e.emission2, 
+         e.emission3, 
+         e.emission5       
+    from countryConcentration c, countryEmission e
+   where c.countryID   = e.countryID
+     and c.pollutantID = e.pollutantID
+     and c.year        = e.year;
+        
+-- obsolete
 create view countryPollutantFactor as
   select c.countryID,
          c.countryName,
@@ -204,24 +228,45 @@ create view countryPollutantFactor as
 /* Create post-regression forecast views */
 /*****************************************/
 
+-- concentration forecast evaluation
+create view concForecastEvaluation as
+  select t.forecastID                             as forecastID,
+         t.pollutantID                            as pollutantID,
+         t.stationID                              as stationID,
+         t.year                                   as year,
+         t.concentration                          as concentration,
+         t.low95                                  as low95,
+         t.high95                                 as high95,
+         if(t.concentration >= p.limitConc, 1, 0) as meanExcLimit,
+         if(t.low95 >= p.limitConc, 1, 0)         as low95ExcLimit,
+         if(t.high95 >= p.limitConc, 1, 0)        as high95ExcLimit
+    from pollutant p, forecastConcentration t
+   where p.pollutantID = t.pollutantID;   
+
 -- countryConcentrationForecast
 create view countryConcentrationForecast as
-  select n.countryID          as countryID, 
-         n.countryName        as countryName,
-         f.pollutantID        as pollutantID, 
-         f.year               as year, 
-         avg(f.concentration) as concentration,
-         avg(f.low95)         as low95,
-         avg(f.high95)        as high95
+  select n.countryID           as countryID, 
+         n.countryName         as countryName,
+         f.pollutantID         as pollutantID, 
+         f.year                as year, 
+         avg(f.concentration)  as concentration,
+         avg(f.low95)          as low95,
+         avg(f.high95)         as high95,
+         count(s.stationID)    as totStations,
+         sum(f.meanExcLimit)   as excStations,
+         sum(f.low95ExcLimit)  as excStationsLow95,
+         sum(f.high95ExcLimit) as excStationsHigh95
     from country n, 
          city c, 
          station s, 
-         forecastConcentration f
+         concForecastEvaluation f
    where n.countryID = c.CountryID
      and c.cityID    = s.cityID
      and s.stationID = f.stationID
      and f.year     >= 2014
    group by c.countryID, f.pollutantID, f.year; 
+
+
   
    
 /**************************/
@@ -254,11 +299,25 @@ create view concentrationForecastView as
     from countryConcentrationForecast f
    group by countryID, pollutantID, year;
    
+-- view on percentage of stations exceeding limit on average in a year   
+create view excStationForecastView as   
+  select countryID, 
+         pollutantID, 
+         year,
+         (case when totStations = 0 then 0 else (excStations/totStations) end) as pctExcStations,  
+         (case when totStations = 0 then 0 else (excStations/totStations) end) as pctExcStationsLow95, 
+         (case when totStations = 0 then 0 else (excStations/totStations) end) as pctExcStationsHigh95                                    
+    from countryConcentration n   
+   union
+  select countryID, 
+         pollutantID, 
+         year,
+         (case when totStations = 0 then 0 else (excStations/totStations) end) as pctExcStations,
+         (case when totStations = 0 then 0 else (excStationsLow95/totStations) end) as pctExcStationsLow95, 
+         (case when totStations = 0 then 0 else (excStationsHigh95/totStations) end) as pctExcStationsHigh95                                                 
+    from countryConcentrationForecast n;     
    
-   
-   
-   
-   
+      
    
    
    
