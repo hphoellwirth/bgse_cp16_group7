@@ -66,6 +66,7 @@ run)
 	mysql -u $user -p$pswd < db/ddl_analysis.sql 
 	#Rscript analysis/descPollutantCountry.R $user $pswd
 	echo "... computing predictive analysis"
+	Rscript analysis/predConcCountry.R $user $pswd
 	Rscript analysis/predConcStation.R $user $pswd
 	#R CMD BATCH analysis/analysis.R 
 	#cat analysis.Rout

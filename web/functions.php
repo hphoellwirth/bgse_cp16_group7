@@ -8,8 +8,9 @@ $approved_functions = array('query_city_map',
                             'query_concentration',
                             'query_countryName',
                             'query_ctry_new_station_impact',
-                            'query_ctry_forecast',
-                            'query_excStation_forecast');
+                            'query_station_forecast',
+                            'query_excStation_forecast',
+                            'query_ctry_forecast');
 
 $func = (isset($_GET['function']) ? $_GET['function'] : null);
 if(in_array($func, $approved_functions)) {
@@ -385,8 +386,8 @@ function query_ctry_new_station_impact() {
 // Predictive view  //
 //////////////////////
 
-// graph of pollutation forecast for given country
-function query_ctry_forecast() {
+// graph of station-level pollutation forecast for given country
+function query_station_forecast() {
 
     if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
       $pollutant = $_POST["pollutant"]; 
@@ -396,7 +397,7 @@ function query_ctry_forecast() {
       connect_to_db(); 
     
       // perform query
-      $query = "SELECT year, concentration, low95, high95, cLimit FROM airpollution.concentrationForecastView WHERE pollutantID = '" . $pollutant . "' AND countryID = '" . $countryID . "'";
+      $query = "SELECT year, concentration, low95, high95, cLimit FROM airpollution.concentrationStationForecastView WHERE pollutantID = '" . $pollutant . "' AND countryID = '" . $countryID . "'";
       $result = mysql_query($query);
 
       //create an array  
@@ -457,6 +458,48 @@ function query_excStation_forecast() {
         $temp[] = array('v' => (double) $row['pctExcStationsLow95']);
         $temp[] = array('v' => (double) $row['pctExcStationsHigh95']);
         $temp[] = array('v' => (double) $row['pctExcStations']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph of country-level pollutation forecast for given country
+function query_ctry_forecast() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"];
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT year, concentration, low95, high95, cLimit FROM airpollution.concentrationCountryForecastView WHERE pollutantID = '" . $pollutant . "' AND countryID = '" . $countryID . "'";
+      $result = mysql_query($query);
+
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'year', 'type' => 'string'),
+        array('label' => 'limit', 'type' => 'number'),
+        array('label' => 'lower bound (95%)', 'type' => 'number'),
+        array('label' => 'upper bound (95%)', 'type' => 'number'),
+        array('label' => 'concentration', 'type' => 'number')
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (string) $row['year']); 
+        $temp[] = array('v' => (double) $row['cLimit']);
+        $temp[] = array('v' => (double) $row['low95']);
+        $temp[] = array('v' => (double) $row['high95']);
+        $temp[] = array('v' => (double) $row['concentration']);
         $rows[] = array('c' => $temp);    
       }
     

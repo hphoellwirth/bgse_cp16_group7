@@ -114,10 +114,22 @@ create table largestCities (
   primary key (cityID)
 );
 
-create table forecastConcentration (
+create table forecastStationConcentration (
   forecastID      int(11) not null auto_increment, -- system ID 
   pollutantID     varchar(5),                      -- reference to pollutant table 
   stationID       varchar(7),                      -- reference to station table 
+  year            int(4),                          -- statistics year 
+  concentration   decimal(7,2),                    -- mean concentration 
+  low95           decimal(7,2),                    -- .95 lower bound 
+  high95          decimal(7,2),                    -- .95 higher bound    
+  
+  primary key (forecastID)
+);
+
+create table forecastCountryConcentration (
+  forecastID      int(11) not null auto_increment, -- system ID 
+  pollutantID     varchar(5),                      -- reference to pollutant table 
+  countryID       varchar(2),                      -- reference to country table 
   year            int(4),                          -- statistics year 
   concentration   decimal(7,2),                    -- mean concentration 
   low95           decimal(7,2),                    -- .95 lower bound 
@@ -162,6 +174,16 @@ alter table cityPopulation
 alter table largestCities 
   add foreign key (cityID) references city (cityID);
 alter table largestCities 
+  add foreign key (countryID) references country (countryID);
+
+alter table forecastStationConcentration 
+  add foreign key (pollutantID) references pollutant (pollutantID);
+alter table forecastStationConcentration 
+  add foreign key (stationID) references station (stationID);
+
+alter table forecastCountryConcentration 
+  add foreign key (pollutantID) references pollutant (pollutantID);
+alter table forecastCountryConcentration 
   add foreign key (countryID) references country (countryID);
 
 /********************/

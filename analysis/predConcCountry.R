@@ -2,7 +2,7 @@
 # Information
 # ----------------------------------------------------------------------
 #
-# Predictive analysis: Station pollutant concentration level
+# Predictive analysis: Country pollutant concentration level
 #
 # BGSE Data Science 2016/17
 # 14D003/14D004 Computing Project 
@@ -33,8 +33,8 @@ options(warn=-1)
 interactive <- FALSE
 if (interactive) {
     setwd("/Users/Hans-Peter/Documents/Masters/14D003/project")
-    loadFileName <- "analysis/data/concentration.csv"
-    data <- read.csv(loadFileName, sep = ';', 
+    loadFileName <- "analysis/data/countryConcentration.csv"
+    data <- read.csv2(loadFileName, sep = ',', 
                     stringsAsFactors = FALSE, na.strings = 'NULL')
 } 
 
@@ -59,12 +59,12 @@ invisible(dbGetQuery(dbConn, "set names utf8"))
 # ----------------------------------------------------------------------
 # Delete existing forecasts
 # ----------------------------------------------------------------------
-invisible(dbGetQuery(dbConn, "DELETE FROM forecastStationConcentration"))
+invisible(dbGetQuery(dbConn, "DELETE FROM forecastCountryConcentration"))
 
 # ----------------------------------------------------------------------
 # Loading data from database
 # ----------------------------------------------------------------------
-select <- "SELECT concID, pollutantID, stationID, year, concentration FROM concentration"
+select <- "SELECT pollutantID, countryID, year, concentration FROM cityConcentration"
 data <- invisible(dbGetQuery(dbConn, select));
 
 # ----------------------------------------------------------------------
@@ -78,11 +78,11 @@ model <- list()
 predictions <- list()
 
 # calculate ARIMA models for each combination of station and pollutant
-for (s in levels(as.factor(data$stationID))){
+for (s in levels(as.factor(data$countryID))){
   #if (k == 10) break; # temporary stop condition    
   for (p in levels(as.factor(data$pollutantID))){
     k <- k + 1
-    filt.data <- data[data$stationID==s & data$pollutantID==p,]
+    filt.data <- data[data$countryID==s & data$pollutantID==p,]
     filt.data <- filt.data[order(filt.data$year),]
     
     # only consider stations for which more than one data point exists
@@ -93,19 +93,19 @@ for (s in levels(as.factor(data$stationID))){
                   start = min(filt.data$year), 
                   end = max(filt.data$year) - 1, 
                   frequency = 1)
-      model[[k]] <- auto.arima(filt.data$concentration)
+      model[[k]] <- auto.arima(as.numeric(filt.data$concentration))
       
       if (length(model[[k]]) > 0){
         # get forecasts until 2018
-        no.years <- 2018 - max(data[data$stationID==s & data$pollutantID==p,'year'])  
+        no.years <- 2018 - max(data[data$countryID==s & data$pollutantID==p,'year'])  
         predictions[[k]] <- forecast(model[[k]],no.years)
         
         # setup new prediction
         prediction <- as.numeric(predictions[[k]]$mean)
         pollutant <- matrix(p,length(prediction),1)
-        station <- matrix(s,length(prediction),1)
-        year <- seq(max(data[data$stationID==s & data$pollutantID==p,'year']) + 1,
-                   max(data[data$stationID==s & data$pollutantID==p,'year']) + no.years, 1)
+        country <- matrix(s,length(prediction),1)
+        year <- seq(max(data[data$countryID==s & data$pollutantID==p,'year']) + 1,
+                   max(data[data$countryID==s & data$pollutantID==p,'year']) + no.years, 1)
         low_95 <- as.matrix(predictions[[k]]$lower[,2])
         up_95 <- as.matrix(predictions[[k]]$upper[,2])
         
@@ -115,7 +115,7 @@ for (s in levels(as.factor(data$stationID))){
         up_95[up_95 < 0] <- 0
         
         # add new forecast to data frame
-        new.row <- data.frame(pollutant, station, year, prediction, low_95, up_95)        
+        new.row <- data.frame(pollutant, country, year, prediction, low_95, up_95)        
         if (first.row) {
           table_predictions <- new.row
           first.row <- FALSE
@@ -132,8 +132,8 @@ for (s in levels(as.factor(data$stationID))){
 # Store forecasts in database
 # ----------------------------------------------------------------------
 inserts <- paste0("(\"", apply(table_predictions, 1, paste0, collapse = "\", \""), "\")")
-query <- paste("INSERT INTO forecastStationConcentration",
-               "(pollutantID, stationID, year, concentration, low95, high95)",
+query <- paste("INSERT INTO forecastCountryConcentration",
+               "(pollutantID, countryID, year, concentration, low95, high95)",
                "VALUES", paste(inserts,collapse = ", "))
 #print(query)
 invisible(dbGetQuery(dbConn, query))

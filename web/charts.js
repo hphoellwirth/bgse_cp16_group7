@@ -34,9 +34,10 @@ function initGraphs() {
   drawNewStationsImpactChart(descPollutant, descCountry); 
   
   // initialize prescriptive analysis graphs
-  updatePrescHeader(prescPollutant, prescCountry);      
-  drawConcentrationForecastChart(prescPollutant, prescCountry);
-  drawExcStationForecastChart(prescPollutant, prescCountry);  
+  updatePrescHeader(prescPollutant, prescCountry);        
+  drawStationConcForecastChart(prescPollutant, prescCountry);
+  drawExcStationForecastChart(prescPollutant, prescCountry);
+  drawCountryConcForecastChart(prescPollutant, prescCountry);  
 }       
 
 // set pollutant concentration chart title
@@ -265,20 +266,20 @@ function drawNewStationsImpactChart(pollutant, countryID) {
 // Prescriptive charts  //
 //////////////////////////        
 
-// draw forecast of pollutant concentration chart for specific country
-function drawConcentrationForecastChart(pollutant, countryID) {
+// draw forecast of station-level pollutant concentration chart for specific country
+function drawStationConcForecastChart(pollutant, countryID) {
   var jsonData = $.ajax({
       type: "POST",
       data: {countryID: countryID,
              pollutant: pollutant},      
-      url: "functions.php?function=query_ctry_forecast",
+      url: "functions.php?function=query_station_forecast",
       dataType: "json",
       async: false         
       }).responseText;
   var data = new google.visualization.DataTable(jsonData);
   
   var options = {
-      title: getPollutantTitle(pollutant).concat(" forecast"),       
+      title: getPollutantTitle(pollutant).concat(" forecast (station level)"),       
       legend: 'none',
       width: 550,
       height: 300,
@@ -291,7 +292,7 @@ function drawConcentrationForecastChart(pollutant, countryID) {
       hAxis: {slantedText: true}                    
   };
 
-  var chart = new google.visualization.LineChart(document.getElementById('chart_concentration_forecast'));
+  var chart = new google.visualization.LineChart(document.getElementById('chart_station_conc_forecast'));
   chart.draw(data, options);
 }
 
@@ -323,7 +324,37 @@ function drawExcStationForecastChart(pollutant, countryID) {
 
   var chart = new google.visualization.LineChart(document.getElementById('chart_excStation_forecast'));
   chart.draw(data, options);
-}           
+}    
+
+// draw forecast of country-level pollutant concentration chart for specific country
+function drawCountryConcForecastChart(pollutant, countryID) {
+  var jsonData = $.ajax({
+      type: "POST",
+      data: {countryID: countryID,
+             pollutant: pollutant},      
+      url: "functions.php?function=query_ctry_forecast",
+      dataType: "json",
+      async: false         
+      }).responseText;
+  var data = new google.visualization.DataTable(jsonData);
+  
+  var options = {
+      title: getPollutantTitle(pollutant).concat(" forecast (country level)"),       
+      legend: 'none',
+      width: 550,
+      height: 300,
+      colors: ['red', 'green', 'green', 'blue'],
+      crosshair: { trigger: 'both', opacity: 0.5 },
+      dataOpaque: 0.5,
+      vAxis: {minValue: 0,
+              title: getPollutantUnit(pollutant),
+              gridlines: {count: 6}},
+      hAxis: {slantedText: true}                    
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('chart_ctry_conc_forecast'));
+  chart.draw(data, options);
+}       
 
 // initial draw of charts
 google.charts.setOnLoadCallback(initGraphs);
