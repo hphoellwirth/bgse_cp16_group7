@@ -11,6 +11,17 @@
       ?>	          
     </div>
   </div> 
+  
+  <!-- Year dropdown box -->
+  <div class="dropdown" style="float: right;">
+    <button id="daYearButton" onclick="showDescYears()" class="dropbtn">Year</button>
+    <div id="daYearDropdown" class="dropdown-content">
+      <input type="text" placeholder="Search.." id="daYearsInput" onkeyup="filterDescYear()">     
+      <?php
+        dropdown_years("selectDescYear");
+      ?>        
+    </div>
+  </div>   
 
   <!-- Pollutant dropdown box -->
   <div class="dropdown" style="float: right;">
@@ -28,7 +39,8 @@
   <!-- Descriptive analysis country dropdown functions --> 
   <script>  
     // re-draw graphs 
-    function drawDescGraphs(pollutant, countryID) {
+    function drawDescGraphs(pollutant, year, countryID) {
+        drawPopulationVsConcentration(pollutant, countryID, year);
         drawNewStationsImpactChart(pollutant, countryID);  
     }
     
@@ -54,9 +66,11 @@
     }   
     
     // update header in section upon pollutant or country selection
-    function updateDescHeader(pollutant, countryID) {
+    function updateDescHeader(pollutant, year, countryID) {
       daCtryButton = document.getElementById("daCtryButton");
       daCtryButton.innerText = getCountryName(countryID);
+      daYearButton = document.getElementById("daYearButton");
+      daYearButton.innerText = year;
       daPollutantButton = document.getElementById("daPollutantButton");
       daPollutantButton.innerText = pollutant;
     }
@@ -64,11 +78,43 @@
     // update charts and header in section upon country selection
     function selectDescCountry(countryID, countryName) {
       descCountry = countryID;
-      updateDescHeader(descPollutant, countryID);
+      updateDescHeader(descPollutant, descYear, countryID);
       showDescCountries();
-      drawDescGraphs(descPollutant, countryID);
+      drawDescGraphs(descPollutant, descYear, countryID);
     }      
   </script>  
+  
+  <!-- Descriptive analysis year dropdown box functions --> 
+  <script>  
+    // show/hide year dropdown list
+    function showDescYears() {
+      document.getElementById("daYearDropdown").classList.toggle("show");
+    }
+
+    // filter year function in dropdown list
+    function filterDescYear() {
+      var input, filter, ul, li, a, i;
+      input = document.getElementById("daYearsInput");
+      filter = input.value.toUpperCase();
+      div = document.getElementById("daYearDropdown");
+      a = div.getElementsByTagName("a");
+      for (i = 0; i < a.length; i++) {
+        if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+          a[i].style.display = "";
+        } else {
+          a[i].style.display = "none";
+        }
+      }
+    }   
+    
+    // update map and header in section upon year selection
+    function selectDescYear(year) {
+      descYear = year;
+      updateDescHeader(descPollutant, year, descCountry);
+      showDescYears();
+      drawDescGraphs(descPollutant, year, descCountry);
+    }    
+  </script>   
   
   <!-- Descriptive analysis pollutant dropdown box functions --> 
   <script>  
@@ -96,15 +142,22 @@
     // update map and header in section upon year selection
     function selectDescPollutant(pollutant) {
       descPollutant = pollutant;
-      updateDescHeader(pollutant, descCountry);
+      updateDescHeader(pollutant, descYear, descCountry);
       showDescPollutants();
-      drawDescGraphs(pollutant, descCountry);
+      drawDescGraphs(pollutant, descYear, descCountry);
     }    
-  </script>      
-
-  <h2 id="daH2">Descriptive Analysis</h2>
-  <div>
-    <div id="chart_newstations" style="float: left;"></div>  
+  </script>    
+  
+  <h2>Correlation Analysis</h2>
+  <div>   
+    <div id="chart_pop_vs_conc" style="float: left;"></div> 
+    <div style="width: 550px; height: 300px; float: left;"></div>
+    <div style="width: 1200px; height: 5px; float: left;"></div>
   </div>
+  <br>
+  
+  <h2>Sensitivity Analysis</h2>
+  <div id="chart_newstations" style="float: left;"></div>
+
 </div>	
 <?php?>

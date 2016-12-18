@@ -2,6 +2,7 @@
 // Load the visualization API for Google charts
 google.charts.load('current', {'packages':['corechart']});
 google.charts.load('current', {'packages':['line']});
+google.charts.load('current', {'packages':['scatter']});
 google.charts.load('current', {'packages': ['geochart']});     
   
 // initialize default year/country/pollutant type
@@ -9,6 +10,7 @@ var geoMapYear = 2013;
 var geoMapPollutant = 'NO2';
 var dataCountry = 'ES';
 var dataPollutant = 'NO2';
+var descYear = 2013;
 var descCountry = 'ES';
 var descPollutant = 'NO2';
 var prescCountry = 'ES';
@@ -30,7 +32,8 @@ function initGraphs() {
   drawPopulationChart(dataCountry);  
 
   // initialize descriptive analysis graphs
-  updateDescHeader(descPollutant, descCountry);
+  updateDescHeader(descPollutant, descYear, descCountry);
+  drawPopulationVsConcentration(descPollutant, descCountry, descYear);
   drawNewStationsImpactChart(descPollutant, descCountry); 
   
   // initialize prescriptive analysis graphs
@@ -231,6 +234,42 @@ function drawPopulationChart(countryID) {
 /////////////////////////
 // Descriptive charts  //
 ///////////////////////// 
+
+// draw scatter plot of city population vs concentration level
+function drawPopulationVsConcentration(pollutant, countryID, year) {
+  var jsonData = $.ajax({
+      type: "POST",
+      data: {pollutant: pollutant,
+             countryID: countryID,
+             year: year},     
+      url: "functions.php?function=query_population_vs_concentration",
+      dataType: "json",
+      async: false         
+      }).responseText;
+  var data = new google.visualization.DataTable(jsonData);
+  
+  var options = {
+      title: 'City population versus concentration level',
+      legend: 'none',
+      width: 550,
+      height: 300,    
+      trendlines: {
+        0: {
+          type: 'linear',
+          color: 'red',
+          lineWidth: 2,
+          opacity: 0.3,
+          showR2: true
+        }},                    
+      vAxis: {minValue: 0,
+              title: getPollutantUnit(pollutant)},
+      hAxis: {title: 'city population',
+              logScale: true}
+  };
+
+  var chart = new google.visualization.ScatterChart(document.getElementById('chart_pop_vs_conc'));
+  chart.draw(data, options);
+} 
 
 // draw new stations impact chart for specific country
 function drawNewStationsImpactChart(pollutant, countryID) {

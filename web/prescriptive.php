@@ -104,8 +104,9 @@
     }    
   </script>     
    	  
-	<h2 id="paH2">Prescriptive Analysis</h2>
+	<h2>Prescriptive Analysis</h2>
   <div>
+    <div style="width: 1200px; height: 10px; float: left;"></div>
     <div id="chart_station_conc_forecast" style="float: left;"></div>
     <div id="chart_excStation_forecast" style="float: left;"></div>
     <div id="chart_ctry_conc_forecast" style="float: left;"></div>

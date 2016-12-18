@@ -7,6 +7,7 @@ $approved_functions = array('query_city_map',
                             'query_excStation',
                             'query_concentration',
                             'query_countryName',
+                            'query_population_vs_concentration',
                             'query_ctry_new_station_impact',
                             'query_station_forecast',
                             'query_excStation_forecast',
@@ -37,7 +38,7 @@ function connect_to_db() {
 // Dropdown buttons  //
 ///////////////////////
 
-// Query all countries for dropdown menu
+// query all countries for dropdown menu
 function dropdown_countries($selectFunction) {
 
     //open connection to database
@@ -61,7 +62,7 @@ function dropdown_countries($selectFunction) {
     }
 }
 
-// Query years for dropdown menu
+// query years for dropdown menu
 function dropdown_years($selectFunction) {
 
     // create list of years
@@ -76,6 +77,7 @@ function dropdown_years($selectFunction) {
     }
 }
 
+// get country name for given country code
 function query_countryName() {
 
     if (isset($_POST["countryID"])) {
@@ -93,6 +95,7 @@ function query_countryName() {
     }
 }
 
+// get city name for the rank-largest city of a given country
 function query_cityName($countryID, $rank) {
 
     //open connection to database
@@ -341,6 +344,46 @@ function query_population() {
 // Descriptive view  //
 ///////////////////////
 
+// plot of city level population versus annual concentration mean
+function query_population_vs_concentration() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"]) and isset($_POST["year"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"];
+      $year = $_POST["year"];
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT cityName, population, concentration FROM airpollution.cityConcentration WHERE pollutantID = '" . $pollutant . "' AND countryID = '" . $countryID . "' AND year = " . $year . " AND population is not null";
+      $result = mysql_query($query);
+
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'population', 'type' => 'number'),
+        array('label' => 'concentration', 'type' => 'number')
+        //array('label' => 'city', 'type' => 'tooltip', 'p' => array('role' => 'tooltip'))
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (double) $row['population']);
+        $temp[] = array('v' => (double) $row['concentration']);
+        //$temp[] = array('v' => (string) $row['cityName']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// graph of impact of added stations on national concentration average
 function query_ctry_new_station_impact() {
 
     if (isset($_POST["pollutant"]) and isset($_POST["countryID"])) {

@@ -105,8 +105,9 @@
     }    
   </script>     
 
-  <h2 id="dataH2">Data View</h2>
+  <h2>Data View</h2>
   <div>
+    <div style="width: 1200px; height: 10px; float: left;"></div>
     <div id="chart_concentration" style="float: left;"></div>  
     <div id="chart_excStation" style="float: left;"></div>
     <div id="chart_emission" style="float: left;"></div>

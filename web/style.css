@@ -230,6 +230,17 @@ h4 {
     border: none;
 }
 
+#daYearsInput {
+    border-box: box-sizing;
+    background-image: url('background/searchicon.png');
+    background-position: 12px 8px;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+}
+
 #daPollutantsInput {
     border-box: box-sizing;
     background-image: url('background/searchicon.png');
@@ -242,6 +253,17 @@ h4 {
 }
 
 #paCountries {
+    border-box: box-sizing;
+    background-image: url('background/searchicon.png');
+    background-position: 12px 8px;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+}
+
+#paPollutantsInput {
     border-box: box-sizing;
     background-image: url('background/searchicon.png');
     background-position: 12px 8px;
