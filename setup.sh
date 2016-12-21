@@ -64,14 +64,11 @@ run)
 	Rscript analysis/preInterpolatePopulation.R $user $pswd
 	echo "... computing descriptive analysis"	
 	mysql -u $user -p$pswd < db/ddl_analysis.sql 
-	#Rscript analysis/descPollutantCountry.R $user $pswd
+	#Rscript analysis/descCorrEmission.R $user $pswd
+	Rscript analysis/descCorrPopulation.R $user $pswd
 	echo "... computing predictive analysis"
 	Rscript analysis/predConcCountry.R $user $pswd
 	Rscript analysis/predConcStation.R $user $pswd
-	#R CMD BATCH analysis/analysis.R 
-	#cat analysis.Rout
-	#rm analysis.Rout
-	#cp web/categories_network.png "$target_dir/airpollution"
 
   echo "done!"
 	;;
