@@ -34,7 +34,8 @@
 		<a id="map_link" href="#" onclick="show_content('map'); return false;">Pollutant Map</a> &middot;
 		<a id="data_view_link" href="#" onclick="show_content('data_view'); return false;">Data View</a> &middot;
 		<a id="desc_analysis_link" href="#" onclick="show_content('desc_analysis'); return false;">Descriptive Analysis</a> &middot;
-		<a id="pres_analysis_link" href="#" onclick="show_content('pres_analysis'); return false;">Prescriptive Analysis</a> 
+		<a id="pres_analysis_link" href="#" onclick="show_content('pres_analysis'); return false;">Prescriptive Analysis</a> &middot;
+		<a id="conclusion_link" href="#" onclick="show_content('conclusion'); return false;">Conclusion</a> 
     </div>
     
     <div id="main">
@@ -90,7 +91,8 @@
 	    <?php include 'map.php' ?>
 	    <?php include 'data.php' ?>
 	    <?php include 'descriptive.php' ?>
-	    <?php include 'prescriptive.php' ?>       
+	    <?php include 'prescriptive.php' ?>  
+	    <?php include 'conclusion.php' ?>      
     </div>
         
     <div id="footer">Project team: Carlos Isaac Rodriguez Prado, Hans-Peter H&ouml;llwirth, Veronika Kyuchukova</div>

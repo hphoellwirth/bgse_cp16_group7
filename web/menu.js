@@ -27,7 +27,7 @@ function hide(element) {
 }
 
 function show_content(optionsId) {
-  var ids = new Array('home','map','data_view','desc_analysis','pres_analysis');
+  var ids = new Array('home','map','data_view','desc_analysis','pres_analysis','conclusion');
   show(optionsId);
   document.getElementById(optionsId + '_link').className = 'active';
 
