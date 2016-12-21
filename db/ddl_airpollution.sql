@@ -138,6 +138,21 @@ create table forecastCountryConcentration (
   primary key (forecastID)
 );
 
+create table correlationPopulation (
+  corrID          int(11) not null auto_increment, -- system ID 
+  pollutantID     varchar(5),                      -- reference to pollutant table 
+  countryID       varchar(2),                      -- reference to country table 
+  year            int(4),                          -- statistics year 
+  interceptEst    decimal(15,8),                   -- intercept estimator
+  interceptSE     decimal(15,8),                   -- intercept standard error
+  slopeEst        decimal(15,8),                   -- slope estimator
+  slopeSE         decimal(15,8),                   -- slope standard error
+  rSquared        decimal(7,4),                    -- multiple R-squared    
+  
+  primary key (corrID)
+);
+
+
   
 /***********************/
 /* Create foreign keys */
