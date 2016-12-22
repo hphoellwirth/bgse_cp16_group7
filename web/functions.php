@@ -1,7 +1,8 @@
 <?php
 
 // list of approved AJAX function calls
-$approved_functions = array('query_city_map',
+$approved_functions = array('query_corrPopulationSignificant',
+                            'query_city_map',
                             'query_population',
                             'query_emission',
                             'query_excStation',
@@ -95,7 +96,7 @@ function query_countryName() {
     }
 }
 
-// get city name for the rank-largest city of a given country
+// get city name for the rank-largest city of a given country (obsolete)
 function query_cityName($countryID, $rank) {
 
     //open connection to database
@@ -108,6 +109,26 @@ function query_cityName($countryID, $rank) {
     $row = mysql_fetch_array($result);
     return $row['cityName'];
     
+}
+
+// is population correlation for given pollutant, country, and year significant?
+function query_corrPopulationSignificant() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["countryID"]) and isset($_POST["year"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $countryID = $_POST["countryID"];
+      $year = $_POST["year"];
+      
+      //open connection to database
+      connect_to_db();
+
+      // perform query
+      $query = "SELECT COUNT(*) AS significant FROM airpollution.correlationPopulation WHERE pollutantID = '" . $pollutant . "' AND countryID = '" . $countryID . "' AND year = " . $year;
+      $result = mysql_query($query);
+    
+      $row = mysql_fetch_array($result);
+      echo $row['significant'];
+    }
 }
 
 

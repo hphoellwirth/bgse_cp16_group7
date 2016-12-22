@@ -79,7 +79,21 @@ function getCountryName(countryID) {
       async: false         
       }).responseText;    
   return countryName;
-}   
+} 
+
+// is population correlation for given pollutant, country, and year significant?
+function isCorrPopulationSignificant(pollutant, countryID, year) {  
+  var significant = $.ajax({
+      type: "POST",     
+      data: {pollutant: pollutant,
+             countryID: countryID,
+             year: year}, 
+      url: "functions.php?function=query_corrPopulationSignificant",
+      dataType: "text",
+      async: false         
+      }).responseText;   
+  return significant;
+}  
 
 
 ////////////////
@@ -246,26 +260,39 @@ function drawPopulationVsConcentration(pollutant, countryID, year) {
       dataType: "json",
       async: false         
       }).responseText;
-  var data = new google.visualization.DataTable(jsonData);
+  var data = new google.visualization.DataTable(jsonData);     
   
-  var options = {
-      title: 'City population versus concentration level',
-      legend: 'none',
-      width: 550,
-      height: 300,    
-      trendlines: {
-        0: {
-          type: 'linear',
-          color: 'red',
-          lineWidth: 2,
-          opacity: 0.3,
-          showR2: true
-        }},                    
-      vAxis: {minValue: 0,
-              title: getPollutantUnit(pollutant)},
-      hAxis: {title: 'city population',
-              logScale: true}
-  };
+  if (isCorrPopulationSignificant(pollutant, countryID, year) == '0') {
+    var options = {
+        title: 'City population versus concentration level',
+        legend: 'none',
+        width: 550,
+        height: 300,                        
+        vAxis: {minValue: 0,
+                title: getPollutantUnit(pollutant)},
+        hAxis: {title: 'city population',
+                logScale: true}
+    };
+  } else {    
+    var options = {
+        title: 'City population versus concentration level',
+        legend: 'none',
+        width: 550,
+        height: 300,    
+        trendlines: {
+          0: {
+            type: 'linear',
+            color: 'red',
+            lineWidth: 2,
+            opacity: 0.3,
+            showR2: true
+          }},                    
+        vAxis: {minValue: 0,
+                title: getPollutantUnit(pollutant)},
+        hAxis: {title: 'city population',
+                logScale: true}
+    };
+  }    
 
   var chart = new google.visualization.ScatterChart(document.getElementById('chart_pop_vs_conc'));
   chart.draw(data, options);

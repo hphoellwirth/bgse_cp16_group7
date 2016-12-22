@@ -68,6 +68,7 @@
     // update header in section upon pollutant or country selection
     function updateDescHeader(pollutant, year, countryID) {
       daCtryButton = document.getElementById("daCtryButton");
+      //daCtryButton.innerText = isCorrPopulationSignificant('NO2',countryID,2008);
       daCtryButton.innerText = getCountryName(countryID);
       daYearButton = document.getElementById("daYearButton");
       daYearButton.innerText = year;
