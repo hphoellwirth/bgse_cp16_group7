@@ -118,7 +118,8 @@ for (p in 1:length(pollutants)){
                     r.squared       <- result$r.squared
                     
                     # only store results if statistically significant
-                    if (intercept.tval > 1.96 & slope.tval > 1.96) {
+                    # at 95% confidence level
+                    if (abs(intercept.tval) > 1.96 & abs(slope.tval) > 1.96) {
                         new.row <- data.frame(pollutant, country, year, 
                                               intercept.est, intercept.se, 
                                               slope.est, slope.se, 
