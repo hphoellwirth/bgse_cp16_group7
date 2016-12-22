@@ -8,6 +8,8 @@ $approved_functions = array('query_corrPopulationSignificant',
                             'query_excStation',
                             'query_concentration',
                             'query_countryName',
+                            'query_longitude_vs_concentration',
+                            'query_latitude_vs_concentration',
                             'query_population_vs_concentration',
                             'query_ctry_new_station_impact',
                             'query_station_forecast',
@@ -96,7 +98,7 @@ function query_countryName() {
     }
 }
 
-// get city name for the rank-largest city of a given country (obsolete)
+// get city name for the rank-largest city of a given country
 function query_cityName($countryID, $rank) {
 
     //open connection to database
@@ -364,6 +366,82 @@ function query_population() {
 ///////////////////////
 // Descriptive view  //
 ///////////////////////
+
+// plot of city longitudes versus annual concentration mean
+function query_longitude_vs_concentration() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["year"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $year = $_POST["year"];
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT cityName, longitude, concentration FROM airpollution.cityConcentration WHERE pollutantID = '" . $pollutant . "' AND year = " . $year . " AND longitude is not null";
+      $result = mysql_query($query);
+
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'longitude', 'type' => 'number'),
+        array('label' => 'concentration', 'type' => 'number')
+        //array('label' => 'city', 'type' => 'tooltip', 'p' => array('role' => 'tooltip'))
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (double) $row['longitude']);
+        $temp[] = array('v' => (double) $row['concentration']);
+        //$temp[] = array('v' => (string) $row['cityName']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
+
+// plot of city latitudes versus annual concentration mean
+function query_latitude_vs_concentration() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["year"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $year = $_POST["year"];
+         
+      //open connection to database
+      connect_to_db(); 
+    
+      // perform query
+      $query = "SELECT cityName, latitude, concentration FROM airpollution.cityConcentration WHERE pollutantID = '" . $pollutant . "' AND year = " . $year . " AND latitude is not null";
+      $result = mysql_query($query);
+
+      //create an array  
+      $table = array();
+      $table['cols'] = array(  
+        array('label' => 'latitude', 'type' => 'number'),
+        array('label' => 'concentration', 'type' => 'number')
+        //array('label' => 'city', 'type' => 'tooltip', 'p' => array('role' => 'tooltip'))
+      );
+
+      $rows = array();
+      while ($row = mysql_fetch_array($result)) {
+        $temp = array();
+        $temp[] = array('v' => (double) $row['latitude']);
+        $temp[] = array('v' => (double) $row['concentration']);
+        //$temp[] = array('v' => (string) $row['cityName']);
+        $rows[] = array('c' => $temp);    
+      }
+    
+      // encode in JSON
+      $table['rows'] = $rows;
+      $jsonTable = json_encode($table);    
+      echo $jsonTable;
+    }
+}
 
 // plot of city level population versus annual concentration mean
 function query_population_vs_concentration() {

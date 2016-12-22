@@ -33,6 +33,8 @@ function initGraphs() {
 
   // initialize descriptive analysis graphs
   updateDescHeader(descPollutant, descYear, descCountry);
+  drawLongitudeVsConcentration(descPollutant, descYear);
+  drawLatitudeVsConcentration(descPollutant, descYear);
   drawPopulationVsConcentration(descPollutant, descCountry, descYear);
   drawNewStationsImpactChart(descPollutant, descCountry); 
   
@@ -248,6 +250,78 @@ function drawPopulationChart(countryID) {
 /////////////////////////
 // Descriptive charts  //
 ///////////////////////// 
+
+// draw scatter plot of city longitude vs concentration level
+function drawLongitudeVsConcentration(pollutant, year) {
+  var jsonData = $.ajax({
+      type: "POST",
+      data: {pollutant: pollutant,
+             year: year},     
+      url: "functions.php?function=query_longitude_vs_concentration",
+      dataType: "json",
+      async: false         
+      }).responseText;
+  var data = new google.visualization.DataTable(jsonData);     
+     
+    var options = {
+        title: 'City longitude versus concentration level',
+        legend: 'none',
+        width: 550,
+        height: 300,    
+        pointSize: 3,
+        trendlines: {
+          0: {
+            type: 'linear',
+            color: 'red',
+            lineWidth: 2,
+            opacity: 0.3,
+            showR2: true
+          }},                    
+        vAxis: {minValue: 0,
+                title: getPollutantUnit(pollutant)},
+        hAxis: {viewWindowMode: 'maximized', 
+                title: 'longitude'}
+    };   
+
+  var chart = new google.visualization.ScatterChart(document.getElementById('chart_long_vs_conc'));
+  chart.draw(data, options);
+} 
+
+// draw scatter plot of city latitude vs concentration level
+function drawLatitudeVsConcentration(pollutant, year) {
+  var jsonData = $.ajax({
+      type: "POST",
+      data: {pollutant: pollutant,
+             year: year},     
+      url: "functions.php?function=query_latitude_vs_concentration",
+      dataType: "json",
+      async: false         
+      }).responseText;
+  var data = new google.visualization.DataTable(jsonData);     
+     
+    var options = {
+        title: 'City latitude versus concentration level',
+        legend: 'none',
+        width: 550,
+        height: 300,    
+        pointSize: 3,
+        trendlines: {
+          0: {
+            type: 'linear',
+            color: 'red',
+            lineWidth: 2,
+            opacity: 0.3,
+            showR2: true
+          }},                    
+        vAxis: {minValue: 0,
+                title: getPollutantUnit(pollutant)},
+        hAxis: {viewWindowMode: 'maximized', 
+                title: 'latitude'}
+    };   
+
+  var chart = new google.visualization.ScatterChart(document.getElementById('chart_lat_vs_conc'));
+  chart.draw(data, options);
+}
 
 // draw scatter plot of city population vs concentration level
 function drawPopulationVsConcentration(pollutant, countryID, year) {

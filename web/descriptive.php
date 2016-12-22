@@ -40,6 +40,8 @@
   <script>  
     // re-draw graphs 
     function drawDescGraphs(pollutant, year, countryID) {
+        drawLongitudeVsConcentration(pollutant, year);
+        drawLatitudeVsConcentration(pollutant, year);
         drawPopulationVsConcentration(pollutant, countryID, year);
         drawNewStationsImpactChart(pollutant, countryID);  
     }
@@ -150,7 +152,10 @@
   </script>    
   
   <h2>Correlation Analysis</h2>
-  <div>   
+  <p>Note that trendlines are only shown if statistically significant at the 95% confidence level.</p>  
+  <div>
+    <div id="chart_long_vs_conc" style="float: left;"></div>    
+    <div id="chart_lat_vs_conc" style="float: left;"></div>  
     <div id="chart_pop_vs_conc" style="float: left;"></div> 
     <div style="width: 550px; height: 300px; float: left;"></div>
     <div style="width: 1200px; height: 5px; float: left;"></div>
