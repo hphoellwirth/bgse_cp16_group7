@@ -42,13 +42,16 @@
 		  <div id="home">
 			  <h2>Home</h2>
 			  <h3>The goal</h3>
-			  <p>The main goal of this project is to shed light on the possible measures that an 
-			     emission (reduction) government policy could consider in order to reduce the 
-			     air pollution most efficiently, and to predict city pollutant concentrations 
-			     for future years, assuming no policy changes. For this purpose, 
-			     we want to learn which emission sectors impact the measured air pollutants 
-			     most in a country (and to what extend) and also try to relate 
-			     the measured pollutions to the size of city populations.</p>						
+			  <p>The main goal of this project is to study trends and correlations of annual 
+			     national and city-level pollutant concentration levels across Europe. The
+			     visualization and analysis of the dataset should help to form government policies
+			     that aim to reduce air pollution in Europe over the next 5 years. The pollutant concentration
+			     levels are compared to reported national pollutant emissions (annual) and population
+			     growth (city and national level).</p>						
+
+			  <h3>Motivation</h3>
+			  <p>Air pollution causes 467,000 premature deaths a year in Europe (<a href="http://www.bbc.com/news/world-europe-38078488">BBC</a>)
+			     and reduces average life expectancy by 7 months.</p>
 
 			  <h3>The dataset</h3>
 			  <p>The analysis is based on 3 different datasets, provided by the <a href="http://www.eea.europa.eu">European Environment Agency (EEA)</a></p>
@@ -74,18 +77,6 @@
               for the years 1990 - 2014. The dataset consists of over 3 million records.</li>
           <li>In addition to that, we loaded <a href="http://ec.europa.eu/eurostat/web/cities/data/database">annual population data</a> for the national and city level.</li>
         </ol>
-      
-			  <!--
-        <?php
-          // Emission data
-          //$query = "SELECT year, emission FROM airpollution.emission WHERE pollutantID = 'PM10' AND sectorID = '1A3ai(i)' AND countryID = 'AT'";
-          //$title = "PM10 emission in AT (sector 1A3ai(i))";
-          //query_and_print_graph($query,$title,"Gg");
-        ?>			
-        -->
-
-			  <h3>Motivation</h3>
-			  <p>Air pollution causes 467,000 premature deaths a year in Europe (<a href="http://www.bbc.com/news/world-europe-38078488">BBC</a>).</p>
 		  </div>	    
         	    
 	    <?php include 'map.php' ?>

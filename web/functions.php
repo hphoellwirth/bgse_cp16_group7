@@ -115,6 +115,11 @@ function query_cityName($countryID, $rank) {
     
 }
 
+
+//////////////////////////
+// Trendline functions  //
+//////////////////////////
+
 // is longitude correlation for given pollutant and year significant?
 function query_corrLongitudeSignificant() {
 
