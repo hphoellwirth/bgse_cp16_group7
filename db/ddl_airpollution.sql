@@ -11,9 +11,9 @@ drop database if exists airpollution;
 create database airpollution;
 use airpollution;
 
-/*****************/
-/* Create tables */
-/*****************/
+/**********************/
+/* Create data tables */
+/**********************/
 create table country (
   countryID    varchar(2),                  -- ISO 3166-1 alpha-2 code 
   countryName  varchar(40),                 -- English country name 
@@ -107,6 +107,10 @@ create table cityPopulation (
   primary key (popID)
 );
 
+
+/**************************/
+/* Create analysis tables */
+/**************************/
 create table largestCities (
   cityID     varchar(7),                           -- city code 
   countryID  varchar(2),                           -- country code  
@@ -136,6 +140,23 @@ create table forecastCountryConcentration (
   high95          decimal(7,2),                    -- .95 higher bound    
   
   primary key (forecastID)
+);
+
+create table correlationLocation (
+  corrID          int(11) not null auto_increment, -- system ID 
+  pollutantID     varchar(5),                      -- reference to pollutant table 
+  year            int(4),                          -- statistics year 
+  interceptEst    decimal(15,8),                   -- intercept estimator
+  interceptSE     decimal(15,8),                   -- intercept standard error
+  longitudeEst    decimal(15,8),                   -- longitude estimator
+  longitudeSE     decimal(15,8),                   -- longitude standard error
+  longitudeSig    boolean,                         -- longitude estimator significant?
+  latitudeEst     decimal(15,8),                   -- latitude estimator
+  latitudeSE      decimal(15,8),                   -- latitude standard error
+  latitudeSig     boolean,                         -- latitude estimator significant?
+  rSquared        decimal(7,4),                    -- multiple R-squared    
+  
+  primary key (corrID)
 );
 
 create table correlationPopulation (

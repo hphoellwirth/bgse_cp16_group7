@@ -1,7 +1,9 @@
 <?php
 
 // list of approved AJAX function calls
-$approved_functions = array('query_corrPopulationSignificant',
+$approved_functions = array('query_corrLongitudeSignificant',
+                            'query_corrLatitudeSignificant',
+                            'query_corrPopulationSignificant',
                             'query_city_map',
                             'query_population',
                             'query_emission',
@@ -111,6 +113,44 @@ function query_cityName($countryID, $rank) {
     $row = mysql_fetch_array($result);
     return $row['cityName'];
     
+}
+
+// is longitude correlation for given pollutant and year significant?
+function query_corrLongitudeSignificant() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["year"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $year = $_POST["year"];
+      
+      //open connection to database
+      connect_to_db();
+
+      // perform query
+      $query = "SELECT SUM(longitudeSig) AS significant FROM airpollution.correlationLocation WHERE pollutantID = '" . $pollutant . "' AND year = " . $year;
+      $result = mysql_query($query);
+    
+      $row = mysql_fetch_array($result);
+      echo $row['significant'];
+    }
+}
+
+// is latitude correlation for given pollutant and year significant?
+function query_corrLatitudeSignificant() {
+
+    if (isset($_POST["pollutant"]) and isset($_POST["year"])) {
+      $pollutant = $_POST["pollutant"]; 
+      $year = $_POST["year"];
+      
+      //open connection to database
+      connect_to_db();
+
+      // perform query
+      $query = "SELECT SUM(latitudeSig) AS significant FROM airpollution.correlationLocation WHERE pollutantID = '" . $pollutant . "' AND year = " . $year;
+      $result = mysql_query($query);
+    
+      $row = mysql_fetch_array($result);
+      echo $row['significant'];
+    }
 }
 
 // is population correlation for given pollutant, country, and year significant?

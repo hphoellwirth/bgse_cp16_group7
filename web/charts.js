@@ -83,6 +83,32 @@ function getCountryName(countryID) {
   return countryName;
 } 
 
+// is longitude correlation for given pollutant and year significant?
+function isCorrLongitudeSignificant(pollutant, year) {  
+  var significant = $.ajax({
+      type: "POST",     
+      data: {pollutant: pollutant,
+             year: year}, 
+      url: "functions.php?function=query_corrLongitudeSignificant",
+      dataType: "text",
+      async: false         
+      }).responseText;   
+  return significant;
+}  
+
+// is latitude correlation for given pollutant and year significant?
+function isCorrLatitudeSignificant(pollutant, year) {  
+  var significant = $.ajax({
+      type: "POST",     
+      data: {pollutant: pollutant,
+             year: year}, 
+      url: "functions.php?function=query_corrLatitudeSignificant",
+      dataType: "text",
+      async: false         
+      }).responseText;   
+  return significant;
+}
+
 // is population correlation for given pollutant, country, and year significant?
 function isCorrPopulationSignificant(pollutant, countryID, year) {  
   var significant = $.ajax({
@@ -262,7 +288,20 @@ function drawLongitudeVsConcentration(pollutant, year) {
       async: false         
       }).responseText;
   var data = new google.visualization.DataTable(jsonData);     
-     
+
+  if (isCorrLongitudeSignificant(pollutant, year) == '0') {     
+     var options = {
+        title: 'City longitude versus concentration level',
+        legend: 'none',
+        width: 550,
+        height: 300,    
+        pointSize: 3,                    
+        vAxis: {minValue: 0,
+                title: getPollutantUnit(pollutant)},
+        hAxis: {viewWindowMode: 'maximized', 
+                title: 'longitude'}
+    };
+  } else {
     var options = {
         title: 'City longitude versus concentration level',
         legend: 'none',
@@ -281,7 +320,8 @@ function drawLongitudeVsConcentration(pollutant, year) {
                 title: getPollutantUnit(pollutant)},
         hAxis: {viewWindowMode: 'maximized', 
                 title: 'longitude'}
-    };   
+    }; 
+  }    
 
   var chart = new google.visualization.ScatterChart(document.getElementById('chart_long_vs_conc'));
   chart.draw(data, options);
@@ -298,7 +338,20 @@ function drawLatitudeVsConcentration(pollutant, year) {
       async: false         
       }).responseText;
   var data = new google.visualization.DataTable(jsonData);     
-     
+  
+  if (isCorrLatitudeSignificant(pollutant, year) == '0') {   
+    var options = {
+        title: 'City latitude versus concentration level',
+        legend: 'none',
+        width: 550,
+        height: 300,    
+        pointSize: 3,                   
+        vAxis: {minValue: 0,
+                title: getPollutantUnit(pollutant)},
+        hAxis: {viewWindowMode: 'maximized', 
+                title: 'latitude'}
+    };
+  } else {  
     var options = {
         title: 'City latitude versus concentration level',
         legend: 'none',
@@ -318,7 +371,8 @@ function drawLatitudeVsConcentration(pollutant, year) {
         hAxis: {viewWindowMode: 'maximized', 
                 title: 'latitude'}
     };   
-
+  }
+  
   var chart = new google.visualization.ScatterChart(document.getElementById('chart_lat_vs_conc'));
   chart.draw(data, options);
 }
