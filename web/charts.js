@@ -313,7 +313,7 @@ function drawLongitudeVsConcentration(pollutant, year) {
             type: 'linear',
             color: 'red',
             lineWidth: 2,
-            opacity: 0.3,
+            opacity: 0.5,
             showR2: true
           }},                    
         vAxis: {minValue: 0,
@@ -363,7 +363,7 @@ function drawLatitudeVsConcentration(pollutant, year) {
             type: 'linear',
             color: 'red',
             lineWidth: 2,
-            opacity: 0.3,
+            opacity: 0.5,
             showR2: true
           }},                    
         vAxis: {minValue: 0,
@@ -395,7 +395,8 @@ function drawPopulationVsConcentration(pollutant, countryID, year) {
         title: 'City population versus concentration level',
         legend: 'none',
         width: 550,
-        height: 300,                        
+        height: 300,  
+        pointSize: 5,                       
         vAxis: {minValue: 0,
                 title: getPollutantUnit(pollutant)},
         hAxis: {title: 'city population',
@@ -406,13 +407,14 @@ function drawPopulationVsConcentration(pollutant, countryID, year) {
         title: 'City population versus concentration level',
         legend: 'none',
         width: 550,
-        height: 300,    
+        height: 300,
+        pointSize: 5,     
         trendlines: {
           0: {
             type: 'linear',
             color: 'red',
             lineWidth: 2,
-            opacity: 0.3,
+            opacity: 0.5,
             showR2: true
           }},                    
         vAxis: {minValue: 0,
