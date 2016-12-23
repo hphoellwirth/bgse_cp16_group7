@@ -64,7 +64,6 @@ run)
 	Rscript analysis/preInterpolatePopulation.R $user $pswd
 	echo "... computing descriptive analysis"	
 	mysql -u $user -p$pswd < db/ddl_analysis.sql 
-	#Rscript analysis/descCorrEmission.R $user $pswd
 	Rscript analysis/descCorrLocation.R $user $pswd
 	Rscript analysis/descCorrPopulation.R $user $pswd
 	echo "... computing predictive analysis"

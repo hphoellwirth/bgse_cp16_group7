@@ -431,7 +431,7 @@ function query_longitude_vs_concentration() {
       $table['cols'] = array(  
         array('label' => 'longitude', 'type' => 'number'),
         array('label' => 'concentration', 'type' => 'number')
-        //array('label' => 'city', 'type' => 'tooltip', 'p' => array('role' => 'tooltip'))
+        //array('type' => 'string', 'role' => 'tooltip')
       );
 
       $rows = array();
