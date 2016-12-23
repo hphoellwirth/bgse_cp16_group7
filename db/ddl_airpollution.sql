@@ -222,6 +222,14 @@ alter table forecastCountryConcentration
 alter table forecastCountryConcentration 
   add foreign key (countryID) references country (countryID);
 
+alter table correlationLocation 
+  add foreign key (pollutantID) references pollutant (pollutantID);
+  
+alter table correlationPopulation 
+  add foreign key (pollutantID) references pollutant (pollutantID);  
+alter table correlationPopulation 
+  add foreign key (countryID) references country (countryID);
+
 /********************/
 /* Create functions */
 /********************/ 
